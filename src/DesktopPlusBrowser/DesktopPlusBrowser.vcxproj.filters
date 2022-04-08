@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="DesktopPlusBrowser.cpp" />
+    <ClCompile Include="DPBrowserApp.cpp" />
+    <ClCompile Include="DPBrowserHandler.cpp" />
+    <ClCompile Include="D3DManager.cpp" />
+    <ClCompile Include="DPBrowserAPIServer.cpp" />
+    <ClCompile Include="..\Shared\Util.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Shared\openvr.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="DPBrowserApp.h" />
+    <ClInclude Include="DPBrowserHandler.h" />
+    <ClInclude Include="D3DManager.h" />
+    <ClInclude Include="DPBrowserAPIServer.h" />
+    <ClInclude Include="..\Shared\DPBrowserAPI.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Util.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{0ebcc221-9c46-46ae-b707-c14dc5b8f061}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DesktopPlusBrowser.ruleset" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DesktopPlusBrowser.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Shared\icon_desktop.ico" />
+  </ItemGroup>
+</Project>
