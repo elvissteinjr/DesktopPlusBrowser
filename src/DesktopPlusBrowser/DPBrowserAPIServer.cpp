@@ -266,6 +266,31 @@ void DPBrowserAPIServer::HandleIPCMessage(const MSG& msg)
                 m_IPCOverlayTarget = vr::k_ulOverlayHandleInvalid;
                 break;
             }
+            case dpbrowser_ipccmd_keyboard_vkey:
+            {
+                DVLOG(1) << "dpbrowser_ipccmd_keyboard_vkey: " << std::hex << LOWORD(msg.lParam) << " (flags) " << HIWORD(msg.lParam) << " (keycode)";
+
+                CefPostTask(TID_UI, base::BindOnce(&DPBrowserHandler::DPBrowser_KeyboardSetKeyState, handler, m_IPCOverlayTarget, 
+                                                   (DPBrowserIPCKeyboardKeystateFlags)LOWORD(msg.lParam), HIWORD(msg.lParam)) );
+
+                m_IPCOverlayTarget = vr::k_ulOverlayHandleInvalid;
+                break;
+            }
+            case dpbrowser_ipccmd_keyboard_wchar:
+            {
+                DVLOG(1) << "dpbrowser_ipccmd_keyboard_wchar: " << LOWORD(msg.lParam) << " (wchar) " << HIWORD(msg.lParam) << " (down)";
+
+                CefPostTask(TID_UI, base::BindOnce(&DPBrowserHandler::DPBrowser_KeyboardTypeWChar, handler, m_IPCOverlayTarget, LOWORD(msg.lParam), (HIWORD(msg.lParam) == 1)) );
+                m_IPCOverlayTarget = vr::k_ulOverlayHandleInvalid;
+                break;
+            }
+            case dpbrowser_ipccmd_keyboard_string:
+            {
+                DVLOG(1) << "dpbrowser_ipccmd_keyboard_string: " << std::hex << msg.lParam;
+
+                CefPostTask(TID_UI, base::BindOnce(&DPBrowserHandler::DPBrowser_KeyboardTypeString, handler, msg.lParam, GetIPCString(dpbrowser_ipcstr_keyboard_string)) );
+                break;
+            }
             case dpbrowser_ipccmd_go_back:
             {
                 DVLOG(0) << "dpbrowser_ipccmd_go_back: " << std::hex << msg.lParam;

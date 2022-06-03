@@ -16,6 +16,13 @@
 #include "DPBrowserAPIServer.h"
 #include "Util.h"
 
+enum KeyboardWin32KeystateFlags
+{
+    kbd_w32keystate_flag_shift_down       = 1 << 0,
+    kbd_w32keystate_flag_ctrl_down        = 1 << 1,
+    kbd_w32keystate_flag_alt_down         = 1 << 2
+};
+
 static CefRefPtr<DPBrowserHandler> g_DPBrowserHandler = nullptr;
 
 DPBrowserHandler::DPBrowserHandler()
@@ -200,6 +207,17 @@ void DPBrowserHandler::CheckStaleFPSValues()
     {
         m_IsStaleFPSValueTaskPending = false;
     }
+}
+
+CefKeyEvent DPBrowserHandler::KeyboardGenerateWCharEvent(wchar_t wchar)
+{
+    CefKeyEvent key_event;
+    UINT scan_code = ::MapVirtualKey(LOBYTE(::VkKeyScanW(wchar)), MAPVK_VK_TO_VSC);
+    key_event.native_key_code  = MAKELPARAM(1 /*repeat count*/, scan_code); //lParam like a WM_CHAR message
+    key_event.windows_key_code = wchar;
+    key_event.type             = KEYEVENT_CHAR;
+
+    return key_event;
 }
 
 void DPBrowserHandler::CloseAllBrowsers(bool force_close)
@@ -914,6 +932,168 @@ void DPBrowserHandler::DPBrowser_Scroll(vr::VROverlayHandle_t overlay_handle, fl
     if (browser_data.BrowserPtr != nullptr)
     {
         browser_data.BrowserPtr->GetHost()->SendMouseWheelEvent(m_MouseState, x_delta * WHEEL_DELTA, y_delta * WHEEL_DELTA);
+    }
+}
+
+void DPBrowserHandler::DPBrowser_KeyboardSetKeyState(vr::VROverlayHandle_t overlay_handle, DPBrowserIPCKeyboardKeystateFlags flags, unsigned char keycode)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    DPBrowserData& browser_data = FindBrowserDataForOverlay(overlay_handle);
+
+    if (browser_data.BrowserPtr != nullptr)
+    {
+        //CefKeyEvent::native_key_code is expected to be the lParam you get in WM_KEYDOWN/UP on Windows
+        //So, it's actually scancode + keystroke flags. We don't have those, so we need to make them up in order to make things work as they should.
+
+        //Get scancode
+        UINT scancode = ::MapVirtualKey(keycode, MAPVK_VK_TO_VSC_EX);
+
+        BYTE highbyte = HIBYTE(scancode);
+        bool is_extended = ((highbyte == 0xe0) || (highbyte == 0xe1));
+
+        //Some keys need some extra fiddling
+        switch (keycode)
+        {
+            //Modifiers need to use their generic variant (scancode still differs though)
+            case VK_LSHIFT:
+            case VK_RSHIFT:
+            {
+                keycode = VK_SHIFT;
+                break;
+            }
+            case VK_LCONTROL:
+            case VK_RCONTROL:
+            {
+                keycode = VK_CONTROL;
+                break;
+            }
+            case VK_LMENU:
+            case VK_RMENU:
+            {
+                keycode = VK_MENU;
+                break;
+            }
+            //Not extended but needs to be for expected results
+            case VK_NUMLOCK:
+            case VK_INSERT:
+            case VK_DELETE:
+            case VK_PRIOR:
+            case VK_NEXT:
+            case VK_END:
+            case VK_HOME:
+            case VK_LEFT:
+            case VK_UP:
+            case VK_RIGHT:
+            case VK_DOWN:
+            {
+                is_extended = true;
+                break;
+            }
+            //MapVirtualKey returns an unexpected scan code for VK_PAUSE and wrongly extends it (VK_NUMLOCK needs it instead)
+            case VK_PAUSE:
+            {
+                scancode = 0x45;
+                is_extended = false;
+                break;
+            }
+            //VK_SNAPSHOT is an odd one. Scancode 0x37 (VK_MULTIPLY) is technically not correct, but it's what you get in window messages, so we force that value instead
+            case VK_SNAPSHOT:
+            {
+                scancode = 0x37;
+                is_extended = true;
+                break;
+            }
+            default: break;
+        }
+
+        const bool is_alt_down = ( (flags & dpbrowser_ipckbd_keystate_flag_lalt_down) || (flags & dpbrowser_ipckbd_keystate_flag_ralt_down) );
+
+        //Set keystroke flags
+        WORD keystroke_flags = scancode;
+
+        if (is_extended)
+            keystroke_flags |= KF_EXTENDED;
+        if (!(flags & dpbrowser_ipckbd_keystate_flag_key_down))
+            keystroke_flags |= KF_REPEAT | KF_UP;
+        if ( (is_alt_down) || (keycode == VK_LMENU) || (keycode == VK_RMENU) || (keycode == VK_MENU) )
+            keystroke_flags |= KF_ALTDOWN;
+
+        LPARAM scancode_with_keystroke_flags = MAKELPARAM(1 /*repeat count*/, keystroke_flags);
+
+        //Set CefKeyEvent
+        CefKeyEvent key_event;
+        key_event.windows_key_code = keycode;
+        key_event.native_key_code  = scancode_with_keystroke_flags;
+        key_event.type             = (flags & dpbrowser_ipckbd_keystate_flag_key_down) ? KEYEVENT_RAWKEYDOWN : KEYEVENT_KEYUP;
+        key_event.modifiers        = m_MouseState.modifiers;
+
+        if ( (flags & dpbrowser_ipckbd_keystate_flag_lshift_down) || (flags & dpbrowser_ipckbd_keystate_flag_rshift_down) )
+            key_event.modifiers |= EVENTFLAG_SHIFT_DOWN;
+        if ( (flags & dpbrowser_ipckbd_keystate_flag_lctrl_down) || (flags & dpbrowser_ipckbd_keystate_flag_rctrl_down) )
+            key_event.modifiers |= EVENTFLAG_CONTROL_DOWN;
+        if (is_alt_down)
+            key_event.modifiers |= EVENTFLAG_ALT_DOWN;
+        if (flags & dpbrowser_ipckbd_keystate_flag_capslock_toggled)
+            key_event.modifiers |= EVENTFLAG_CAPS_LOCK_ON;
+
+        browser_data.BrowserPtr->GetHost()->SendKeyEvent(key_event);
+    }
+}
+
+void DPBrowserHandler::DPBrowser_KeyboardTypeWChar(vr::VROverlayHandle_t overlay_handle, wchar_t wchar, bool down)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    DPBrowserData& browser_data = FindBrowserDataForOverlay(overlay_handle);
+
+    if (browser_data.BrowserPtr != nullptr)
+    {
+        //Check if it can be pressed on the current windows keyboard layout and send key down/up events then
+        SHORT w32_keystate = ::VkKeyScan(wchar);
+        unsigned char keycode = LOBYTE(w32_keystate);
+        unsigned char flags   = HIBYTE(w32_keystate);
+
+        bool is_valid = ((keycode != -1) || (flags != -1));
+
+        if (is_valid)
+        {
+            //Set keystate flags from win32 keystate
+            unsigned char dpflags = (down) ? dpbrowser_ipckbd_keystate_flag_key_down : 0;
+
+            if (flags & kbd_w32keystate_flag_shift_down)
+                dpflags |= dpbrowser_ipckbd_keystate_flag_lshift_down;
+            if (flags & kbd_w32keystate_flag_ctrl_down)
+                dpflags |= dpbrowser_ipckbd_keystate_flag_lctrl_down;
+            if (flags & kbd_w32keystate_flag_alt_down)
+                dpflags |= dpbrowser_ipckbd_keystate_flag_lalt_down;
+
+            //Send key down/up event
+            DPBrowser_KeyboardSetKeyState(overlay_handle, (DPBrowserIPCKeyboardKeystateFlags)dpflags, keycode);
+        }
+
+        //Also send wchar event if the key is down
+        if (down)
+        {
+            browser_data.BrowserPtr->GetHost()->SendKeyEvent(KeyboardGenerateWCharEvent(wchar));
+        }
+    }
+}
+
+void DPBrowserHandler::DPBrowser_KeyboardTypeString(vr::VROverlayHandle_t overlay_handle, const std::string& str)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    DPBrowserData& browser_data = FindBrowserDataForOverlay(overlay_handle);
+
+    if (browser_data.BrowserPtr != nullptr)
+    {
+        std::wstring wstr = WStringConvertFromUTF8(str.c_str());
+
+        for (wchar_t wchar : wstr)
+        {
+            browser_data.BrowserPtr->GetHost()->SendKeyEvent(KeyboardGenerateWCharEvent(wchar));
+        }
     }
 }
 
