@@ -943,6 +943,29 @@ void DPBrowserHandler::DPBrowser_KeyboardSetKeyState(vr::VROverlayHandle_t overl
 
     if (browser_data.BrowserPtr != nullptr)
     {
+        //Mouse buttons need to be handled differently (X1 and X2 are not really supported, but still sent as keyboard events)
+        if ((keycode <= 4) && (keycode != VK_CANCEL))
+        {
+            vr::EVRMouseButton vr_mouse_button = vr::VRMouseButton_Left;
+
+            switch (keycode)
+            {
+                case VK_LBUTTON: vr_mouse_button = vr::VRMouseButton_Left;   break;
+                case VK_RBUTTON: vr_mouse_button = vr::VRMouseButton_Right;  break;
+                case VK_MBUTTON: vr_mouse_button = vr::VRMouseButton_Middle; break;
+            }
+
+            if (flags & dpbrowser_ipckbd_keystate_flag_key_down)
+            {
+                DPBrowser_MouseDown(overlay_handle, vr_mouse_button);
+            }
+            else
+            {
+                DPBrowser_MouseUp(overlay_handle, vr_mouse_button);
+            }
+            return;
+        }
+
         //CefKeyEvent::native_key_code is expected to be the lParam you get in WM_KEYDOWN/UP on Windows
         //So, it's actually scancode + keystroke flags. We don't have those, so we need to make them up in order to make things work as they should.
 
