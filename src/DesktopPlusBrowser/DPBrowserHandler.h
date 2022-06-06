@@ -38,6 +38,7 @@ struct DPBrowserData
     int ResizingFrameCount = 0;
     int FrameCount = 0;
     ULONGLONG FrameCountStartTick = 0;
+    bool KeyboardToggledKeys[256] = {false};                  //Tracks state of toggled keys between API calls (only DPBrowser_KeyboardToggleKey())
 };
 
 //Browser handler for CEF and Desktop+. Implements DPBrowserAPI functions called by DPBrowserAPIServer
@@ -138,6 +139,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         virtual void DPBrowser_Scroll(vr::VROverlayHandle_t overlay_handle, float x_delta, float y_delta) override;
 
         virtual void DPBrowser_KeyboardSetKeyState(vr::VROverlayHandle_t overlay_handle, DPBrowserIPCKeyboardKeystateFlags flags, unsigned char keycode) override;
+        virtual void DPBrowser_KeyboardToggleKey(vr::VROverlayHandle_t overlay_handle, unsigned char keycode) override;
         virtual void DPBrowser_KeyboardTypeWChar(vr::VROverlayHandle_t overlay_handle, wchar_t wchar, bool down) override;
         virtual void DPBrowser_KeyboardTypeString(vr::VROverlayHandle_t overlay_handle, const std::string& str) override;
 

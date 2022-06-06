@@ -276,6 +276,15 @@ void DPBrowserAPIServer::HandleIPCMessage(const MSG& msg)
                 m_IPCOverlayTarget = vr::k_ulOverlayHandleInvalid;
                 break;
             }
+            case dpbrowser_ipccmd_keyboard_vkey_toggle:
+            {
+                DVLOG(1) << "dpbrowser_ipccmd_keyboard_vkey_toggle: " << std::hex << msg.lParam;
+
+                CefPostTask(TID_UI, base::BindOnce(&DPBrowserHandler::DPBrowser_KeyboardToggleKey, handler, m_IPCOverlayTarget, msg.lParam) );
+
+                m_IPCOverlayTarget = vr::k_ulOverlayHandleInvalid;
+                break;
+            }
             case dpbrowser_ipccmd_keyboard_wchar:
             {
                 DVLOG(1) << "dpbrowser_ipccmd_keyboard_wchar: " << LOWORD(msg.lParam) << " (wchar) " << HIWORD(msg.lParam) << " (down)";

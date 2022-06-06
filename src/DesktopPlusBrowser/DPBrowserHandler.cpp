@@ -1064,6 +1064,21 @@ void DPBrowserHandler::DPBrowser_KeyboardSetKeyState(vr::VROverlayHandle_t overl
     }
 }
 
+void DPBrowserHandler::DPBrowser_KeyboardToggleKey(vr::VROverlayHandle_t overlay_handle, unsigned char keycode)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    DPBrowserData& browser_data = FindBrowserDataForOverlay(overlay_handle);
+
+    if (browser_data.BrowserPtr != nullptr)
+    {
+        unsigned char dpflags = (browser_data.KeyboardToggledKeys[keycode]) ? 0 : dpbrowser_ipckbd_keystate_flag_key_down;
+        DPBrowser_KeyboardSetKeyState(overlay_handle, (DPBrowserIPCKeyboardKeystateFlags)dpflags, keycode);
+
+        browser_data.KeyboardToggledKeys[keycode] = !browser_data.KeyboardToggledKeys[keycode];
+    }
+}
+
 void DPBrowserHandler::DPBrowser_KeyboardTypeWChar(vr::VROverlayHandle_t overlay_handle, wchar_t wchar, bool down)
 {
     CEF_REQUIRE_UI_THREAD();
