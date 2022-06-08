@@ -38,7 +38,8 @@ struct DPBrowserData
     int ResizingFrameCount = 0;
     int FrameCount = 0;
     ULONGLONG FrameCountStartTick = 0;
-    bool KeyboardToggledKeys[256] = {false};                  //Tracks state of toggled keys between API calls (only DPBrowser_KeyboardToggleKey())
+    bool KeyboardToggledKeys[256] = {false};                                        //Tracks state of toggled keys between API calls (only DPBrowser_KeyboardToggleKey())
+    vr::VROverlayHandle_t LastActiveOverlayHandle = vr::k_ulOverlayHandleInvalid;   //Last overlay used as target for keyboard or mouse input (excluding mouse move/scroll)
 };
 
 //Browser handler for CEF and Desktop+. Implements DPBrowserAPI functions called by DPBrowserAPIServer
@@ -111,6 +112,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void *buffer, int width, int height) override;
         virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, void *shared_handle) override;
         virtual void OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, void *shared_handle, bool new_texture) override;
+        virtual void OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode input_mode) override;
 
         //CefContextMenuHandler:
         virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model) override;

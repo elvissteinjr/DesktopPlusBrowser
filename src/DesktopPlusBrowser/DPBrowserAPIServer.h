@@ -37,4 +37,5 @@ class DPBrowserAPIServer
         void NotifyTitleChange(vr::VROverlayHandle_t overlay_handle, const std::string& title);
         void NotifyFPS(vr::VROverlayHandle_t overlay_handle, int fps);
         void NotifyLaserPointerHaptics();
+        void NotifyKeyboardShow(vr::VROverlayHandle_t overlay_handle, bool show);
 };

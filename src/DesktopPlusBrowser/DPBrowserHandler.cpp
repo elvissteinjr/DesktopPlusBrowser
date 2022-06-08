@@ -584,6 +584,22 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
     }
 }
 
+void DPBrowserHandler::OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode input_mode)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    DPBrowserData& browser_data = GetBrowserData(*browser);
+
+    const auto& overlay_data = browser_data.Overlays;
+    if (!overlay_data.empty())
+    {
+        //Use last active overlay if available
+        vr::VROverlayHandle_t overlay_handle = (browser_data.LastActiveOverlayHandle != vr::k_ulOverlayHandleInvalid) ? browser_data.LastActiveOverlayHandle : overlay_data[0].OverlayHandle;
+
+        DPBrowserAPIServer::Get().NotifyKeyboardShow(overlay_handle, (input_mode != CEF_TEXT_INPUT_MODE_NONE));
+    }
+}
+
 void DPBrowserHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model)
 {
     //Clear the menu to block it
@@ -757,6 +773,12 @@ void DPBrowserHandler::DPBrowser_StopBrowser(vr::VROverlayHandle_t overlay_handl
 
             //The removed overlay might've been used as a shared source, so we need to force a fresh full frame
             ForceRedraw(browser_data);
+
+            //Reset last active overlay if it's the removed one
+            if (browser_data.LastActiveOverlayHandle == overlay_handle)
+            {
+                browser_data.LastActiveOverlayHandle = vr::k_ulOverlayHandleInvalid;
+            }
         }
     }
 }
@@ -899,6 +921,8 @@ void DPBrowserHandler::DPBrowser_MouseDown(vr::VROverlayHandle_t overlay_handle,
         }
 
         browser_data.BrowserPtr->GetHost()->SendMouseClickEvent(m_MouseState, cefbutton, false, 1);
+
+        browser_data.LastActiveOverlayHandle = overlay_handle;
     }
 }
 
@@ -1061,6 +1085,8 @@ void DPBrowserHandler::DPBrowser_KeyboardSetKeyState(vr::VROverlayHandle_t overl
             key_event.modifiers |= EVENTFLAG_CAPS_LOCK_ON;
 
         browser_data.BrowserPtr->GetHost()->SendKeyEvent(key_event);
+
+        browser_data.LastActiveOverlayHandle = overlay_handle;
     }
 }
 
@@ -1076,6 +1102,8 @@ void DPBrowserHandler::DPBrowser_KeyboardToggleKey(vr::VROverlayHandle_t overlay
         DPBrowser_KeyboardSetKeyState(overlay_handle, (DPBrowserIPCKeyboardKeystateFlags)dpflags, keycode);
 
         browser_data.KeyboardToggledKeys[keycode] = !browser_data.KeyboardToggledKeys[keycode];
+
+        browser_data.LastActiveOverlayHandle = overlay_handle;
     }
 }
 
@@ -1115,6 +1143,8 @@ void DPBrowserHandler::DPBrowser_KeyboardTypeWChar(vr::VROverlayHandle_t overlay
         {
             browser_data.BrowserPtr->GetHost()->SendKeyEvent(KeyboardGenerateWCharEvent(wchar));
         }
+
+        browser_data.LastActiveOverlayHandle = overlay_handle;
     }
 }
 
@@ -1132,6 +1162,8 @@ void DPBrowserHandler::DPBrowser_KeyboardTypeString(vr::VROverlayHandle_t overla
         {
             browser_data.BrowserPtr->GetHost()->SendKeyEvent(KeyboardGenerateWCharEvent(wchar));
         }
+
+        browser_data.LastActiveOverlayHandle = overlay_handle;
     }
 }
 

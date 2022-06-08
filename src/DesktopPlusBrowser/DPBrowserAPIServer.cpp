@@ -384,3 +384,13 @@ void DPBrowserAPIServer::NotifyLaserPointerHaptics()
         ::PostMessage(window, m_Win32MessageID, dpbrowser_ipccmd_notify_lpointer_haptics, 0);
     }
 }
+
+void DPBrowserAPIServer::NotifyKeyboardShow(vr::VROverlayHandle_t overlay_handle, bool show)
+{
+    //Send notifcation to UI app
+    if (HWND window = ::FindWindow(g_WindowClassNameUIApp, nullptr))
+    {
+        ::PostMessage(window, m_Win32MessageID, dpbrowser_ipccmd_set_overlay_target, overlay_handle);
+        ::PostMessage(window, m_Win32MessageID, dpbrowser_ipccmd_notify_keyboard_show, show);
+    }
+}
