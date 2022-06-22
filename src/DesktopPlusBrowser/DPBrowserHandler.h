@@ -44,7 +44,7 @@ struct DPBrowserData
 
 //Browser handler for CEF and Desktop+. Implements DPBrowserAPI functions called by DPBrowserAPIServer
 class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefLifeSpanHandler, public CefLoadHandler, public CefRenderHandler, public CefContextMenuHandler,
-                         public CefDownloadHandler, public DPBrowserAPI
+                         public CefDownloadHandler, public CefJSDialogHandler, public DPBrowserAPI
 {
     private:
         //List of browsers. Only accessed on the CEF UI thread.
@@ -89,6 +89,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         virtual CefRefPtr<CefRenderHandler>      GetRenderHandler()      override { return this; }
         virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override { return this; }
         virtual CefRefPtr<CefDownloadHandler>    GetDownloadHandler()    override { return this; }
+        virtual CefRefPtr<CefJSDialogHandler>    GetJSDialogHandler()    override { return this; }
 
         //CefDisplayHandler:
         virtual void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url) override;
@@ -112,6 +113,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void *buffer, int width, int height) override;
         virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, void *shared_handle) override;
         virtual void OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, void *shared_handle, bool new_texture) override;
+        virtual bool StartDragging(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDragData> drag_data, DragOperationsMask allowed_ops, int x, int y) override;
         virtual void OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode input_mode) override;
 
         //CefContextMenuHandler:
@@ -121,6 +123,11 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         virtual void OnBeforeDownload(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDownloadItem> download_item, const CefString& suggested_name, 
                                       CefRefPtr<CefBeforeDownloadCallback> callback) override;
         virtual void OnDownloadUpdated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDownloadItem> download_item, CefRefPtr<CefDownloadItemCallback> callback) override;
+
+        //CefJSDialogHandler:
+        virtual bool OnJSDialog(CefRefPtr<CefBrowser> browser, const CefString& origin_url, JSDialogType dialog_type, const CefString& message_text, const CefString& default_prompt_text,
+                                CefRefPtr<CefJSDialogCallback> callback, bool& suppress_message) override;
+        virtual bool OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser, const CefString& message_text, bool is_reload, CefRefPtr<CefJSDialogCallback> callback) override;
 
         //DPBrowserAPI:
         virtual void DPBrowser_StartBrowser(vr::VROverlayHandle_t overlay_handle, const std::string& url, bool use_transparent_background) override;

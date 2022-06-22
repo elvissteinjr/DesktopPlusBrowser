@@ -584,6 +584,11 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
     }
 }
 
+bool DPBrowserHandler::StartDragging(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDragData> drag_data, DragOperationsMask allowed_ops, int x, int y)
+{
+    return false;
+}
+
 void DPBrowserHandler::OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode input_mode)
 {
     CEF_REQUIRE_UI_THREAD();
@@ -620,6 +625,20 @@ void DPBrowserHandler::OnDownloadUpdated(CefRefPtr<CefBrowser> browser, CefRefPt
     //CEF documentation suggests that downloads would be blocked by default if the callback in OnBeforeDownload() isn't used, but that simply isn't true.
     //In the default case, the download happens quietly and is put in the temp folder... and never deleted. Not nice.
     callback->Cancel();
+}
+
+bool DPBrowserHandler::OnJSDialog(CefRefPtr<CefBrowser> browser, const CefString& origin_url, JSDialogType dialog_type, const CefString& message_text, const CefString& default_prompt_text, CefRefPtr<CefJSDialogCallback> callback, bool& suppress_message)
+{
+    //Just ignore all javascript dialogs for now
+    suppress_message = true;
+    return false;
+}
+
+bool DPBrowserHandler::OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser, const CefString& message_text, bool is_reload, CefRefPtr<CefJSDialogCallback> callback)
+{
+    //Just always allow leaving the page
+    callback->Continue(true, "");
+    return true;
 }
 
 void DPBrowserHandler::DPBrowser_StartBrowser(vr::VROverlayHandle_t overlay_handle, const std::string& url, bool use_transparent_background)
