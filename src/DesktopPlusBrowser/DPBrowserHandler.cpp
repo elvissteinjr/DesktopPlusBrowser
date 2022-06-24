@@ -903,10 +903,10 @@ void DPBrowserHandler::DPBrowser_MouseMove(vr::VROverlayHandle_t overlay_handle,
 
     if (browser_data.BrowserPtr != nullptr)
     {
-        m_MouseState.x = x;
-        m_MouseState.y = y;
+        m_MouseState.CefEvent.x = x;
+        m_MouseState.CefEvent.y = y;
 
-        browser_data.BrowserPtr->GetHost()->SendMouseMoveEvent(m_MouseState, false);
+        browser_data.BrowserPtr->GetHost()->SendMouseMoveEvent(m_MouseState.CefEvent, false);
     }
 }
 
@@ -918,7 +918,8 @@ void DPBrowserHandler::DPBrowser_MouseLeave(vr::VROverlayHandle_t overlay_handle
 
     if (browser_data.BrowserPtr != nullptr)
     {
-        browser_data.BrowserPtr->GetHost()->SendMouseMoveEvent(m_MouseState, true);
+        browser_data.BrowserPtr->GetHost()->SendMouseMoveEvent(m_MouseState.CefEvent, true);
+        m_MouseState.LastButtonClickCount = 0;
     }
 }
 
@@ -934,12 +935,22 @@ void DPBrowserHandler::DPBrowser_MouseDown(vr::VROverlayHandle_t overlay_handle,
 
         switch (button)
         {
-            case vr::VRMouseButton_Left:   cefbutton = MBT_LEFT;   m_MouseState.modifiers |= EVENTFLAG_LEFT_MOUSE_BUTTON;   break;
-            case vr::VRMouseButton_Right:  cefbutton = MBT_RIGHT;  m_MouseState.modifiers |= EVENTFLAG_RIGHT_MOUSE_BUTTON;  break;
-            case vr::VRMouseButton_Middle: cefbutton = MBT_MIDDLE; m_MouseState.modifiers |= EVENTFLAG_MIDDLE_MOUSE_BUTTON; break;
+            case vr::VRMouseButton_Left:   cefbutton = MBT_LEFT;   m_MouseState.CefEvent.modifiers |= EVENTFLAG_LEFT_MOUSE_BUTTON;   break;
+            case vr::VRMouseButton_Right:  cefbutton = MBT_RIGHT;  m_MouseState.CefEvent.modifiers |= EVENTFLAG_RIGHT_MOUSE_BUTTON;  break;
+            case vr::VRMouseButton_Middle: cefbutton = MBT_MIDDLE; m_MouseState.CefEvent.modifiers |= EVENTFLAG_MIDDLE_MOUSE_BUTTON; break;
         }
 
-        browser_data.BrowserPtr->GetHost()->SendMouseClickEvent(m_MouseState, cefbutton, false, 1);
+        //Reset click count if different button, click count is already 2 or over double click time (we cycle after a double-click to imitate desktop browser behavior)
+        if ( (cefbutton != m_MouseState.LastButton) || (m_MouseState.LastButtonClickCount == 2) || (m_MouseState.LastButtonClickTick + ::GetDoubleClickTime() < ::GetTickCount64()) )
+        {
+            m_MouseState.LastButtonClickCount = 0;
+        }
+
+        m_MouseState.LastButton = cefbutton;
+        m_MouseState.LastButtonClickCount++;
+        m_MouseState.LastButtonClickTick = ::GetTickCount64();
+
+        browser_data.BrowserPtr->GetHost()->SendMouseClickEvent(m_MouseState.CefEvent, cefbutton, false, m_MouseState.LastButtonClickCount);
 
         browser_data.LastActiveOverlayHandle = overlay_handle;
     }
@@ -957,12 +968,12 @@ void DPBrowserHandler::DPBrowser_MouseUp(vr::VROverlayHandle_t overlay_handle, v
 
         switch (button)
         {
-            case vr::VRMouseButton_Left:   cefbutton = MBT_LEFT;   m_MouseState.modifiers &= ~EVENTFLAG_LEFT_MOUSE_BUTTON;   break;
-            case vr::VRMouseButton_Right:  cefbutton = MBT_RIGHT;  m_MouseState.modifiers &= ~EVENTFLAG_RIGHT_MOUSE_BUTTON;  break;
-            case vr::VRMouseButton_Middle: cefbutton = MBT_MIDDLE; m_MouseState.modifiers &= ~EVENTFLAG_MIDDLE_MOUSE_BUTTON; break;
+            case vr::VRMouseButton_Left:   cefbutton = MBT_LEFT;   m_MouseState.CefEvent.modifiers &= ~EVENTFLAG_LEFT_MOUSE_BUTTON;   break;
+            case vr::VRMouseButton_Right:  cefbutton = MBT_RIGHT;  m_MouseState.CefEvent.modifiers &= ~EVENTFLAG_RIGHT_MOUSE_BUTTON;  break;
+            case vr::VRMouseButton_Middle: cefbutton = MBT_MIDDLE; m_MouseState.CefEvent.modifiers &= ~EVENTFLAG_MIDDLE_MOUSE_BUTTON; break;
         }
 
-        browser_data.BrowserPtr->GetHost()->SendMouseClickEvent(m_MouseState, cefbutton, true, 1);
+        browser_data.BrowserPtr->GetHost()->SendMouseClickEvent(m_MouseState.CefEvent, cefbutton, true, m_MouseState.LastButtonClickCount);
     }
 }
 
@@ -974,7 +985,7 @@ void DPBrowserHandler::DPBrowser_Scroll(vr::VROverlayHandle_t overlay_handle, fl
 
     if (browser_data.BrowserPtr != nullptr)
     {
-        browser_data.BrowserPtr->GetHost()->SendMouseWheelEvent(m_MouseState, x_delta * WHEEL_DELTA, y_delta * WHEEL_DELTA);
+        browser_data.BrowserPtr->GetHost()->SendMouseWheelEvent(m_MouseState.CefEvent, x_delta * WHEEL_DELTA, y_delta * WHEEL_DELTA);
     }
 }
 
@@ -1092,7 +1103,7 @@ void DPBrowserHandler::DPBrowser_KeyboardSetKeyState(vr::VROverlayHandle_t overl
         key_event.windows_key_code = keycode;
         key_event.native_key_code  = scancode_with_keystroke_flags;
         key_event.type             = (flags & dpbrowser_ipckbd_keystate_flag_key_down) ? KEYEVENT_RAWKEYDOWN : KEYEVENT_KEYUP;
-        key_event.modifiers        = m_MouseState.modifiers;
+        key_event.modifiers        = m_MouseState.CefEvent.modifiers;
 
         if ( (flags & dpbrowser_ipckbd_keystate_flag_lshift_down) || (flags & dpbrowser_ipckbd_keystate_flag_rshift_down) )
             key_event.modifiers |= EVENTFLAG_SHIFT_DOWN;

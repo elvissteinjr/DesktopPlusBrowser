@@ -42,12 +42,20 @@ struct DPBrowserData
     vr::VROverlayHandle_t LastActiveOverlayHandle = vr::k_ulOverlayHandleInvalid;   //Last overlay used as target for keyboard or mouse input (excluding mouse move/scroll)
 };
 
+struct DPBrowserMouseState
+{
+    CefMouseEvent CefEvent;
+    cef_mouse_button_type_t LastButton = MBT_LEFT;
+    int LastButtonClickCount = 0;                   //Track click count within double-click time-window to trigger double-click events
+    ULONGLONG LastButtonClickTick = 0;
+};
+
 //Browser handler for CEF and Desktop+. Implements DPBrowserAPI functions called by DPBrowserAPIServer
 class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefLifeSpanHandler, public CefLoadHandler, public CefRenderHandler, public CefContextMenuHandler,
                          public CefDownloadHandler, public CefJSDialogHandler, public DPBrowserAPI
 {
     private:
-        //List of browsers. Only accessed on the CEF UI thread.
+        //List of browsers and browser-global state. Only accessed on the CEF UI thread.
         std::vector<DPBrowserData> m_BrowserList;
         std::unordered_map<int, int> m_BrowserIDToDataMap;  //Maps CEF browser identifier to ID of m_BrowserList
         DPBrowserData m_BrowserDataNull;
@@ -55,7 +63,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
 
         int m_GlobalMaxFPS = 60;
 
-        CefMouseEvent m_MouseState;
+        DPBrowserMouseState m_MouseState;
         bool m_IsStaleFPSValueTaskPending = false;
 
         //--These need to be called on the browser/CEF UI thread
