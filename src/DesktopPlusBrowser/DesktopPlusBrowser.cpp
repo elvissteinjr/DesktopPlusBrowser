@@ -1,6 +1,8 @@
 //This code belongs to the Desktop+ Browser component, licensed under GPL 3.0
 
 #include "include/cef_command_line.h"
+#include "include/cef_path_util.h"
+
 #include "DPBrowserApp.h"
 #include "DPBrowserAPIServer.h"
 #include "Util.h"
@@ -29,24 +31,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
     //Get working directory and use it for the cache path
     {
-        std::unique_ptr<WCHAR[]> buffer;
-        DWORD buffer_size = ::GetCurrentDirectoryW(0, nullptr);
+        CefString current_dir;
+        CefGetPath(PK_DIR_CURRENT, current_dir);
 
-        if (buffer_size > 0)
-        {
-            buffer = std::unique_ptr<WCHAR[]>{ new WCHAR[buffer_size] };
+        std::wstring cache_dir_wstr = current_dir.c_str();
+        cache_dir_wstr += L"/userdata/";
 
-            if (::GetCurrentDirectoryW(buffer_size, buffer.get()) != 0)
-            {
-                //Append cache directory name and set the path
-                std::wstring str_current_dir(buffer.get());
-                str_current_dir += L"/userdata/";
-
-                CefString(&settings.cache_path) = str_current_dir;
-            }
-        }
+        CefString(&settings.cache_path) = cache_dir_wstr;
     }
-    
+
     //DPBrowserApp handles application-level CEF callbacks and forwards window messages to the DPBrowserAPIServer
     CefRefPtr<DPBrowserApp> app(new DPBrowserApp);
 
