@@ -7,6 +7,7 @@
 
 #include "D3DManager.h"
 #include "DPBrowserAPI.h"
+#include "DPBrowserContentBlocker.h"
 
 struct DPBrowserOverlayData
 {
@@ -52,7 +53,7 @@ struct DPBrowserMouseState
 
 //Browser handler for CEF and Desktop+. Implements DPBrowserAPI functions called by DPBrowserAPIServer
 class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefLifeSpanHandler, public CefLoadHandler, public CefRenderHandler, public CefContextMenuHandler,
-                         public CefDownloadHandler, public CefJSDialogHandler, public DPBrowserAPI
+                         public CefDownloadHandler, public CefJSDialogHandler, public CefRequestHandler, public DPBrowserAPI
 {
     private:
         //List of browsers and browser-global state. Only accessed on the CEF UI thread.
@@ -65,6 +66,9 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
 
         DPBrowserMouseState m_MouseState;
         bool m_IsStaleFPSValueTaskPending = false;
+
+        //Content blocker, only accessed on the CEF IO thread
+        CefRefPtr<DPBrowserContentBlocker> m_ContentBlocker;
 
         //--These need to be called on the browser/CEF UI thread
         DPBrowserData& GetBrowserData(unsigned int id);
@@ -98,6 +102,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override { return this; }
         virtual CefRefPtr<CefDownloadHandler>    GetDownloadHandler()    override { return this; }
         virtual CefRefPtr<CefJSDialogHandler>    GetJSDialogHandler()    override { return this; }
+        virtual CefRefPtr<CefRequestHandler>     GetRequestHandler()     override { return this; }
 
         //CefDisplayHandler:
         virtual void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url) override;
@@ -137,6 +142,10 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
                                 CefRefPtr<CefJSDialogCallback> callback, bool& suppress_message) override;
         virtual bool OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser, const CefString& message_text, bool is_reload, CefRefPtr<CefJSDialogCallback> callback) override;
 
+        //CefRequestHandler
+        virtual CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request, bool is_navigation,
+                                                                               bool is_download, const CefString& request_initiator, bool& disable_default_handling) override;
+
         //DPBrowserAPI:
         virtual void DPBrowser_StartBrowser(vr::VROverlayHandle_t overlay_handle, const std::string& url, bool use_transparent_background) override;
         virtual void DPBrowser_DuplicateBrowserOutput(vr::VROverlayHandle_t overlay_handle_src, vr::VROverlayHandle_t overlay_handle_dst) override;
@@ -165,4 +174,5 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         virtual void DPBrowser_Refresh(vr::VROverlayHandle_t overlay_handle) override;
 
         virtual void DPBrowser_GlobalSetFPS(int fps) override;
+        virtual void DPBrowser_ContentBlockSetEnabled(bool enable) override;    //Call on IO thread
 };

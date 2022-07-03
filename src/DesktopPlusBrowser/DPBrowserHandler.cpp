@@ -29,6 +29,9 @@ DPBrowserHandler::DPBrowserHandler()
 {
     DCHECK(!g_DPBrowserHandler);
     g_DPBrowserHandler = this;
+
+    m_ContentBlocker = CefRefPtr<DPBrowserContentBlocker>(new DPBrowserContentBlocker);
+    CefPostTask(TID_IO, base::BindOnce(&DPBrowserContentBlocker::ReloadEngines, m_ContentBlocker));
 }
 
 DPBrowserHandler::~DPBrowserHandler()
@@ -627,7 +630,8 @@ void DPBrowserHandler::OnDownloadUpdated(CefRefPtr<CefBrowser> browser, CefRefPt
     callback->Cancel();
 }
 
-bool DPBrowserHandler::OnJSDialog(CefRefPtr<CefBrowser> browser, const CefString& origin_url, JSDialogType dialog_type, const CefString& message_text, const CefString& default_prompt_text, CefRefPtr<CefJSDialogCallback> callback, bool& suppress_message)
+bool DPBrowserHandler::OnJSDialog(CefRefPtr<CefBrowser> browser, const CefString& origin_url, JSDialogType dialog_type, const CefString& message_text, const CefString& default_prompt_text, 
+                                  CefRefPtr<CefJSDialogCallback> callback, bool& suppress_message)
 {
     //Just ignore all javascript dialogs for now
     suppress_message = true;
@@ -639,6 +643,12 @@ bool DPBrowserHandler::OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser, const
     //Just always allow leaving the page
     callback->Continue(true, "");
     return true;
+}
+
+CefRefPtr<CefResourceRequestHandler> DPBrowserHandler::GetResourceRequestHandler(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request, bool is_navigation, bool is_download, 
+                                                                                 const CefString& request_initiator, bool& disable_default_handling)
+{
+    return m_ContentBlocker;
 }
 
 void DPBrowserHandler::DPBrowser_StartBrowser(vr::VROverlayHandle_t overlay_handle, const std::string& url, bool use_transparent_background)
@@ -1247,4 +1257,11 @@ void DPBrowserHandler::DPBrowser_GlobalSetFPS(int fps)
             ApplyMaxFPS(*browser_data.BrowserPtr);
         }
     }
+}
+
+void DPBrowserHandler::DPBrowser_ContentBlockSetEnabled(bool enable)
+{
+    CEF_REQUIRE_IO_THREAD();
+
+    m_ContentBlocker->SetEnabled(enable);
 }

@@ -59,7 +59,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)cef;..\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)cef;$(SolutionDir)Shared;$(SolutionDir)ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -97,8 +97,8 @@
       </Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>cef\libcef.lib;openvr_api.lib;dxgi.lib;d3d11.lib;dwmapi.lib;cef\libcef_dll_wrapper\Debug\libcef_dll_wrapper.lib;%(AdditionalDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Shared;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cef\libcef.lib;adblock_rust_ffi\adblock.dll.lib;openvr_api.lib;dxgi.lib;d3d11.lib;dwmapi.lib;cef\libcef_dll_wrapper\Debug\libcef_dll_wrapper.lib;%(AdditionalDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Shared;$(SolutionDir)ThirdParty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>
@@ -114,7 +114,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)cef;..\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)cef;$(SolutionDir)Shared;$(SolutionDir)ThirdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>None</DebugInformationFormat>
       <DisableSpecificWarnings>4100;4127;4244;4324;4481;4512;4701;4702;4996</DisableSpecificWarnings>
@@ -149,8 +149,8 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>cef\libcef.lib;openvr_api.lib;dxgi.lib;d3d11.lib;dwmapi.lib;cef\libcef_dll_wrapper\Release\libcef_dll_wrapper.lib;%(AdditionalDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Shared;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cef\libcef.lib;adblock_rust_ffi\adblock.dll.lib;openvr_api.lib;dxgi.lib;d3d11.lib;dwmapi.lib;cef\libcef_dll_wrapper\Release\libcef_dll_wrapper.lib;%(AdditionalDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Shared;$(SolutionDir)ThirdParty;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>
@@ -166,15 +166,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Shared\Util.cpp" />
+    <ClCompile Include="..\ThirdParty\adblock_rust_ffi\src\wrapper.cc" />
     <ClCompile Include="DPBrowserAPIServer.cpp" />
     <ClCompile Include="DPBrowserApp.cpp" />
     <ClInclude Include="..\Shared\DPBrowserAPI.h" />
     <ClInclude Include="..\Shared\openvr.h" />
     <ClInclude Include="..\Shared\Util.h" />
+    <ClInclude Include="..\ThirdParty\adblock_rust_ffi\src\lib.h" />
+    <ClInclude Include="..\ThirdParty\adblock_rust_ffi\src\wrapper.h" />
     <ClInclude Include="DPBrowserAPIServer.h" />
     <ClInclude Include="DPBrowserApp.h" />
     <ClCompile Include="D3DManager.cpp" />
+    <ClCompile Include="DPBrowserContentBlocker.cpp" />
     <ClCompile Include="DPBrowserHandler.cpp" />
+    <ClInclude Include="DPBrowserContentBlocker.h" />
     <ClInclude Include="DPBrowserHandler.h" />
     <ClInclude Include="D3DManager.h" />
     <ClInclude Include="resource.h" />

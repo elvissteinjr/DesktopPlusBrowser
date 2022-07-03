@@ -326,6 +326,14 @@ void DPBrowserAPIServer::HandleIPCMessage(const MSG& msg)
                 DVLOG(0) << "dpbrowser_ipccmd_global_set_fps: " << msg.lParam;
 
                 CefPostTask(TID_UI, base::BindOnce(&DPBrowserHandler::DPBrowser_GlobalSetFPS, handler, msg.lParam) );
+                break;
+            }
+            case dpbrowser_ipccmd_cblock_set_enabled:
+            {
+                DVLOG(0) << "dpbrowser_ipccmd_cblock_set_enabled: " << msg.lParam;
+
+                CefPostTask(TID_IO, base::BindOnce(&DPBrowserHandler::DPBrowser_ContentBlockSetEnabled, handler, msg.lParam) );
+                break;
             }
         }
     }
@@ -392,5 +400,14 @@ void DPBrowserAPIServer::NotifyKeyboardShow(vr::VROverlayHandle_t overlay_handle
     {
         ::PostMessage(window, m_Win32MessageID, dpbrowser_ipccmd_set_overlay_target, overlay_handle);
         ::PostMessage(window, m_Win32MessageID, dpbrowser_ipccmd_notify_keyboard_show, show);
+    }
+}
+
+void DPBrowserAPIServer::NotifyContentBlockListCount(int list_count)
+{
+    //Send notifcation to UI app
+    if (HWND window = ::FindWindow(g_WindowClassNameUIApp, nullptr))
+    {
+        ::PostMessage(window, m_Win32MessageID, dpbrowser_ipccmd_notify_cblock_list_count, list_count);
     }
 }
