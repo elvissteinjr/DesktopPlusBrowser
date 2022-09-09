@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=791e5fd2deefd0e040143477a6ae53593886e706$
+// $hash=fa3208182bcdb9aab36096b3ce5ecdd35cb0a80f$
 //
 
 #include "libcef_dll/ctocpp/browser_host_ctocpp.h"
@@ -261,7 +261,6 @@ void CefBrowserHostCToCpp::RunFileDialog(
     const CefString& title,
     const CefString& default_file_path,
     const std::vector<CefString>& accept_filters,
-    int selected_accept_filter,
     CefRefPtr<CefRunFileDialogCallback> callback) {
   shutdown_checker::AssertNotShutdown();
 
@@ -271,10 +270,6 @@ void CefBrowserHostCToCpp::RunFileDialog(
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
-  // Verify param: selected_accept_filter; type: simple_byval
-  DCHECK_GE(selected_accept_filter, 0);
-  if (selected_accept_filter < 0)
-    return;
   // Verify param: callback; type: refptr_diff
   DCHECK(callback.get());
   if (!callback.get())
@@ -290,7 +285,6 @@ void CefBrowserHostCToCpp::RunFileDialog(
   // Execute
   _struct->run_file_dialog(_struct, mode, title.GetStruct(),
                            default_file_path.GetStruct(), accept_filtersList,
-                           selected_accept_filter,
                            CefRunFileDialogCallbackCppToC::Wrap(callback));
 
   // Restore param:accept_filters; type: string_vec_byref_const
@@ -384,8 +378,7 @@ void CefBrowserHostCToCpp::PrintToPDF(const CefString& path,
 }
 
 NO_SANITIZE("cfi-icall")
-void CefBrowserHostCToCpp::Find(int identifier,
-                                const CefString& searchText,
+void CefBrowserHostCToCpp::Find(const CefString& searchText,
                                 bool forward,
                                 bool matchCase,
                                 bool findNext) {
@@ -403,8 +396,7 @@ void CefBrowserHostCToCpp::Find(int identifier,
     return;
 
   // Execute
-  _struct->find(_struct, identifier, searchText.GetStruct(), forward, matchCase,
-                findNext);
+  _struct->find(_struct, searchText.GetStruct(), forward, matchCase, findNext);
 }
 
 NO_SANITIZE("cfi-icall")

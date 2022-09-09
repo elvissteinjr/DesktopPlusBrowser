@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=a20dfae14509f99270e5ce1422790681aee2d5f2$
+// $hash=33a684b03178472bdf93e70043304cce8bc32d05$
 //
 
 #ifndef CEF_INCLUDE_CAPI_TEST_CEF_TRANSLATOR_TEST_CAPI_H_
@@ -530,7 +530,7 @@ typedef struct _cef_translator_test_t {
 ///
 // Create the test object.
 ///
-CEF_EXPORT cef_translator_test_t* cef_translator_test_create();
+CEF_EXPORT cef_translator_test_t* cef_translator_test_create(void);
 
 ///
 // Library-side test object for RefPtr.

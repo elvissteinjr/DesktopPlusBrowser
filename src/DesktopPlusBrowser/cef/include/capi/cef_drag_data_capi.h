@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=9663321e2be1d000ac54e195c81f210ae40773d1$
+// $hash=c99e9efb74fea2a2a99b25a694c59256f59238ab$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_DRAG_DATA_CAPI_H_
@@ -200,6 +200,11 @@ typedef struct _cef_drag_data_t {
                                const cef_string_t* display_name);
 
   ///
+  // Clear list of filenames.
+  ///
+  void(CEF_CALLBACK* clear_filenames)(struct _cef_drag_data_t* self);
+
+  ///
   // Get the image representation of drag data. May return NULL if no image
   // representation is available.
   ///
@@ -219,7 +224,7 @@ typedef struct _cef_drag_data_t {
 ///
 // Create a new cef_drag_data_t object.
 ///
-CEF_EXPORT cef_drag_data_t* cef_drag_data_create();
+CEF_EXPORT cef_drag_data_t* cef_drag_data_create(void);
 
 #ifdef __cplusplus
 }

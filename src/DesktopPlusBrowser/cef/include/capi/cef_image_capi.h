@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=d9da8862142742e780086714bbd4fb44ac95cf2c$
+// $hash=bbc87eb4ecaf92c900193afef7059caedbe8ab3a$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_IMAGE_CAPI_H_
@@ -196,7 +196,7 @@ typedef struct _cef_image_t {
 // Create a new cef_image_t. It will initially be NULL. Use the Add*() functions
 // to add representations at different scale factors.
 ///
-CEF_EXPORT cef_image_t* cef_image_create();
+CEF_EXPORT cef_image_t* cef_image_create(void);
 
 #ifdef __cplusplus
 }

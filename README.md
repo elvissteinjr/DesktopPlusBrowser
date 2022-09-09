@@ -23,7 +23,7 @@ Alternatively you can also take the `Shared` folder from the Desktop+ repository
 
 With the required files in place, the Visual Studio 2019 Solution builds out of the box with no further external dependencies.
 
-A build of CEF is included in the `assets_browser` directory as convenience. If you want to build CEF yourself, keep in mind Desktop+ Browser requires the [CEF fork maintained by the OBS Project](https://github.com/obsproject/cef) (a big thanks for their phenomenal work here!).
+A build of CEF is included in the `assets_browser` directory as convenience. If you want to build CEF yourself, keep in mind Desktop+ Browser requires OBS Project's CEF fork (a big thanks for their phenomenal work here!), with an extra fix for Desktop+ Browser. The repo for that is available [here](https://github.com/elvissteinjr/cef).
 
 Other compilers likely work as well, but are neither tested nor have a build configuration.
 

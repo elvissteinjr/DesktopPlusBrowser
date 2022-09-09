@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=01fbdd3bbe7d3cfd39c7d9ae93d8930ac6bd8f39$
+// $hash=3e2fc4cf108e13165c53ee3e8b10b483dbe5ff5e$
 //
 
 #include "libcef_dll/cpptoc/dialog_handler_cpptoc.h"
@@ -29,7 +29,6 @@ dialog_handler_on_file_dialog(struct _cef_dialog_handler_t* self,
                               const cef_string_t* title,
                               const cef_string_t* default_file_path,
                               cef_string_list_t accept_filters,
-                              int selected_accept_filter,
                               cef_file_dialog_callback_t* callback) {
   shutdown_checker::AssertNotShutdown();
 
@@ -41,10 +40,6 @@ dialog_handler_on_file_dialog(struct _cef_dialog_handler_t* self,
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
   if (!browser)
-    return 0;
-  // Verify param: selected_accept_filter; type: simple_byval
-  DCHECK_GE(selected_accept_filter, 0);
-  if (selected_accept_filter < 0)
     return 0;
   // Verify param: callback; type: refptr_diff
   DCHECK(callback);
@@ -59,7 +54,7 @@ dialog_handler_on_file_dialog(struct _cef_dialog_handler_t* self,
   // Execute
   bool _retval = CefDialogHandlerCppToC::Get(self)->OnFileDialog(
       CefBrowserCToCpp::Wrap(browser), mode, CefString(title),
-      CefString(default_file_path), accept_filtersList, selected_accept_filter,
+      CefString(default_file_path), accept_filtersList,
       CefFileDialogCallbackCToCpp::Wrap(callback));
 
   // Return type: bool

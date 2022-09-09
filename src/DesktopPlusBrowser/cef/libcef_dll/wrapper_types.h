@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=fe0ac38e8b7c9fcd4f69e3b43a98b1c4a09fc0b5$
+// $hash=7a247cc26167ddbc4fbe23ed939fa9e39c48a09c$
 //
 
 #ifndef CEF_LIBCEF_DLL_WRAPPER_TYPES_H_
@@ -35,6 +35,7 @@ enum CefWrapperType {
   WT_BUTTON_DELEGATE,
   WT_CALLBACK,
   WT_CLIENT,
+  WT_COMMAND_HANDLER,
   WT_COMMAND_LINE,
   WT_COMPLETION_CALLBACK,
   WT_CONTEXT_MENU_HANDLER,
@@ -76,8 +77,6 @@ enum CefWrapperType {
   WT_LIFE_SPAN_HANDLER,
   WT_LIST_VALUE,
   WT_LOAD_HANDLER,
-  WT_MEDIA_ACCESS_CALLBACK,
-  WT_MEDIA_ACCESS_HANDLER,
   WT_MEDIA_OBSERVER,
   WT_MEDIA_ROUTE,
   WT_MEDIA_ROUTE_CREATE_CALLBACK,
@@ -165,9 +164,6 @@ enum CefWrapperType {
   WT_VIEW,
   WT_VIEW_DELEGATE,
   WT_WAITABLE_EVENT,
-  WT_WEB_PLUGIN_INFO,
-  WT_WEB_PLUGIN_INFO_VISITOR,
-  WT_WEB_PLUGIN_UNSTABLE_CALLBACK,
   WT_WINDOW,
   WT_WINDOW_DELEGATE,
   WT_WRITE_HANDLER,

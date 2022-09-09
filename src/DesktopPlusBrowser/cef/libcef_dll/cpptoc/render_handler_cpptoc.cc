@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=f6410f1d692fb2ccbd0cae2e388db6ee8b22cc1e$
+// $hash=9439221629149d15c4a608bb10809b60df6dba34$
 //
 
 #include "libcef_dll/cpptoc/render_handler_cpptoc.h"
@@ -17,6 +17,7 @@
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
 #include "libcef_dll/ctocpp/drag_data_ctocpp.h"
 #include "libcef_dll/shutdown_checker.h"
+#include "libcef_dll/template_util.h"
 
 namespace {
 
@@ -173,6 +174,10 @@ render_handler_get_screen_info(struct _cef_render_handler_t* self,
   DCHECK(screen_info);
   if (!screen_info)
     return 0;
+  if (!template_util::has_valid_size(screen_info)) {
+    NOTREACHED() << "invalid screen_info->[base.]size";
+    return 0;
+  }
 
   // Translate param: screen_info; type: struct_byref
   CefScreenInfo screen_infoObj;
@@ -331,7 +336,7 @@ render_handler_on_accelerated_paint2(struct _cef_render_handler_t* self,
                                      size_t dirtyRectsCount,
                                      cef_rect_t const* dirtyRects,
                                      void* shared_handle,
-                                     bool new_texture) {
+                                     int new_texture) {
   shutdown_checker::AssertNotShutdown();
 
   DCHECK(self);
@@ -344,6 +349,10 @@ render_handler_on_accelerated_paint2(struct _cef_render_handler_t* self,
   // Verify param: dirtyRects; type: simple_vec_byref_const
   DCHECK(dirtyRectsCount == 0 || dirtyRects);
   if (dirtyRectsCount > 0 && !dirtyRects)
+    return;
+  // Verify param: shared_handle; type: simple_byaddr
+  DCHECK(!new_texture || shared_handle);
+  if (new_texture && !shared_handle)
     return;
 
   // Translate param: dirtyRects; type: simple_vec_byref_const
@@ -358,7 +367,7 @@ render_handler_on_accelerated_paint2(struct _cef_render_handler_t* self,
   // Execute
   CefRenderHandlerCppToC::Get(self)->OnAcceleratedPaint2(
       CefBrowserCToCpp::Wrap(browser), type, dirtyRectsList, shared_handle,
-      new_texture);
+      new_texture ? true : false);
 }
 
 int CEF_CALLBACK

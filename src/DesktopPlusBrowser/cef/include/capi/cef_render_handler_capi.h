@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=0834dc141b9cca248a9f27fee86456e610f04a41$
+// $hash=b737a187f428270dd9ed8b7ecf0e1e1bede77139$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_RENDER_HANDLER_CAPI_H_
@@ -48,8 +48,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define CEF_ON_ACCELERATED_PAINT2 1
 
 ///
 // Implement this structure to handle events when window rendering is disabled.
@@ -69,25 +67,27 @@ typedef struct _cef_render_handler_t {
       struct _cef_render_handler_t* self);
 
   ///
-  // Called to retrieve the root window rectangle in screen coordinates. Return
-  // true (1) if the rectangle was provided. If this function returns false (0)
-  // the rectangle from GetViewRect will be used.
+  // Called to retrieve the root window rectangle in screen DIP coordinates.
+  // Return true (1) if the rectangle was provided. If this function returns
+  // false (0) the rectangle from GetViewRect will be used.
   ///
   int(CEF_CALLBACK* get_root_screen_rect)(struct _cef_render_handler_t* self,
                                           struct _cef_browser_t* browser,
                                           cef_rect_t* rect);
 
   ///
-  // Called to retrieve the view rectangle which is relative to screen
-  // coordinates. This function must always provide a non-NULL rectangle.
+  // Called to retrieve the view rectangle in screen DIP coordinates. This
+  // function must always provide a non-NULL rectangle.
   ///
   void(CEF_CALLBACK* get_view_rect)(struct _cef_render_handler_t* self,
                                     struct _cef_browser_t* browser,
                                     cef_rect_t* rect);
 
   ///
-  // Called to retrieve the translation from view coordinates to actual screen
-  // coordinates. Return true (1) if the screen coordinates were provided.
+  // Called to retrieve the translation from view DIP coordinates to screen
+  // coordinates. Windows/Linux should provide screen device (pixel) coordinates
+  // and MacOS should provide screen DIP coordinates. Return true (1) if the
+  // requested coordinates were provided.
   ///
   int(CEF_CALLBACK* get_screen_point)(struct _cef_render_handler_t* self,
                                       struct _cef_browser_t* browser,
@@ -180,13 +180,18 @@ typedef struct _cef_render_handler_t {
                                            cef_rect_t const* dirtyRects,
                                            void* shared_handle);
 
+  ///
+  // New implementation by Jim. Doesn't used keyed_mutexes. There's a bool which
+  // signals a new texture.
+  ///
   void(CEF_CALLBACK* on_accelerated_paint2)(struct _cef_render_handler_t* self,
                                             struct _cef_browser_t* browser,
                                             cef_paint_element_type_t type,
                                             size_t dirtyRectsCount,
                                             cef_rect_t const* dirtyRects,
                                             void* shared_handle,
-                                            bool new_texture);
+                                            int new_texture);
+
   ///
   // Called when the user starts dragging content in the web view. Contextual
   // information about the dragged content is supplied by |drag_data|. (|x|,

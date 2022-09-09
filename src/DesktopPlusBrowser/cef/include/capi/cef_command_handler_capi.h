@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,11 +33,11 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=a93d5c00c274d3bcaa5eebe371e105b2f3f8dd62$
+// $hash=54332b79c057df9c8f3be56cc77f1daf877b3ac1$
 //
 
-#ifndef CEF_INCLUDE_CAPI_CEF_MEDIA_ACCESS_HANDLER_CAPI_H_
-#define CEF_INCLUDE_CAPI_CEF_MEDIA_ACCESS_HANDLER_CAPI_H_
+#ifndef CEF_INCLUDE_CAPI_CEF_COMMAND_HANDLER_CAPI_H_
+#define CEF_INCLUDE_CAPI_CEF_COMMAND_HANDLER_CAPI_H_
 #pragma once
 
 #include "include/capi/cef_base_capi.h"
@@ -48,61 +48,33 @@ extern "C" {
 #endif
 
 ///
-// Callback structure used for asynchronous continuation of media access
-// permission requests.
+// Implement this structure to handle events related to commands. The functions
+// of this structure will be called on the UI thread.
 ///
-typedef struct _cef_media_access_callback_t {
+typedef struct _cef_command_handler_t {
   ///
   // Base structure.
   ///
   cef_base_ref_counted_t base;
 
   ///
-  // Call to allow or deny media access. If this callback was initiated in
-  // response to a getUserMedia (indicated by
-  // CEF_MEDIA_PERMISSION_DEVICE_AUDIO_CAPTURE and/or
-  // CEF_MEDIA_PERMISSION_DEVICE_VIDEO_CAPTURE being set) the
-  // |allowed_permissions| are required to match those given in
-  // |required_permissions| in the OnRequestMediaAccessPermission.
+  // Called to execute a Chrome command triggered via menu selection or keyboard
+  // shortcut. Values for |command_id| can be found in the cef_command_ids.h
+  // file. |disposition| provides information about the intended command target.
+  // Return true (1) if the command was handled or false (0) for the default
+  // implementation. For context menu commands this will be called after
+  // cef_context_menu_handler_t::OnContextMenuCommand. Only used with the Chrome
+  // runtime.
   ///
-  void(CEF_CALLBACK* cont)(struct _cef_media_access_callback_t* self,
-                           int allowed_permissions);
-
-  ///
-  // Cancel the media access request.
-  ///
-  void(CEF_CALLBACK* cancel)(struct _cef_media_access_callback_t* self);
-} cef_media_access_callback_t;
-
-///
-// Implement this structure to handle events related to media access permission
-// requests. The functions of this structure will be called on the browser
-// process UI thread.
-///
-typedef struct _cef_media_access_handler_t {
-  ///
-  // Base structure.
-  ///
-  cef_base_ref_counted_t base;
-
-  ///
-  // Called when a page requests permission to access media. |requesting_url| is
-  // the URL requesting permission. Return true (1) and call
-  // cef_media_access_callback_t::cont() either in this function or at a later
-  // time to continue or cancel the request. Return false (0) to cancel the
-  // request immediately.
-  ///
-  int(CEF_CALLBACK* on_request_media_access_permission)(
-      struct _cef_media_access_handler_t* self,
+  int(CEF_CALLBACK* on_chrome_command)(
+      struct _cef_command_handler_t* self,
       struct _cef_browser_t* browser,
-      struct _cef_frame_t* frame,
-      const cef_string_t* requesting_url,
-      int32_t requested_permissions,
-      struct _cef_media_access_callback_t* callback);
-} cef_media_access_handler_t;
+      int command_id,
+      cef_window_open_disposition_t disposition);
+} cef_command_handler_t;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // CEF_INCLUDE_CAPI_CEF_MEDIA_ACCESS_HANDLER_CAPI_H_
+#endif  // CEF_INCLUDE_CAPI_CEF_COMMAND_HANDLER_CAPI_H_

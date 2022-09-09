@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=0a2ea84b20bc58f12e8e97d2b38a55448abd47dd$
+// $hash=4e9587e1eaf8aef5f0457537b70ebcc3ee68c449$
 //
 
 #include "libcef_dll/cpptoc/request_handler_cpptoc.h"
@@ -330,31 +330,6 @@ int CEF_CALLBACK request_handler_on_select_client_certificate(
 }
 
 void CEF_CALLBACK
-request_handler_on_plugin_crashed(struct _cef_request_handler_t* self,
-                                  cef_browser_t* browser,
-                                  const cef_string_t* plugin_path) {
-  shutdown_checker::AssertNotShutdown();
-
-  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
-
-  DCHECK(self);
-  if (!self)
-    return;
-  // Verify param: browser; type: refptr_diff
-  DCHECK(browser);
-  if (!browser)
-    return;
-  // Verify param: plugin_path; type: string_byref_const
-  DCHECK(plugin_path);
-  if (!plugin_path)
-    return;
-
-  // Execute
-  CefRequestHandlerCppToC::Get(self)->OnPluginCrashed(
-      CefBrowserCToCpp::Wrap(browser), CefString(plugin_path));
-}
-
-void CEF_CALLBACK
 request_handler_on_render_view_ready(struct _cef_request_handler_t* self,
                                      cef_browser_t* browser) {
   shutdown_checker::AssertNotShutdown();
@@ -429,7 +404,6 @@ CefRequestHandlerCppToC::CefRequestHandlerCppToC() {
   GetStruct()->on_certificate_error = request_handler_on_certificate_error;
   GetStruct()->on_select_client_certificate =
       request_handler_on_select_client_certificate;
-  GetStruct()->on_plugin_crashed = request_handler_on_plugin_crashed;
   GetStruct()->on_render_view_ready = request_handler_on_render_view_ready;
   GetStruct()->on_render_process_terminated =
       request_handler_on_render_process_terminated;

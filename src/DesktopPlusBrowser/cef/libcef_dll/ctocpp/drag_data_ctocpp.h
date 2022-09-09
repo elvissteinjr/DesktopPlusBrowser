@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=888cc05cf543d4017d40afb9e536ba4c083bc59f$
+// $hash=1a5339fa563b702a47be56dda2e0ac53617a6e27$
 //
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_DRAG_DATA_CTOCPP_H_
@@ -57,6 +57,7 @@ class CefDragDataCToCpp : public CefCToCppRefCounted<CefDragDataCToCpp,
   void SetFragmentBaseURL(const CefString& base_url) override;
   void ResetFileContents() override;
   void AddFile(const CefString& path, const CefString& display_name) override;
+  void ClearFilenames() override;
   CefRefPtr<CefImage> GetImage() override;
   CefPoint GetImageHotspot() override;
   bool HasImage() override;

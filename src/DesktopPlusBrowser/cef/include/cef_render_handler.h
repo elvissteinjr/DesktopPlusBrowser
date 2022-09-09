@@ -70,8 +70,8 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
   }
 
   ///
-  // Called to retrieve the root window rectangle in screen coordinates. Return
-  // true if the rectangle was provided. If this method returns false the
+  // Called to retrieve the root window rectangle in screen DIP coordinates.
+  // Return true if the rectangle was provided. If this method returns false the
   // rectangle from GetViewRect will be used.
   ///
   /*--cef()--*/
@@ -80,15 +80,17 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
   }
 
   ///
-  // Called to retrieve the view rectangle which is relative to screen
-  // coordinates. This method must always provide a non-empty rectangle.
+  // Called to retrieve the view rectangle in screen DIP coordinates. This
+  // method must always provide a non-empty rectangle.
   ///
   /*--cef()--*/
   virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) = 0;
 
   ///
-  // Called to retrieve the translation from view coordinates to actual screen
-  // coordinates. Return true if the screen coordinates were provided.
+  // Called to retrieve the translation from view DIP coordinates to screen
+  // coordinates. Windows/Linux should provide screen device (pixel) coordinates
+  // and MacOS should provide screen DIP coordinates. Return true if the
+  // requested coordinates were provided.
   ///
   /*--cef()--*/
   virtual bool GetScreenPoint(CefRefPtr<CefBrowser> browser,
@@ -152,7 +154,7 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
   // Called when an element has been rendered to the shared texture handle.
   // |type| indicates whether the element is the view or the popup widget.
   // |dirtyRects| contains the set of rectangles in pixel coordinates that need
-  // to be repainted. |shared_handle| is an OS specific type defined below. This
+// to be repainted. |shared_handle| is an OS specific type defined below. This
   // function is only called when cef_window_tInfo::shared_texture_enabled is
   // set to true (1), and is currently only supported on Windows and Mac.
   //
@@ -182,6 +184,11 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
                                   const RectList& dirtyRects,
                                   void* shared_handle) {}
 
+  ///
+  // New implementation by Jim. Doesn't used keyed_mutexes.
+  // There's a bool which signals a new texture.
+  ///
+  /*--cef()--*/
   virtual void OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser,
                                    PaintElementType type,
                                    const RectList& dirtyRects,

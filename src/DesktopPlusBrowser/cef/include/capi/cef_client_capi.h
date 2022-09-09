@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=6bab8cb05b49ef3a809c2a00b4b7582cc984216d$
+// $hash=7df3c13b75072c2ad5061cd3a344811222798903$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_CLIENT_CAPI_H_
@@ -42,6 +42,7 @@
 
 #include "include/capi/cef_audio_handler_capi.h"
 #include "include/capi/cef_base_capi.h"
+#include "include/capi/cef_command_handler_capi.h"
 #include "include/capi/cef_context_menu_handler_capi.h"
 #include "include/capi/cef_dialog_handler_capi.h"
 #include "include/capi/cef_display_handler_capi.h"
@@ -54,7 +55,6 @@
 #include "include/capi/cef_keyboard_handler_capi.h"
 #include "include/capi/cef_life_span_handler_capi.h"
 #include "include/capi/cef_load_handler_capi.h"
-#include "include/capi/cef_media_access_handler_capi.h"
 #include "include/capi/cef_print_handler_capi.h"
 #include "include/capi/cef_process_message_capi.h"
 #include "include/capi/cef_render_handler_capi.h"
@@ -77,6 +77,13 @@ typedef struct _cef_client_t {
   // Return the handler for audio rendering events.
   ///
   struct _cef_audio_handler_t*(CEF_CALLBACK* get_audio_handler)(
+      struct _cef_client_t* self);
+
+  ///
+  // Return the handler for commands. If no handler is provided the default
+  // implementation will be used.
+  ///
+  struct _cef_command_handler_t*(CEF_CALLBACK* get_command_handler)(
       struct _cef_client_t* self);
 
   ///
@@ -130,13 +137,6 @@ typedef struct _cef_client_t {
   // will be cached for performance reasons.
   ///
   struct _cef_frame_handler_t*(CEF_CALLBACK* get_frame_handler)(
-      struct _cef_client_t* self);
-
-  ///
-  // Return the handler for media access permissions requests. If no handler is
-  // provided media access will be denied by default.
-  ///
-  struct _cef_media_access_handler_t*(CEF_CALLBACK* get_media_access_handler)(
       struct _cef_client_t* self);
 
   ///

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=ffe0de3b50e0a612bd1b055b873c265b030e721d$
+// $hash=6d8a7e3c0ed66cad10e8a0c59fed51431ec82ce5$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_RESOURCE_BUNDLE_CAPI_H_
@@ -95,7 +95,7 @@ typedef struct _cef_resource_bundle_t {
 ///
 // Returns the global resource bundle instance.
 ///
-CEF_EXPORT cef_resource_bundle_t* cef_resource_bundle_get_global();
+CEF_EXPORT cef_resource_bundle_t* cef_resource_bundle_get_global(void);
 
 #ifdef __cplusplus
 }

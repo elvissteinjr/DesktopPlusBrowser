@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=1c231cf78fe94d9e395fe8bee9c0c848d81f3ef5$
+// $hash=e82e7bf06a027262268172fd74254a8af087e528$
 //
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_BROWSER_HOST_CTOCPP_H_
@@ -52,7 +52,6 @@ class CefBrowserHostCToCpp : public CefCToCppRefCounted<CefBrowserHostCToCpp,
                      const CefString& title,
                      const CefString& default_file_path,
                      const std::vector<CefString>& accept_filters,
-                     int selected_accept_filter,
                      CefRefPtr<CefRunFileDialogCallback> callback) override;
   void StartDownload(const CefString& url) override;
   void DownloadImage(const CefString& image_url,
@@ -64,8 +63,7 @@ class CefBrowserHostCToCpp : public CefCToCppRefCounted<CefBrowserHostCToCpp,
   void PrintToPDF(const CefString& path,
                   const CefPdfPrintSettings& settings,
                   CefRefPtr<CefPdfPrintCallback> callback) override;
-  void Find(int identifier,
-            const CefString& searchText,
+  void Find(const CefString& searchText,
             bool forward,
             bool matchCase,
             bool findNext) override;

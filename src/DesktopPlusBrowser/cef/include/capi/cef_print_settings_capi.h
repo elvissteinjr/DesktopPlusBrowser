@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=4b52323c4ce2d0ebcc3438e16fc9a9b181a58adc$
+// $hash=1a9b9718367ec8d575fbb39b73b1085b17eb0a2b$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_PRINT_SETTINGS_CAPI_H_
@@ -193,7 +193,7 @@ typedef struct _cef_print_settings_t {
 ///
 // Create a new cef_print_settings_t object.
 ///
-CEF_EXPORT cef_print_settings_t* cef_print_settings_create();
+CEF_EXPORT cef_print_settings_t* cef_print_settings_create(void);
 
 #ifdef __cplusplus
 }

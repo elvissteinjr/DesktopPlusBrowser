@@ -19,6 +19,7 @@
     <ClCompile Include="..\libcef_dll\cpptoc\base_scoped_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\browser_process_handler_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\client_cpptoc.cc" />
+    <ClCompile Include="..\libcef_dll\cpptoc\command_handler_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\completion_callback_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\context_menu_handler_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\cookie_access_filter_cpptoc.cc" />
@@ -40,7 +41,6 @@
     <ClCompile Include="..\libcef_dll\cpptoc\keyboard_handler_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\life_span_handler_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\load_handler_cpptoc.cc" />
-    <ClCompile Include="..\libcef_dll\cpptoc\media_access_handler_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\media_observer_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\media_route_create_callback_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\media_sink_device_info_callback_cpptoc.cc" />
@@ -69,8 +69,6 @@
     <ClCompile Include="..\libcef_dll\cpptoc\v8array_buffer_release_callback_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\v8handler_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\v8interceptor_cpptoc.cc" />
-    <ClCompile Include="..\libcef_dll\cpptoc\web_plugin_info_visitor_cpptoc.cc" />
-    <ClCompile Include="..\libcef_dll\cpptoc\web_plugin_unstable_callback_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\write_handler_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\test\translator_test_ref_ptr_client_child_cpptoc.cc" />
     <ClCompile Include="..\libcef_dll\cpptoc\test\translator_test_ref_ptr_client_cpptoc.cc" />
@@ -105,7 +103,6 @@
     <ClCompile Include="..\libcef_dll\ctocpp\image_ctocpp.cc" />
     <ClCompile Include="..\libcef_dll\ctocpp\jsdialog_callback_ctocpp.cc" />
     <ClCompile Include="..\libcef_dll\ctocpp\list_value_ctocpp.cc" />
-    <ClCompile Include="..\libcef_dll\ctocpp\media_access_callback_ctocpp.cc" />
     <ClCompile Include="..\libcef_dll\ctocpp\media_route_ctocpp.cc" />
     <ClCompile Include="..\libcef_dll\ctocpp\media_router_ctocpp.cc" />
     <ClCompile Include="..\libcef_dll\ctocpp\media_sink_ctocpp.cc" />
@@ -143,7 +140,6 @@
     <ClCompile Include="..\libcef_dll\ctocpp\v8value_ctocpp.cc" />
     <ClCompile Include="..\libcef_dll\ctocpp\value_ctocpp.cc" />
     <ClCompile Include="..\libcef_dll\ctocpp\waitable_event_ctocpp.cc" />
-    <ClCompile Include="..\libcef_dll\ctocpp\web_plugin_info_ctocpp.cc" />
     <ClCompile Include="..\libcef_dll\ctocpp\x509cert_principal_ctocpp.cc" />
     <ClCompile Include="..\libcef_dll\ctocpp\x509certificate_ctocpp.cc" />
     <ClCompile Include="..\libcef_dll\ctocpp\xml_reader_ctocpp.cc" />
@@ -212,10 +208,10 @@
     <ClInclude Include="..\include\cef_client.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cef_command_line.h">
+    <ClInclude Include="..\include\cef_command_handler.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cef_config.h">
+    <ClInclude Include="..\include\cef_command_line.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cef_context_menu_handler.h">
@@ -288,9 +284,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cef_load_handler.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cef_media_access_handler.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cef_media_router.h">
@@ -405,9 +398,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cef_waitable_event.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cef_web_plugin.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cef_x509_certificate.h">
@@ -542,6 +532,9 @@
     <ClInclude Include="..\include\capi\cef_client_capi.h">
       <Filter>include\capi</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\capi\cef_command_handler_capi.h">
+      <Filter>include\capi</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\capi\cef_command_line_capi.h">
       <Filter>include\capi</Filter>
     </ClInclude>
@@ -615,9 +608,6 @@
       <Filter>include\capi</Filter>
     </ClInclude>
     <ClInclude Include="..\include\capi\cef_load_handler_capi.h">
-      <Filter>include\capi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\capi\cef_media_access_handler_capi.h">
       <Filter>include\capi</Filter>
     </ClInclude>
     <ClInclude Include="..\include\capi\cef_media_router_capi.h">
@@ -729,9 +719,6 @@
       <Filter>include\capi</Filter>
     </ClInclude>
     <ClInclude Include="..\include\capi\cef_waitable_event_capi.h">
-      <Filter>include\capi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\capi\cef_web_plugin_capi.h">
       <Filter>include\capi</Filter>
     </ClInclude>
     <ClInclude Include="..\include\capi\cef_x509_certificate_capi.h">
@@ -960,6 +947,7 @@
       <Filter>include\wrapper</Filter>
     </ClInclude>
     <ClInclude Include="..\libcef_dll\shutdown_checker.h" />
+	<ClInclude Include="..\libcef_dll\template_util.h" />
     <ClInclude Include="..\libcef_dll\transfer_util.h" />
     <ClInclude Include="..\libcef_dll\wrapper_types.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\accessibility_handler_cpptoc.h" />
@@ -969,6 +957,7 @@
     <ClInclude Include="..\libcef_dll\cpptoc\base_scoped_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\browser_process_handler_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\client_cpptoc.h" />
+    <ClInclude Include="..\libcef_dll\cpptoc\command_handler_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\completion_callback_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\context_menu_handler_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\cookie_access_filter_cpptoc.h" />
@@ -992,7 +981,6 @@
     <ClInclude Include="..\libcef_dll\cpptoc\keyboard_handler_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\life_span_handler_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\load_handler_cpptoc.h" />
-    <ClInclude Include="..\libcef_dll\cpptoc\media_access_handler_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\media_observer_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\media_route_create_callback_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\media_sink_device_info_callback_cpptoc.h" />
@@ -1021,8 +1009,6 @@
     <ClInclude Include="..\libcef_dll\cpptoc\v8array_buffer_release_callback_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\v8handler_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\v8interceptor_cpptoc.h" />
-    <ClInclude Include="..\libcef_dll\cpptoc\web_plugin_info_visitor_cpptoc.h" />
-    <ClInclude Include="..\libcef_dll\cpptoc\web_plugin_unstable_callback_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\write_handler_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\test\translator_test_ref_ptr_client_child_cpptoc.h" />
     <ClInclude Include="..\libcef_dll\cpptoc\test\translator_test_ref_ptr_client_cpptoc.h" />
@@ -1059,7 +1045,6 @@
     <ClInclude Include="..\libcef_dll\ctocpp\image_ctocpp.h" />
     <ClInclude Include="..\libcef_dll\ctocpp\jsdialog_callback_ctocpp.h" />
     <ClInclude Include="..\libcef_dll\ctocpp\list_value_ctocpp.h" />
-    <ClInclude Include="..\libcef_dll\ctocpp\media_access_callback_ctocpp.h" />
     <ClInclude Include="..\libcef_dll\ctocpp\media_route_ctocpp.h" />
     <ClInclude Include="..\libcef_dll\ctocpp\media_router_ctocpp.h" />
     <ClInclude Include="..\libcef_dll\ctocpp\media_sink_ctocpp.h" />
@@ -1097,7 +1082,6 @@
     <ClInclude Include="..\libcef_dll\ctocpp\v8value_ctocpp.h" />
     <ClInclude Include="..\libcef_dll\ctocpp\value_ctocpp.h" />
     <ClInclude Include="..\libcef_dll\ctocpp\waitable_event_ctocpp.h" />
-    <ClInclude Include="..\libcef_dll\ctocpp\web_plugin_info_ctocpp.h" />
     <ClInclude Include="..\libcef_dll\ctocpp\x509cert_principal_ctocpp.h" />
     <ClInclude Include="..\libcef_dll\ctocpp\x509certificate_ctocpp.h" />
     <ClInclude Include="..\libcef_dll\ctocpp\xml_reader_ctocpp.h" />

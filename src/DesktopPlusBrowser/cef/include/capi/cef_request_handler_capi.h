@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=83ff671e8a4db001029be8a02a414333fe4354af$
+// $hash=4e19e04de13949f20e63e44542bc0a0eeed46b43$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_REQUEST_HANDLER_CAPI_H_
@@ -227,14 +227,6 @@ typedef struct _cef_request_handler_t {
       size_t certificatesCount,
       struct _cef_x509certificate_t* const* certificates,
       struct _cef_select_client_certificate_callback_t* callback);
-
-  ///
-  // Called on the browser process UI thread when a plugin has crashed.
-  // |plugin_path| is the path of the plugin that crashed.
-  ///
-  void(CEF_CALLBACK* on_plugin_crashed)(struct _cef_request_handler_t* self,
-                                        struct _cef_browser_t* browser,
-                                        const cef_string_t* plugin_path);
 
   ///
   // Called on the browser process UI thread when the render view associated

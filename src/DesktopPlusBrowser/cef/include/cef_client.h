@@ -40,6 +40,7 @@
 
 #include "include/cef_audio_handler.h"
 #include "include/cef_base.h"
+#include "include/cef_command_handler.h"
 #include "include/cef_context_menu_handler.h"
 #include "include/cef_dialog_handler.h"
 #include "include/cef_display_handler.h"
@@ -52,7 +53,6 @@
 #include "include/cef_keyboard_handler.h"
 #include "include/cef_life_span_handler.h"
 #include "include/cef_load_handler.h"
-#include "include/cef_media_access_handler.h"
 #include "include/cef_print_handler.h"
 #include "include/cef_process_message.h"
 #include "include/cef_render_handler.h"
@@ -69,6 +69,13 @@ class CefClient : public virtual CefBaseRefCounted {
   ///
   /*--cef()--*/
   virtual CefRefPtr<CefAudioHandler> GetAudioHandler() { return nullptr; }
+
+  ///
+  // Return the handler for commands. If no handler is provided the default
+  // implementation will be used.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefCommandHandler> GetCommandHandler() { return nullptr; }
 
   ///
   // Return the handler for context menus. If no handler is provided the default
@@ -124,15 +131,6 @@ class CefClient : public virtual CefBaseRefCounted {
   ///
   /*--cef()--*/
   virtual CefRefPtr<CefFrameHandler> GetFrameHandler() { return nullptr; }
-  
-  ///
-  // Return the handler for media access permissions requests. If no handler is
-  // provided media access will be denied by default.
-  ///
-  /*--cef()--*/
-  virtual CefRefPtr<CefMediaAccessHandler> GetMediaAccessHandler() {
-    return nullptr;
-  }
 
   ///
   // Return the handler for JavaScript dialogs. If no handler is provided the

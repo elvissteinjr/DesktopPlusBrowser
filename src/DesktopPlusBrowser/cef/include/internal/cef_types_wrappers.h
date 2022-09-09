@@ -546,7 +546,6 @@ struct CefSettingsTraits {
     cef_string_clear(&s->locales_dir_path);
     cef_string_clear(&s->accept_language_list);
     cef_string_clear(&s->cookieable_schemes_list);
-    cef_string_clear(&s->application_client_id_for_file_scanning);
   }
 
   static inline void set(const struct_type* src,
@@ -605,10 +604,6 @@ struct CefSettingsTraits {
                    &target->cookieable_schemes_list, copy);
     target->cookieable_schemes_exclude_defaults =
         src->cookieable_schemes_exclude_defaults;
-
-    cef_string_set(src->application_client_id_for_file_scanning.str,
-                   src->application_client_id_for_file_scanning.length,
-                   &target->application_client_id_for_file_scanning, copy);
   }
 };
 
@@ -704,7 +699,6 @@ struct CefBrowserSettingsTraits {
     target->javascript_close_windows = src->javascript_close_windows;
     target->javascript_access_clipboard = src->javascript_access_clipboard;
     target->javascript_dom_paste = src->javascript_dom_paste;
-    target->plugins = src->plugins;
     target->image_loading = src->image_loading;
     target->image_shrink_standalone_to_fit =
         src->image_shrink_standalone_to_fit;
@@ -719,6 +713,8 @@ struct CefBrowserSettingsTraits {
     cef_string_set(src->accept_language_list.str,
                    src->accept_language_list.length,
                    &target->accept_language_list, copy);
+
+    target->chrome_status_bubble = src->chrome_status_bubble;
   }
 };
 

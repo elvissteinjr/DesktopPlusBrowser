@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=3e68482578ce8edfa73bef03a7f943194f3b7f34$
+// $hash=693f5845874072abc324f643981531ed08d17b37$
 //
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_REQUEST_CONTEXT_CTOCPP_H_
@@ -52,7 +52,6 @@ class CefRequestContextCToCpp
       const CefString& domain_name,
       CefRefPtr<CefSchemeHandlerFactory> factory) override;
   bool ClearSchemeHandlerFactories() override;
-  void PurgePluginListCache(bool reload_pages) override;
   bool HasPreference(const CefString& name) override;
   CefRefPtr<CefValue> GetPreference(const CefString& name) override;
   CefRefPtr<CefDictionaryValue> GetAllPreferences(

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=b83b96e2b90124bba8084e2df7f66cc6749df872$
+// $hash=b1c1e44e6d3842064ef6e5b9823173f7ec1fcccc$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_BROWSER_CAPI_H_
@@ -205,15 +205,12 @@ typedef struct _cef_run_file_dialog_callback_t {
   cef_base_ref_counted_t base;
 
   ///
-  // Called asynchronously after the file dialog is dismissed.
-  // |selected_accept_filter| is the 0-based index of the value selected from
-  // the accept filters array passed to cef_browser_host_t::RunFileDialog.
-  // |file_paths| will be a single value or a list of values depending on the
-  // dialog mode. If the selection was cancelled |file_paths| will be NULL.
+  // Called asynchronously after the file dialog is dismissed. |file_paths| will
+  // be a single value or a list of values depending on the dialog mode. If the
+  // selection was cancelled |file_paths| will be NULL.
   ///
   void(CEF_CALLBACK* on_file_dialog_dismissed)(
       struct _cef_run_file_dialog_callback_t* self,
-      int selected_accept_filter,
       cef_string_list_t file_paths);
 } cef_run_file_dialog_callback_t;
 
@@ -391,11 +388,10 @@ typedef struct _cef_browser_host_t {
   // selectable file types and may any combination of (a) valid lower-cased MIME
   // types (e.g. "text/*" or "image/*"), (b) individual file extensions (e.g.
   // ".txt" or ".png"), or (c) combined description and file extension delimited
-  // using "|" and ";" (e.g. "Image Types|.png;.gif;.jpg").
-  // |selected_accept_filter| is the 0-based index of the filter that will be
-  // selected by default. |callback| will be executed after the dialog is
-  // dismissed or immediately if another dialog is already pending. The dialog
-  // will be initiated asynchronously on the UI thread.
+  // using "|" and ";" (e.g. "Image Types|.png;.gif;.jpg"). |callback| will be
+  // executed after the dialog is dismissed or immediately if another dialog is
+  // already pending. The dialog will be initiated asynchronously on the UI
+  // thread.
   ///
   void(CEF_CALLBACK* run_file_dialog)(
       struct _cef_browser_host_t* self,
@@ -403,7 +399,6 @@ typedef struct _cef_browser_host_t {
       const cef_string_t* title,
       const cef_string_t* default_file_path,
       cef_string_list_t accept_filters,
-      int selected_accept_filter,
       struct _cef_run_file_dialog_callback_t* callback);
 
   ///
@@ -450,18 +445,15 @@ typedef struct _cef_browser_host_t {
       struct _cef_pdf_print_callback_t* callback);
 
   ///
-  // Search for |searchText|. |identifier| must be a unique ID and these IDs
-  // must strictly increase so that newer requests always have greater IDs than
-  // older requests. If |identifier| is zero or less than the previous ID value
-  // then it will be automatically assigned a new valid ID. |forward| indicates
-  // whether to search forward or backward within the page. |matchCase|
-  // indicates whether the search should be case-sensitive. |findNext| indicates
-  // whether this is the first request or a follow-up. The cef_find_handler_t
-  // instance, if any, returned via cef_client_t::GetFindHandler will be called
-  // to report find results.
+  // Search for |searchText|. |forward| indicates whether to search forward or
+  // backward within the page. |matchCase| indicates whether the search should
+  // be case-sensitive. |findNext| indicates whether this is the first request
+  // or a follow-up. The search will be restarted if |searchText| or |matchCase|
+  // change. The search will be stopped if |searchText| is NULL. The
+  // cef_find_handler_t instance, if any, returned via
+  // cef_client_t::GetFindHandler will be called to report find results.
   ///
   void(CEF_CALLBACK* find)(struct _cef_browser_host_t* self,
-                           int identifier,
                            const cef_string_t* searchText,
                            int forward,
                            int matchCase,

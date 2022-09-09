@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,13 +9,14 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=9c22ccd70661c2c23bc5bbb6f80f4b04d42c90fe$
+// $hash=1a7a3f0cd61dab86aae86ca54e5554671d1850b7$
 //
 
 #include "libcef_dll/cpptoc/views/textfield_delegate_cpptoc.h"
 #include "libcef_dll/ctocpp/views/textfield_ctocpp.h"
 #include "libcef_dll/ctocpp/views/view_ctocpp.h"
 #include "libcef_dll/shutdown_checker.h"
+#include "libcef_dll/template_util.h"
 
 namespace {
 
@@ -40,6 +41,10 @@ textfield_delegate_on_key_event(struct _cef_textfield_delegate_t* self,
   DCHECK(event);
   if (!event)
     return 0;
+  if (!template_util::has_valid_size(event)) {
+    NOTREACHED() << "invalid event->[base.]size";
+    return 0;
+  }
 
   // Translate param: event; type: struct_byref_const
   CefKeyEvent eventObj;

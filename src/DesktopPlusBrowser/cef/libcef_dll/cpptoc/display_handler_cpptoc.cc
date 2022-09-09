@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,13 +9,14 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=caf5dead1197de40a4038520f33e48739949d4a0$
+// $hash=5bcef102e9ae42a32b551c3af3decbae11b8b37d$
 //
 
 #include "libcef_dll/cpptoc/display_handler_cpptoc.h"
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
 #include "libcef_dll/ctocpp/frame_ctocpp.h"
 #include "libcef_dll/shutdown_checker.h"
+#include "libcef_dll/template_util.h"
 #include "libcef_dll/transfer_util.h"
 
 namespace {
@@ -273,6 +274,10 @@ int CEF_CALLBACK display_handler_on_cursor_change(
   DCHECK(custom_cursor_info);
   if (!custom_cursor_info)
     return 0;
+  if (!template_util::has_valid_size(custom_cursor_info)) {
+    NOTREACHED() << "invalid custom_cursor_info->[base.]size";
+    return 0;
+  }
 
   // Translate param: custom_cursor_info; type: struct_byref_const
   CefCursorInfo custom_cursor_infoObj;

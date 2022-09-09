@@ -202,7 +202,7 @@ typedef struct _cef_settings_t {
 
   ///
   // Set to true (1) to have the browser process message loop run in a separate
-  // thread. If false (0) than the CefDoMessageLoopWork() function must be
+  // thread. If false (0) then the CefDoMessageLoopWork() function must be
   // called from your application message loop. This option is only supported on
   // Windows and Linux.
   ///
@@ -374,10 +374,11 @@ typedef struct _cef_settings_t {
 
   ///
   // Set to a value between 1024 and 65535 to enable remote debugging on the
-  // specified port. For example, if 8080 is specified the remote debugging URL
-  // will be http://localhost:8080. CEF can be remotely debugged from any CEF or
-  // Chrome browser window. Also configurable using the "remote-debugging-port"
-  // command-line switch.
+  // specified port. Also configurable using the "remote-debugging-port"
+  // command-line switch. Remote debugging can be accessed by loading the
+  // chrome://inspect page in Google Chrome. Port numbers 9222 and 9229 are
+  // discoverable by default. Other port numbers may need to be configured via
+  // "Discover network targets" on the Devices tab.
   ///
   int remote_debugging_port;
 
@@ -425,14 +426,6 @@ typedef struct _cef_settings_t {
   ///
   cef_string_t cookieable_schemes_list;
   int cookieable_schemes_exclude_defaults;
-
-  ///
-  // GUID string used for identifying the application. This is passed to the
-  // system AV function for scanning downloaded files. By default, the GUID
-  // will be an empty string and the file will be treated as an untrusted
-  // file when the GUID is empty.
-  ///
-  cef_string_t application_client_id_for_file_scanning;
 } cef_settings_t;
 
 ///
@@ -519,7 +512,7 @@ typedef struct _cef_browser_settings_t {
   ///
   int windowless_frame_rate;
 
-  // The below values map to WebPreferences settings.
+  // BEGIN values that map to WebPreferences settings.
 
   ///
   // Font settings.
@@ -577,12 +570,6 @@ typedef struct _cef_browser_settings_t {
   cef_state_t javascript_dom_paste;
 
   ///
-  // Controls whether any plugins will be loaded. Also configurable using the
-  // "disable-plugins" command-line switch.
-  ///
-  cef_state_t plugins;
-
-  ///
   // Controls whether image URLs will be loaded from the network. A cached image
   // will still be rendered if requested. Also configurable using the
   // "disable-image-loading" command-line switch.
@@ -627,6 +614,8 @@ typedef struct _cef_browser_settings_t {
   ///
   cef_state_t webgl;
 
+  // END values that map to WebPreferences settings.
+
   ///
   // Background color used for the browser before a document is loaded and when
   // no document color is specified. The alpha component must be either fully
@@ -646,6 +635,13 @@ typedef struct _cef_browser_settings_t {
   // empty then "en-US,en" will be used.
   ///
   cef_string_t accept_language_list;
+
+  ///
+  // Controls whether the Chrome status bubble will be used. Only supported with
+  // the Chrome runtime. For details about the status bubble see
+  // https://www.chromium.org/user-experience/status-bubble/
+  ///
+  cef_state_t chrome_status_bubble;
 } cef_browser_settings_t;
 
 ///
@@ -951,15 +947,66 @@ typedef enum {
 ///
 typedef enum {
   WOD_UNKNOWN,
+
+  ///
+  // Current tab. This is the default in most cases.
+  ///
   WOD_CURRENT_TAB,
+
+  ///
+  // Indicates that only one tab with the url should exist in the same window.
+  ///
   WOD_SINGLETON_TAB,
+
+  ///
+  // Shift key + Middle mouse button or meta/ctrl key while clicking.
+  ///
   WOD_NEW_FOREGROUND_TAB,
+
+  ///
+  // Middle mouse button or meta/ctrl key while clicking.
+  ///
   WOD_NEW_BACKGROUND_TAB,
+
+  ///
+  // New popup window.
+  ///
   WOD_NEW_POPUP,
+
+  ///
+  // Shift key while clicking.
+  ///
   WOD_NEW_WINDOW,
+
+  ///
+  // Alt key while clicking.
+  ///
   WOD_SAVE_TO_DISK,
+
+  ///
+  // New off-the-record (incognito) window.
+  ///
   WOD_OFF_THE_RECORD,
-  WOD_IGNORE_ACTION
+
+  ///
+  // Special case error condition from the renderer.
+  ///
+  WOD_IGNORE_ACTION,
+
+  ///
+  // Activates an existing tab containing the url, rather than navigating.
+  // This is similar to SINGLETON_TAB, but searches across all windows from
+  // the current profile and anonymity (instead of just the current one);
+  // closes the current tab on switching if the current tab was the NTP with
+  // no session history; and behaves like CURRENT_TAB instead of
+  // NEW_FOREGROUND_TAB when no existing tab is found.
+  ///
+  WOD_SWITCH_TO_TAB,
+
+  ///
+  // Creates a new document picture-in-picture window showing a child WebView.
+  ///
+  WOD_NEW_PICTURE_IN_PICTURE,
 } cef_window_open_disposition_t;
 
 ///
@@ -1028,7 +1075,8 @@ typedef enum {
 } cef_postdataelement_type_t;
 
 ///
-// Resource type for a request.
+// Resource type for a request. These constants match their equivalents in
+// Chromium's ResourceType and should not be renumbered.
 ///
 typedef enum {
   ///
@@ -1152,6 +1200,12 @@ typedef enum {
   TT_EXPLICIT = 1,
 
   ///
+  // User got to this page through a suggestion in the UI (for example, via the
+  // destinations page). Chrome runtime only.
+  ///
+  TT_AUTO_BOOKMARK = 2,
+
+  ///
   // Source is a subframe navigation. This is any content that is automatically
   // loaded in a non-toplevel frame. For example, if a page consists of several
   // frames containing ads, those ad URLs will have this transition type.
@@ -1170,6 +1224,25 @@ typedef enum {
   TT_MANUAL_SUBFRAME = 4,
 
   ///
+  // User got to this page by typing in the URL bar and selecting an entry
+  // that did not look like a URL.  For example, a match might have the URL
+  // of a Google search result page, but appear like "Search Google for ...".
+  // These are not quite the same as EXPLICIT navigations because the user
+  // didn't type or see the destination URL. Chrome runtime only.
+  // See also TT_KEYWORD.
+  ///
+  TT_GENERATED = 5,
+
+  ///
+  // This is a toplevel navigation. This is any content that is automatically
+  // loaded in a toplevel frame.  For example, opening a tab to show the ASH
+  // screen saver, opening the devtools window, opening the NTP after the safe
+  // browsing warning, opening web-based dialog boxes are examples of
+  // AUTO_TOPLEVEL navigations. Chrome runtime only.
+  ///
+  TT_AUTO_TOPLEVEL = 6,
+
+  ///
   // Source is a form submission by the user. NOTE: In some situations
   // submitting a form does not result in this transition type. This can happen
   // if the form uses a script to submit the contents.
@@ -1182,6 +1255,25 @@ typedef enum {
   // particular load uses "reload semantics" (i.e. bypasses cached data).
   ///
   TT_RELOAD = 8,
+
+  ///
+  // The url was generated from a replaceable keyword other than the default
+  // search provider. If the user types a keyword (which also applies to
+  // tab-to-search) in the omnibox this qualifier is applied to the transition
+  // type of the generated url. TemplateURLModel then may generate an
+  // additional visit with a transition type of TT_KEYWORD_GENERATED against the
+  // url 'http://' + keyword. For example, if you do a tab-to-search against
+  // wikipedia the generated url has a transition qualifer of TT_KEYWORD, and
+  // TemplateURLModel generates a visit for 'wikipedia.org' with a transition
+  // type of TT_KEYWORD_GENERATED. Chrome runtime only.
+  ///
+  TT_KEYWORD = 9,
+
+  ///
+  // Corresponds to a visit generated for a keyword. See description of
+  // TT_KEYWORD for more details. Chrome runtime only.
+  ///
+  TT_KEYWORD_GENERATED = 10,
 
   ///
   // General mask defining the bits used for the source values.
@@ -1207,6 +1299,18 @@ typedef enum {
   // Loaded a URL directly via CreateBrowser, LoadURL or LoadRequest.
   ///
   TT_DIRECT_LOAD_FLAG = 0x02000000,
+
+  ///
+  // User is navigating to the home page. Chrome runtime only.
+  ///
+  TT_HOME_PAGE_FLAG = 0x04000000,
+
+  ///
+  // The transition originated from an external application; the exact
+  // definition of this is embedder dependent. Chrome runtime and
+  // extension system only.
+  ///
+  TT_FROM_API_FLAG = 0x08000000,
 
   ///
   // The beginning of a navigation chain.
@@ -1616,8 +1720,7 @@ typedef enum {
   MENU_ID_NO_SPELLING_SUGGESTIONS = 205,
   MENU_ID_ADD_TO_DICTIONARY = 206,
 
-  // Custom menu items originating from the renderer process. For example,
-  // plugin placeholder menu items.
+  // Custom menu items originating from the renderer process.
   MENU_ID_CUSTOM_FIRST = 220,
   MENU_ID_CUSTOM_LAST = 250,
 
@@ -1819,7 +1922,8 @@ typedef enum {
 } cef_context_menu_type_flags_t;
 
 ///
-// Supported context menu media types.
+// Supported context menu media types. These constants match their equivalents
+// in Chromium's ContextMenuDataMediaType and should not be renumbered.
 ///
 typedef enum {
   ///
@@ -1839,6 +1943,10 @@ typedef enum {
   ///
   CM_MEDIATYPE_AUDIO,
   ///
+  // An canvas node is selected.
+  ///
+  CM_MEDIATYPE_CANVAS,
+  ///
   // A file node is selected.
   ///
   CM_MEDIATYPE_FILE,
@@ -1849,24 +1957,31 @@ typedef enum {
 } cef_context_menu_media_type_t;
 
 ///
-// Supported context menu media state bit flags.
+// Supported context menu media state bit flags. These constants match their
+// equivalents in Chromium's ContextMenuData::MediaFlags and should not be
+// renumbered.
 ///
 typedef enum {
   CM_MEDIAFLAG_NONE = 0,
-  CM_MEDIAFLAG_ERROR = 1 << 0,
+  CM_MEDIAFLAG_IN_ERROR = 1 << 0,
   CM_MEDIAFLAG_PAUSED = 1 << 1,
   CM_MEDIAFLAG_MUTED = 1 << 2,
   CM_MEDIAFLAG_LOOP = 1 << 3,
   CM_MEDIAFLAG_CAN_SAVE = 1 << 4,
   CM_MEDIAFLAG_HAS_AUDIO = 1 << 5,
-  CM_MEDIAFLAG_HAS_VIDEO = 1 << 6,
-  CM_MEDIAFLAG_CONTROL_ROOT_ELEMENT = 1 << 7,
+  CM_MEDIAFLAG_CAN_TOGGLE_CONTROLS = 1 << 6,
+  CM_MEDIAFLAG_CONTROLS = 1 << 7,
   CM_MEDIAFLAG_CAN_PRINT = 1 << 8,
   CM_MEDIAFLAG_CAN_ROTATE = 1 << 9,
+  CM_MEDIAFLAG_CAN_PICTURE_IN_PICTURE = 1 << 10,
+  CM_MEDIAFLAG_PICTURE_IN_PICTURE = 1 << 11,
+  CM_MEDIAFLAG_CAN_LOOP = 1 << 12,
 } cef_context_menu_media_state_flags_t;
 
 ///
-// Supported context menu edit state bit flags.
+// Supported context menu edit state bit flags. These constants match their
+// equivalents in Chromium's ContextMenuDataEditFlags and should not be
+// renumbered.
 ///
 typedef enum {
   CM_EDITFLAG_NONE = 0,
@@ -1878,6 +1993,7 @@ typedef enum {
   CM_EDITFLAG_CAN_DELETE = 1 << 5,
   CM_EDITFLAG_CAN_SELECT_ALL = 1 << 6,
   CM_EDITFLAG_CAN_TRANSLATE = 1 << 7,
+  CM_EDITFLAG_CAN_EDIT_RICHLY = 1 << 8,
 } cef_context_menu_edit_state_flags_t;
 
 ///
@@ -2121,26 +2237,6 @@ typedef enum {
   // already exists.
   ///
   FILE_DIALOG_SAVE,
-
-  ///
-  // General mask defining the bits used for the type values.
-  ///
-  FILE_DIALOG_TYPE_MASK = 0xFF,
-
-  // Qualifiers.
-  // Any of the type values above can be augmented by one or more qualifiers.
-  // These qualifiers further define the dialog behavior.
-
-  ///
-  // Prompt to overwrite if the user selects an existing file with the Save
-  // dialog.
-  ///
-  FILE_DIALOG_OVERWRITEPROMPT_FLAG = 0x01000000,
-
-  ///
-  // Do not display read-only files.
-  ///
-  FILE_DIALOG_HIDEREADONLY_FLAG = 0x02000000,
 } cef_file_dialog_mode_t;
 
 ///
@@ -2457,32 +2553,6 @@ typedef enum {
   SCALE_FACTOR_250P,
   SCALE_FACTOR_300P,
 } cef_scale_factor_t;
-
-///
-// Plugin policies supported by CefRequestContextHandler::OnBeforePluginLoad.
-///
-typedef enum {
-  ///
-  // Allow the content.
-  ///
-  PLUGIN_POLICY_ALLOW,
-
-  ///
-  // Allow important content and block unimportant content based on heuristics.
-  // The user can manually load blocked content.
-  ///
-  PLUGIN_POLICY_DETECT_IMPORTANT,
-
-  ///
-  // Block the content. The user can manually load blocked content.
-  ///
-  PLUGIN_POLICY_BLOCK,
-
-  ///
-  // Disable the content. The user cannot load disabled content.
-  ///
-  PLUGIN_POLICY_DISABLE,
-} cef_plugin_policy_t;
 
 ///
 // Policy for how the Referrer HTTP header value will be sent during navigation.
@@ -3032,8 +3102,14 @@ typedef enum {
   // pass-through mode).
   CEF_CHANNEL_LAYOUT_BITSTREAM = 32,
 
+  // Front L, Front R, Front C, LFE, Side L, Side R,
+  // Front Height L, Front Height R, Rear Height L, Rear Height R
+  // Will be represented as six channels (5.1) due to eight channel limit
+  // kMaxConcurrentChannels
+  CEF_CHANNEL_LAYOUT_5_1_4_DOWNMIX = 33,
+
   // Max value, must always equal the largest entry ever logged.
-  CEF_CHANNEL_LAYOUT_MAX = CEF_CHANNEL_LAYOUT_BITSTREAM
+  CEF_CHANNEL_LAYOUT_MAX = CEF_CHANNEL_LAYOUT_5_1_4_DOWNMIX
 } cef_channel_layout_t;
 
 ///

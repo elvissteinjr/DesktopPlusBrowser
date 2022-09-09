@@ -113,7 +113,7 @@ template <typename T>
 struct SupportsToString<T, decltype(void(std::declval<T>().ToString()))>
     : std::true_type {};
 
-// Used to detech whether the given type is an iterator.  This is normally used
+// Used to detect whether the given type is an iterator.  This is normally used
 // with std::enable_if to provide disambiguation for functions that take
 // templatzed iterators as input.
 template <typename T, typename = void>
@@ -276,8 +276,13 @@ struct negation : bool_constant<!static_cast<bool>(B::value)> {};
 // References:
 // [1] https://en.cppreference.com/w/cpp/types/result_of
 // [2] https://wg21.link/meta.trans.other#lib:invoke_result
+#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
+template <typename Functor, typename... Args>
+using invoke_result = std::invoke_result<Functor, Args...>;
+#else
 template <typename Functor, typename... Args>
 using invoke_result = std::result_of<Functor && (Args && ...)>;
+#endif
 
 // Implementation of C++17's std::invoke_result_t.
 //

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,13 +9,14 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=3e70670085e23c885d7fe0006e782c5293d1430a$
+// $hash=60fce570867addbf622a0f74422d225f23942e4d$
 //
 
 #include "libcef_dll/cpptoc/views/window_delegate_cpptoc.h"
 #include "libcef_dll/ctocpp/views/view_ctocpp.h"
 #include "libcef_dll/ctocpp/views/window_ctocpp.h"
 #include "libcef_dll/shutdown_checker.h"
+#include "libcef_dll/template_util.h"
 
 namespace {
 
@@ -59,6 +60,27 @@ window_delegate_on_window_destroyed(struct _cef_window_delegate_t* self,
   // Execute
   CefWindowDelegateCppToC::Get(self)->OnWindowDestroyed(
       CefWindowCToCpp::Wrap(window));
+}
+
+void CEF_CALLBACK window_delegate_on_window_activation_changed(
+    struct _cef_window_delegate_t* self,
+    cef_window_t* window,
+    int active) {
+  shutdown_checker::AssertNotShutdown();
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self)
+    return;
+  // Verify param: window; type: refptr_diff
+  DCHECK(window);
+  if (!window)
+    return;
+
+  // Execute
+  CefWindowDelegateCppToC::Get(self)->OnWindowActivationChanged(
+      CefWindowCToCpp::Wrap(window), active ? true : false);
 }
 
 cef_window_t* CEF_CALLBACK
@@ -311,6 +333,10 @@ window_delegate_on_key_event(struct _cef_window_delegate_t* self,
   DCHECK(event);
   if (!event)
     return 0;
+  if (!template_util::has_valid_size(event)) {
+    NOTREACHED() << "invalid event->[base.]size";
+    return 0;
+  }
 
   // Translate param: event; type: struct_byref_const
   CefKeyEvent eventObj;
@@ -570,6 +596,8 @@ void CEF_CALLBACK window_delegate_on_blur(struct _cef_view_delegate_t* self,
 CefWindowDelegateCppToC::CefWindowDelegateCppToC() {
   GetStruct()->on_window_created = window_delegate_on_window_created;
   GetStruct()->on_window_destroyed = window_delegate_on_window_destroyed;
+  GetStruct()->on_window_activation_changed =
+      window_delegate_on_window_activation_changed;
   GetStruct()->get_parent_window = window_delegate_get_parent_window;
   GetStruct()->get_initial_bounds = window_delegate_get_initial_bounds;
   GetStruct()->get_initial_show_state = window_delegate_get_initial_show_state;

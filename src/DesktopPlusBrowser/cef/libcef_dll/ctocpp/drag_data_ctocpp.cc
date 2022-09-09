@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=aa1596cb76a36c6adce59bd1d7623c636c1a4740$
+// $hash=7d9a55e1e8779d677d34e2b6c9277db7e6b75d3d$
 //
 
 #include "libcef_dll/ctocpp/drag_data_ctocpp.h"
@@ -418,6 +418,19 @@ void CefDragDataCToCpp::AddFile(const CefString& path,
 
   // Execute
   _struct->add_file(_struct, path.GetStruct(), display_name.GetStruct());
+}
+
+NO_SANITIZE("cfi-icall") void CefDragDataCToCpp::ClearFilenames() {
+  shutdown_checker::AssertNotShutdown();
+
+  cef_drag_data_t* _struct = GetStruct();
+  if (CEF_MEMBER_MISSING(_struct, clear_filenames))
+    return;
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  // Execute
+  _struct->clear_filenames(_struct);
 }
 
 NO_SANITIZE("cfi-icall") CefRefPtr<CefImage> CefDragDataCToCpp::GetImage() {

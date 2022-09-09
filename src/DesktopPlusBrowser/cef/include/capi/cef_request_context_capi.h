@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=2e42334fc22050e207e5a0af6fe290a592e4105f$
+// $hash=dcff1eaa0563cfb48e0232bf78786bb0126c4255$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_REQUEST_CONTEXT_CAPI_H_
@@ -164,17 +164,6 @@ typedef struct _cef_request_context_t {
   ///
   int(CEF_CALLBACK* clear_scheme_handler_factories)(
       struct _cef_request_context_t* self);
-
-  ///
-  // Tells all renderer processes associated with this context to throw away
-  // their plugin list cache. If |reload_pages| is true (1) they will also
-  // reload all pages with plugins.
-  // cef_request_context_handler_t::OnBeforePluginLoad may be called to rebuild
-  // the plugin list cache.
-  ///
-  void(CEF_CALLBACK* purge_plugin_list_cache)(
-      struct _cef_request_context_t* self,
-      int reload_pages);
 
   ///
   // Returns true (1) if a preference with the specified |name| exists. This
@@ -368,7 +357,7 @@ typedef struct _cef_request_context_t {
 ///
 // Returns the global context object.
 ///
-CEF_EXPORT cef_request_context_t* cef_request_context_get_global_context();
+CEF_EXPORT cef_request_context_t* cef_request_context_get_global_context(void);
 
 ///
 // Creates a new context object with the specified |settings| and optional

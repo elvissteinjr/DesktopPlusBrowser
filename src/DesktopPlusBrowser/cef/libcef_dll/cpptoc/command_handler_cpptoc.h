@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,30 +9,30 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=4ef6c6d7e00bc3098a2310c8dd96c6a594f20dde$
+// $hash=85e5de7b82a22ab4738de3a6a2bb141eb5c79579$
 //
 
-#ifndef CEF_LIBCEF_DLL_CPPTOC_MEDIA_ACCESS_HANDLER_CPPTOC_H_
-#define CEF_LIBCEF_DLL_CPPTOC_MEDIA_ACCESS_HANDLER_CPPTOC_H_
+#ifndef CEF_LIBCEF_DLL_CPPTOC_COMMAND_HANDLER_CPPTOC_H_
+#define CEF_LIBCEF_DLL_CPPTOC_COMMAND_HANDLER_CPPTOC_H_
 #pragma once
 
 #if !defined(WRAPPING_CEF_SHARED)
 #error This file can be included wrapper-side only
 #endif
 
-#include "include/capi/cef_media_access_handler_capi.h"
-#include "include/cef_media_access_handler.h"
+#include "include/capi/cef_command_handler_capi.h"
+#include "include/cef_command_handler.h"
 #include "libcef_dll/cpptoc/cpptoc_ref_counted.h"
 
 // Wrap a C++ class with a C structure.
 // This class may be instantiated and accessed wrapper-side only.
-class CefMediaAccessHandlerCppToC
-    : public CefCppToCRefCounted<CefMediaAccessHandlerCppToC,
-                                 CefMediaAccessHandler,
-                                 cef_media_access_handler_t> {
+class CefCommandHandlerCppToC
+    : public CefCppToCRefCounted<CefCommandHandlerCppToC,
+                                 CefCommandHandler,
+                                 cef_command_handler_t> {
  public:
-  CefMediaAccessHandlerCppToC();
-  virtual ~CefMediaAccessHandlerCppToC();
+  CefCommandHandlerCppToC();
+  virtual ~CefCommandHandlerCppToC();
 };
 
-#endif  // CEF_LIBCEF_DLL_CPPTOC_MEDIA_ACCESS_HANDLER_CPPTOC_H_
+#endif  // CEF_LIBCEF_DLL_CPPTOC_COMMAND_HANDLER_CPPTOC_H_

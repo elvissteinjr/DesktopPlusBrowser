@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=3ecebd6b30bb8fb837e062eacd021c1a1ff3620a$
+// $hash=3049c9960a95d32d61cc57ae998c0eba12820673$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_COMMAND_LINE_CAPI_H_
@@ -200,13 +200,13 @@ typedef struct _cef_command_line_t {
 ///
 // Create a new cef_command_line_t instance.
 ///
-CEF_EXPORT cef_command_line_t* cef_command_line_create();
+CEF_EXPORT cef_command_line_t* cef_command_line_create(void);
 
 ///
 // Returns the singleton global cef_command_line_t object. The returned object
 // will be read-only.
 ///
-CEF_EXPORT cef_command_line_t* cef_command_line_get_global();
+CEF_EXPORT cef_command_line_t* cef_command_line_get_global(void);
 
 #ifdef __cplusplus
 }
