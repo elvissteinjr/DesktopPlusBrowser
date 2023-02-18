@@ -33,9 +33,14 @@ struct DPBrowserData
     CefRefPtr<CefBrowser> BrowserPtr;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> SharedTexture;      //Texture shared by CEF
     Microsoft::WRL::ComPtr<ID3D11Texture2D> StagingTexture;     //Texture sent to OpenVR
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> PopupWidgetTexture; //Texture shared by CEF, used for popup widgets (i.e. form dropdowns)
     std::string LastNotifiedURL;
     bool IsFullCopyScheduled = true;
     bool IsResizing = false;
+    bool IsPopupWidgetVisible = false;
+    bool IsPopupWidgetAutoUpdateScheduled = false;
+    ULONGLONG PopupWidgetStartTick = 0;
+    CefRect PopupWidgetRect;
     int ResizingFrameCount = 0;
     int FrameCount = 0;
     ULONGLONG FrameCountStartTick = 0;
@@ -77,6 +82,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         DPBrowserOverlayData& FindBrowserOverlayData(vr::VROverlayHandle_t overlay_handle, DPBrowserData** out_parent_browser_data = nullptr); //May return m_BrowserOverlayDataNull
 
         void ForceRedraw(DPBrowserData& browser_data);
+        void PopupWidgetScheduledAutoTextureUpdate(CefRefPtr<CefBrowser> browser, PaintElementType type);
         void TryApplyPendingResolution(vr::VROverlayHandle_t overlay_handle);
         void ApplyMaxFPS(CefBrowser& browser);
         void CheckStaleFPSValues();
@@ -123,6 +129,8 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
 
         //CefRenderHandler:
         virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
+        virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) override;
+        virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) override;
         virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void *buffer, int width, int height) override;
         virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, void *shared_handle) override;
         virtual void OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, void *shared_handle, bool new_texture) override;

@@ -131,6 +131,23 @@ void DPBrowserHandler::ForceRedraw(DPBrowserData& browser_data)
     }
 }
 
+void DPBrowserHandler::PopupWidgetScheduledAutoTextureUpdate(CefRefPtr<CefBrowser> browser, PaintElementType type)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    DPBrowserData& data = GetBrowserData(*browser);
+
+    if (data.IsPopupWidgetAutoUpdateScheduled)
+    {
+        data.IsPopupWidgetAutoUpdateScheduled = false;
+
+        CefRenderHandler::RectList dirty_rects;
+        dirty_rects.push_back(data.ViewportSize);
+
+        OnAcceleratedPaint2(browser, type, dirty_rects, nullptr, false);
+    }
+}
+
 void DPBrowserHandler::TryApplyPendingResolution(vr::VROverlayHandle_t overlay_handle)
 {
     CEF_REQUIRE_UI_THREAD();
@@ -387,6 +404,30 @@ void DPBrowserHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
     rect = GetBrowserData(*browser).ViewportSize;
 }
 
+void DPBrowserHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    DPBrowserData& data = GetBrowserData(*browser);
+    data.IsPopupWidgetVisible = show;
+
+    if (show)
+    {
+        data.PopupWidgetStartTick = ::GetTickCount64();
+    }
+    else
+    {
+        data.PopupWidgetTexture.Reset();
+    }
+}
+
+void DPBrowserHandler::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    GetBrowserData(*browser).PopupWidgetRect = rect;
+}
+
 void DPBrowserHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height)
 {
     return; //Use OnAcceleratedPaint2()
@@ -399,30 +440,48 @@ void DPBrowserHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintEl
 
 void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, void* shared_handle, bool new_texture)
 {
-    if (type != PET_VIEW)
-        return;
-
     DPBrowserData& data = GetBrowserData(*browser);
 
     if (data.Overlays.empty())
         return;
 
+    //If we already got a future call of this function scheduled, ignore this one
+    if ((data.IsPopupWidgetAutoUpdateScheduled) && (!new_texture))
+        return;
+
     //Use shared handle here
     if (new_texture)
     {
-        data.SharedTexture.Reset();
-        data.StagingTexture.Reset();
-
-        HRESULT res = D3DManager::Get().GetDevice()->OpenSharedResource1(shared_handle, __uuidof(ID3D11Texture2D), (void**)&data.SharedTexture);
-
-        if (FAILED(res))
-            return;
-
-        //Set resize state if it's not already set for reason
-        if (!data.IsResizing)
+        if (type == PET_VIEW)
         {
-            data.IsResizing = true;
-            data.ResizingFrameCount = 0;
+            data.SharedTexture.Reset();
+            data.StagingTexture.Reset();
+            data.PopupWidgetTexture.Reset();
+
+            HRESULT res = D3DManager::Get().GetDevice()->OpenSharedResource1(shared_handle, __uuidof(ID3D11Texture2D), (void**)&data.SharedTexture);
+
+            if (FAILED(res))
+                return;
+
+            //Set resize state if it's not already set for reason (unless popup widget is visible as that would close it)
+            if ((!data.IsResizing) && (!data.IsPopupWidgetVisible))
+            {
+                data.IsResizing = true;
+                data.ResizingFrameCount = 0;
+            }
+        }
+        else if ((type == PET_POPUP) && (data.IsPopupWidgetVisible))
+        {
+            data.PopupWidgetTexture.Reset();
+
+            HRESULT res = D3DManager::Get().GetDevice()->OpenSharedResource1(shared_handle, __uuidof(ID3D11Texture2D), (void**)&data.PopupWidgetTexture);
+
+            if (FAILED(res))
+                return;
+        }
+        else
+        {
+            return;
         }
     }
     else if (data.SharedTexture == nullptr) //This shouldn't usually happen, but abort if there's neither a new texture nor an existing shared one
@@ -430,8 +489,8 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
         return;
     }
 
-    //Default to partial copy if the texture isn't new (usually from resize)
-    bool do_fully_copy = (data.IsFullCopyScheduled || data.IsResizing);
+    //Default to partial copy unless the texture is new (usually from resize) or popup widget is visible
+    bool do_fully_copy = (data.IsFullCopyScheduled || data.IsResizing || data.IsPopupWidgetVisible);
 
     //To avoid flicker after a resize, the first few frames are not actually sent to OpenVR
     //However, we need to make sure there are going to be follow up frames so the overlay doesn't look stuck until the next user interaction
@@ -539,24 +598,57 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
                     }
                 }
 
-                //Don't set the texture while resizing to avoid flickering
-                if (!data.IsResizing)
-                {
-                    //Set the overlay texture from the staging texture
-                    vr::Texture_t vr_tex = {0};
-                    vr_tex.eColorSpace = vr::ColorSpace_Gamma;
-                    vr_tex.eType       = vr::TextureType_DirectX;
-                    vr_tex.handle      = data.StagingTexture.Get();
+                //Set the overlay texture from the staging texture
+                vr::Texture_t vr_tex = {0};
+                vr_tex.eColorSpace = vr::ColorSpace_Gamma;
+                vr_tex.eType       = vr::TextureType_DirectX;
+                vr_tex.handle      = data.StagingTexture.Get();
 
+                //Don't set the texture while resizing to avoid flickering
+                if ((!data.IsResizing) && (!data.IsPopupWidgetVisible))
+                {
                     vr::VROverlay()->SetOverlayTexture(ovrl_shared_source, &vr_tex);
 
                     //Use this staging texture as a device reference for the shared overlays
                     staging_tex_shared_source = data.StagingTexture;
                 }
 
-                //Note how we copy the texture after setting the texture. This is because the first frame on a new texture will be blank and we want to avoid flickering
+                //Note how we copy the texture after setting the overlay texture. This is because the first frame on a new texture will be blank and we want to avoid flickering
+                //However, this strategy introduces yet another flicker when switching between popup widgets so we don't do this when one is visible and just do it after the copy instead
                 D3DManager::Get().GetDeviceContext()->CopyResource(data.StagingTexture.Get(), data.SharedTexture.Get());
-                D3DManager::Get().GetDeviceContext()->Flush();   //Copy will not be done in time without flushing
+
+                //Add popup widget texture on of staging texture if it's visible
+                //CEF samples go the full-on compositing route for this, but there doesn't seem to any widget that actually requires this, so we make do with a simple copy
+                if ((data.IsPopupWidgetVisible) && (data.PopupWidgetTexture != nullptr))
+                {
+                    //Enforce additonal delay to elimate last remaining flicker from potential previous texture contents (that's a lot of flicker opportunities in total)
+                    if (::GetTickCount64() >= data.PopupWidgetStartTick + 100)
+                    {
+                        D3D11_BOX box = {0};
+                        box.left   = 0;
+                        box.top    = 0;
+                        box.front  = 0;
+                        box.right  = data.PopupWidgetRect.width;
+                        box.bottom = data.PopupWidgetRect.height;
+                        box.back   = 1;
+
+                        D3DManager::Get().GetDeviceContext()->CopySubresourceRegion((ID3D11Texture2D*)data.StagingTexture.Get(), 0, 
+                                                                                    data.PopupWidgetRect.x, -(data.PopupWidgetRect.y + data.PopupWidgetRect.height) + data.ViewportSize.height, 
+                                                                                    0, (ID3D11Texture2D*)data.PopupWidgetTexture.Get(), 0, &box);
+                    }
+                }
+
+                //Copy will not be done in time without flushing
+                D3DManager::Get().GetDeviceContext()->Flush();
+
+                //Set texture right after copy if popup widget is visible
+                if (data.IsPopupWidgetVisible)
+                {
+                    vr::VROverlay()->SetOverlayTexture(ovrl_shared_source, &vr_tex);
+
+                    //Use this staging texture as a device reference for the shared overlays
+                    staging_tex_shared_source = data.StagingTexture;
+                }
 
                 data.IsFullCopyScheduled = false;
             }
@@ -584,6 +676,14 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
     {
         CefPostDelayedTask(TID_UI, base::BindOnce(&DPBrowserHandler::CheckStaleFPSValues, this), 2100);
         m_IsStaleFPSValueTaskPending = true;
+    }
+
+    //Constantly call this function at roughly 60 fps to make up for not actually getting notified for all texture updates of the popup widget texture
+    //We ignore all other calls to this function during this, which is not ideal for frame-pacing, but it's better than updating the overlay more often than needed
+    if ((data.IsPopupWidgetVisible) && (!data.IsPopupWidgetAutoUpdateScheduled))
+    {
+        CefPostDelayedTask(TID_UI, base::BindOnce(&DPBrowserHandler::PopupWidgetScheduledAutoTextureUpdate, this, browser, type), 16);
+        data.IsPopupWidgetAutoUpdateScheduled = true;
     }
 }
 
