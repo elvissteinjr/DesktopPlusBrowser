@@ -13,6 +13,9 @@
     <ClCompile Include="..\ThirdParty\adblock_rust_ffi\src\wrapper.cc">
       <Filter>adblock</Filter>
     </ClCompile>
+    <ClCompile Include="..\Shared\OUtoSBSConverter.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Shared\openvr.h">
@@ -35,6 +38,12 @@
     </ClInclude>
     <ClInclude Include="..\ThirdParty\adblock_rust_ffi\src\wrapper.h">
       <Filter>adblock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\OUtoSBSConverter.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\DPRect.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

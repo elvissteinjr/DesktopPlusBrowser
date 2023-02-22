@@ -7,6 +7,7 @@
 #include "include/wrapper/cef_closure_task.h"
 
 #include "Util.h"
+#include "DPRect.h"
 
 static DPBrowserAPIServer g_DPBrowserAPIServer;
 
@@ -220,6 +221,28 @@ void DPBrowserAPIServer::HandleIPCMessage(const MSG& msg)
                 DVLOG(0) << "dpbrowser_ipccmd_set_zoom: " << std::hex << m_IPCOverlayTarget << " (overlay_handle) " << std::dec << pun_cast<float, LPARAM>(msg.lParam) * 100 << "%";
 
                 CefPostTask(TID_UI, base::BindOnce(&DPBrowserHandler::DPBrowser_SetZoomLevel, handler, m_IPCOverlayTarget, pun_cast<float, LPARAM>(msg.lParam)) );
+                m_IPCOverlayTarget = vr::k_ulOverlayHandleInvalid;
+                break;
+            }
+            case dpbrowser_ipccmd_set_ou3d_crop:
+            {
+                if (msg.lParam != -1)
+                {
+                    DPRect dp_rect;
+                    dp_rect.Unpack16(msg.lParam);
+
+                    DVLOG(0) << "dpbrowser_ipccmd_set_ou3d_crop: " << std::hex << m_IPCOverlayTarget << " (overlay_handle) " << std::dec << 
+                                "[" << dp_rect.GetTL().x << ", " << dp_rect.GetTL().y << " | " << dp_rect.GetWidth() << " x " << dp_rect.GetHeight() << "]";
+
+                    CefPostTask(TID_UI, base::BindOnce(&DPBrowserHandler::DPBrowser_SetOverUnder3D, handler, m_IPCOverlayTarget, true, 
+                                                       dp_rect.GetTL().x, dp_rect.GetTL().y, dp_rect.GetWidth(), dp_rect.GetHeight()) );
+                }
+                else
+                {
+                    DVLOG(0) << "dpbrowser_ipccmd_set_ou3d_crop: " << std::hex << m_IPCOverlayTarget << " (overlay_handle) " << "-1 (disable)";
+                    CefPostTask(TID_UI, base::BindOnce(&DPBrowserHandler::DPBrowser_SetOverUnder3D, handler, m_IPCOverlayTarget, false, 0, 0, 1, 1) );
+                }
+
                 m_IPCOverlayTarget = vr::k_ulOverlayHandleInvalid;
                 break;
             }

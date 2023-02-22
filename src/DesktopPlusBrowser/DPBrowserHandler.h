@@ -8,6 +8,7 @@
 #include "D3DManager.h"
 #include "DPBrowserAPI.h"
 #include "DPBrowserContentBlocker.h"
+#include "OUtoSBSConverter.h"
 
 struct DPBrowserOverlayData
 {
@@ -19,6 +20,7 @@ struct DPBrowserOverlayData
     int OU3D_CropY = 0;
     int OU3D_CropWidth  = 1;
     int OU3D_CropHeight = 1;
+    OUtoSBSConverter OU3D_Converter;
 };
 
 struct DPBrowserData
@@ -38,10 +40,10 @@ struct DPBrowserData
     bool IsFullCopyScheduled = true;
     bool IsResizing = false;
     bool IsPopupWidgetVisible = false;
-    bool IsPopupWidgetAutoUpdateScheduled = false;
-    ULONGLONG PopupWidgetStartTick = 0;
     CefRect PopupWidgetRect;
     int ResizingFrameCount = 0;
+    int IdleFrameCount = 0;
+    bool IsIdleFrameUpdateScheduled = false;
     int FrameCount = 0;
     ULONGLONG FrameCountStartTick = 0;
     bool KeyboardToggledKeys[256] = {false};                                        //Tracks state of toggled keys between API calls (only DPBrowser_KeyboardToggleKey())
@@ -71,6 +73,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
 
         DPBrowserMouseState m_MouseState;
         bool m_IsStaleFPSValueTaskPending = false;
+        bool m_IsPaintCallForIdleFrame    = false;
 
         //Content blocker, only accessed on the CEF IO thread
         CefRefPtr<DPBrowserContentBlocker> m_ContentBlocker;
@@ -82,10 +85,11 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         DPBrowserOverlayData& FindBrowserOverlayData(vr::VROverlayHandle_t overlay_handle, DPBrowserData** out_parent_browser_data = nullptr); //May return m_BrowserOverlayDataNull
 
         void ForceRedraw(DPBrowserData& browser_data);
-        void PopupWidgetScheduledAutoTextureUpdate(CefRefPtr<CefBrowser> browser, PaintElementType type);
+        void ScheduledIdleFrameUpdate(CefRefPtr<CefBrowser> browser);
         void TryApplyPendingResolution(vr::VROverlayHandle_t overlay_handle);
         void ApplyMaxFPS(CefBrowser& browser);
         void CheckStaleFPSValues();
+        void OnAcceleratedPaint2UpdateStagingTexture(DPBrowserData& data);
         CefKeyEvent KeyboardGenerateWCharEvent(wchar_t wchar);
         //--
 
@@ -165,6 +169,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         virtual void DPBrowser_SetResolution(vr::VROverlayHandle_t overlay_handle, int width, int height) override;
         virtual void DPBrowser_SetFPS(vr::VROverlayHandle_t overlay_handle, int fps) override;
         virtual void DPBrowser_SetZoomLevel(vr::VROverlayHandle_t overlay_handle, float zoom_level) override;
+        virtual void DPBrowser_SetOverUnder3D(vr::VROverlayHandle_t overlay_handle, bool is_over_under_3D, int crop_x, int crop_y, int crop_width, int crop_height) override;
 
         virtual void DPBrowser_MouseMove(vr::VROverlayHandle_t overlay_handle, int x, int y) override;
         virtual void DPBrowser_MouseLeave(vr::VROverlayHandle_t overlay_handle) override;
