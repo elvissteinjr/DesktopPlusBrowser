@@ -165,6 +165,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Shared\OpenVRExt.cpp" />
     <ClCompile Include="..\Shared\OUtoSBSConverter.cpp" />
     <ClCompile Include="..\Shared\Util.cpp" />
     <ClCompile Include="..\ThirdParty\adblock_rust_ffi\src\wrapper.cc" />
@@ -173,6 +174,7 @@
     <ClInclude Include="..\Shared\DPBrowserAPI.h" />
     <ClInclude Include="..\Shared\DPRect.h" />
     <ClInclude Include="..\Shared\openvr.h" />
+    <ClInclude Include="..\Shared\OpenVRExt.h" />
     <ClInclude Include="..\Shared\OUtoSBSConverter.h" />
     <ClInclude Include="..\Shared\Util.h" />
     <ClInclude Include="..\ThirdParty\adblock_rust_ffi\src\lib.h" />

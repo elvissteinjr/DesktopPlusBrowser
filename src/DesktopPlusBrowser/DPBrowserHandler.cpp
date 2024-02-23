@@ -15,6 +15,7 @@
 #include "D3DManager.h"
 #include "DPBrowserAPIServer.h"
 #include "Util.h"
+#include "OpenVRExt.h"
 
 enum KeyboardWin32KeystateFlags
 {
@@ -368,7 +369,15 @@ void DPBrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser)
     if ( (it != m_BrowserIDToDataMap.end()) && (it->second < m_BrowserList.size()) )
     {
         erased_id = it->second;
-        m_BrowserList.erase(m_BrowserList.begin() + erased_id);
+
+        //Release shared overlay textures of all remaining overlays, though it should only be one left in this situation usually
+        auto it_data = m_BrowserList.begin() + erased_id;
+        for (auto& overlay : it_data->Overlays)
+        {
+            vr::VROverlayEx()->ReleaseSharedOverlayTexture(overlay.OverlayHandle);
+        }
+        
+        m_BrowserList.erase(it_data);
     }
 
     //Remove browser data id assignment
@@ -594,8 +603,8 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
             //Flip the cropping rectangle vertically to match flipped input texture
             const int crop_y_flipped = -overlay.OU3D_CropY + data.ViewportSize.height - overlay.OU3D_CropHeight;
 
-            HRESULT hr = overlay.OU3D_Converter.Convert(D3DManager::Get().GetDevice(), D3DManager::Get().GetDeviceContext(), nullptr, nullptr, texture_source,
-                                                        texture_desc.Width, texture_desc.Height, overlay.OU3D_CropX, crop_y_flipped, overlay.OU3D_CropWidth, overlay.OU3D_CropHeight);
+            overlay.OU3D_Converter.Convert(D3DManager::Get().GetDevice(), D3DManager::Get().GetDeviceContext(), nullptr, nullptr, texture_source,
+                                           texture_desc.Width, texture_desc.Height, overlay.OU3D_CropX, crop_y_flipped, overlay.OU3D_CropWidth, overlay.OU3D_CropHeight);
 
             //Copy will not be done in time without flushing
             D3DManager::Get().GetDeviceContext()->Flush();
@@ -607,43 +616,34 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
             //Get overlay texture from OpenVR and copy directly into it if possible
             if (!do_full_copy)
             {
-                ID3D11ShaderResourceView* ovrl_shader_res = nullptr;
-                uint32_t ovrl_width;
-                uint32_t ovrl_height;
-                uint32_t ovrl_native_format;
-                vr::ETextureType ovrl_api_type;
-                vr::EColorSpace ovrl_color_space;
-                vr::VRTextureBounds_t ovrl_tex_bounds;
+                //Get overlay texture from OpenVR and copy dirty rect directly into it
+                ID3D11Texture2D* reference_texture = data.SharedTexture.Get();
+                ID3D11ShaderResourceView* ovrl_shader_rsv;
 
-                vr::VROverlayError ovrl_error = vr::VROverlay()->GetOverlayTexture(ovrl_shared_source, (void**)&ovrl_shader_res, data.SharedTexture.Get(), &ovrl_width, &ovrl_height, &ovrl_native_format, 
-                                                                                   &ovrl_api_type, &ovrl_color_space, &ovrl_tex_bounds);
+                ovrl_shader_rsv = vr::VROverlayEx()->GetOverlayTextureEx(ovrl_shared_source, reference_texture);
+                Vector2Int ovrl_size = vr::VROverlayEx()->GetOverlayTextureSizeEx(ovrl_shared_source);
 
-                if (ovrl_error == vr::VROverlayError_None)
+                if (ovrl_shader_rsv != nullptr)
                 {
                     if (texture_desc.Width == 0)
                     {
                         data.SharedTexture->GetDesc(&texture_desc);
                     }
 
-                    if ( (texture_desc.Width == ovrl_width) && (texture_desc.Height == ovrl_height) )
+                    if ( (texture_desc.Width == (UINT)ovrl_size.x) && (texture_desc.Height == (UINT)ovrl_size.y) )
                     {
-                        ID3D11Resource* ovrl_tex;
-                        ovrl_shader_res->GetResource(&ovrl_tex);
+                        Microsoft::WRL::ComPtr<ID3D11Resource> ovrl_tex;
+                        ovrl_shader_rsv->GetResource(&ovrl_tex);
 
-                        D3DManager::Get().GetDeviceContext()->CopyResource(ovrl_tex, (ID3D11Texture2D*)data.SharedTexture.Get());
+                        D3DManager::Get().GetDeviceContext()->CopyResource(ovrl_tex.Get(), reference_texture);
                         D3DManager::Get().GetDeviceContext()->Flush();
-
-                        ovrl_tex->Release();
-                        ovrl_tex = nullptr;
                     }
                     else //Texture sizes don't match for some reason, fall back to fully copy
                     {
                         do_full_copy = true;
                     }
 
-                    //Release shader resource
-                    vr::VROverlay()->ReleaseNativeOverlayHandle(ovrl_shared_source, (void*)ovrl_shader_res);
-                    ovrl_shader_res = nullptr;
+                    //RSV is kept around by IVROverlayEx and not released here
                 }
                 else //Usually shouldn't fail, but fall back to full copy then
                 {
@@ -664,7 +664,7 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
                 if (!data.IsResizing)
                 {
                     //Note how we set the overlay texture before copying the texture. This is because the first frame on a new texture will be blank and we want to avoid flickering
-                    vr::VROverlay()->SetOverlayTexture(ovrl_shared_source, &vr_tex);
+                    vr::VROverlayEx()->SetOverlayTextureEx(ovrl_shared_source, &vr_tex, {(int)texture_desc.Width, (int)texture_desc.Height});
 
                     //Use this staging texture as a device reference for the shared overlays
                     staging_tex_shared_source = data.StagingTexture;
@@ -677,7 +677,7 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
         }
         else if ( (do_full_copy) && (!data.IsResizing) && (staging_tex_shared_source != nullptr) ) //For all others, set it shared from the normal overlay if an update is needed
         {
-            SetSharedOverlayTexture(ovrl_shared_source, overlay.OverlayHandle, staging_tex_shared_source.Get());
+            vr::VROverlayEx()->SetSharedOverlayTexture(ovrl_shared_source, overlay.OverlayHandle, staging_tex_shared_source.Get());
         }
     }
 
@@ -943,6 +943,7 @@ void DPBrowserHandler::DPBrowser_StopBrowser(vr::VROverlayHandle_t overlay_handl
 
         if (it != browser_data.Overlays.end())
         {
+            vr::VROverlayEx()->ReleaseSharedOverlayTexture(it->OverlayHandle);
             browser_data.Overlays.erase(it);
 
             //The removed overlay might've been used as a shared source, so we need to force a fresh full frame
