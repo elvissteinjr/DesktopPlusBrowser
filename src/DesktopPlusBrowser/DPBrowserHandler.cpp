@@ -834,7 +834,7 @@ void DPBrowserHandler::DPBrowser_DuplicateBrowserOutput(vr::VROverlayHandle_t ov
     DPBrowserData* browser_data = nullptr;
     DPBrowserOverlayData& overlay_data_src = FindBrowserOverlayData(overlay_handle_src, &browser_data);
 
-    if (browser_data != nullptr)
+    if ((browser_data != nullptr) && (browser_data->BrowserPtr != nullptr))
     {
         DPBrowserOverlayData overlay_data = overlay_data_src;
         overlay_data.OverlayHandle = overlay_handle_dst;
@@ -842,6 +842,10 @@ void DPBrowserHandler::DPBrowser_DuplicateBrowserOutput(vr::VROverlayHandle_t ov
 
         //To set the shared texture, we need a fresh full texture copy. This also needs to trigger a redraw even on static pages
         ForceRedraw(*browser_data);
+    }
+    else
+    {
+        DVLOG(0) << "DPBrowser_DuplicateBrowserOutput: Source overlay wasn't found in any active browser";
     }
 }
 
