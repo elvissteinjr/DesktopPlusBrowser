@@ -1330,11 +1330,11 @@ void DPBrowserHandler::DPBrowser_KeyboardTypeWChar(vr::VROverlayHandle_t overlay
     if (browser_data.BrowserPtr != nullptr)
     {
         //Check if it can be pressed on the current windows keyboard layout and send key down/up events then
-        SHORT w32_keystate = ::VkKeyScan(wchar);
+        SHORT w32_keystate = ::VkKeyScanW(wchar);
         unsigned char keycode = LOBYTE(w32_keystate);
         unsigned char flags   = HIBYTE(w32_keystate);
 
-        bool is_valid = ((keycode != -1) || (flags != -1));
+        bool is_valid = ((keycode != 255) || (flags != 255));
 
         if (is_valid)
         {
