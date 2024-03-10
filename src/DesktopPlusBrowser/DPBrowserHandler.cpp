@@ -950,6 +950,22 @@ void DPBrowserHandler::DPBrowser_StopBrowser(vr::VROverlayHandle_t overlay_handl
             vr::VROverlayEx()->ReleaseSharedOverlayTexture(it->OverlayHandle);
             browser_data.Overlays.erase(it);
 
+            //Check if all overlays are hidden and apply overall pause state to browser in case this removal changed it
+            bool all_hidden = true;
+            for (DPBrowserOverlayData& overlay_data : browser_data.Overlays)
+            {
+                if (!overlay_data.IsHidden)
+                {
+                    all_hidden = false;
+                }
+            }
+
+            browser_data.BrowserPtr->GetHost()->WasHidden(all_hidden);
+            browser_data.BrowserPtr->GetHost()->SetAudioMuted(all_hidden);
+
+            //Apply max fps again in case this changed anything
+            ApplyMaxFPS(*browser_data.BrowserPtr);
+
             //The removed overlay might've been used as a shared source, so we need to force a fresh full frame
             ForceRedraw(browser_data);
 
