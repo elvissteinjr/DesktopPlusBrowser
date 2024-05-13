@@ -30,6 +30,7 @@ struct DPBrowserData
     CefRect ViewportSize = {0, 0, 1280, 720};
     CefRect ViewportSizePending;
     float ZoomLevel = 1.0f;
+    bool IsBackgroundTransparent = false;
 
     //State
     CefRefPtr<CefBrowser> BrowserPtr;
@@ -37,6 +38,7 @@ struct DPBrowserData
     Microsoft::WRL::ComPtr<ID3D11Texture2D> StagingTexture;     //Texture sent to OpenVR
     Microsoft::WRL::ComPtr<ID3D11Texture2D> PopupWidgetTexture; //Texture shared by CEF, used for popup widgets (i.e. form dropdowns)
     std::string LastNotifiedURL;
+    std::string ErrorPageSourceURL;                             //URL of the page that caused the current error page, if not empty
     bool IsFullCopyScheduled = true;
     bool IsResizing = false;
     bool IsPopupWidgetVisible = false;
@@ -74,6 +76,10 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         DPBrowserMouseState m_MouseState;
         bool m_IsStaleFPSValueTaskPending = false;
         bool m_IsPaintCallForIdleFrame    = false;
+
+        std::string m_TSTR_ErrorTitle   = "Error";
+        std::string m_TSTR_ErrorHeading = "Error";
+        std::string m_TSTR_ErrorMessage = "Failed to load %URL%: %ERROR%";
 
         //Content blocker, only accessed on the CEF IO thread
         CefRefPtr<DPBrowserContentBlocker> m_ContentBlocker;
@@ -188,4 +194,5 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
 
         virtual void DPBrowser_GlobalSetFPS(int fps) override;
         virtual void DPBrowser_ContentBlockSetEnabled(bool enable) override;    //Call on IO thread
+        virtual void DPBrowser_ErrorPageSetStrings(const std::string& title, const std::string& heading, const std::string& message) override;
 };

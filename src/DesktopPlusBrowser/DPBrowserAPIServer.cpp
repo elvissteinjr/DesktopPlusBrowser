@@ -63,7 +63,14 @@ bool DPBrowserAPIServer::Init(HINSTANCE hinstance, CefRefPtr<CefApp> cef_app)
     //Register custom message ID
     m_Win32MessageID = ::RegisterWindowMessage(g_WindowMessageNameBrowserApp);
 
-    return (m_WindowHandle != nullptr);
+    //Notify both processes about us being ready
+    if (m_WindowHandle != nullptr)
+    {
+        NotifyReady();
+        return true;
+    }
+
+    return false;
 }
 
 LRESULT DPBrowserAPIServer::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -358,7 +365,29 @@ void DPBrowserAPIServer::HandleIPCMessage(const MSG& msg)
                 CefPostTask(TID_IO, base::BindOnce(&DPBrowserHandler::DPBrowser_ContentBlockSetEnabled, handler, msg.lParam) );
                 break;
             }
+            case dpbrowser_ipccmd_error_set_strings:
+            {
+                DVLOG(1) << "dpbrowser_ipccmd_error_set_strings: \"" << GetIPCString(dpbrowser_ipcstr_tstr_error_title) << "\" ...";
+
+                CefPostTask(TID_UI, base::BindOnce(&DPBrowserHandler::DPBrowser_ErrorPageSetStrings, handler, GetIPCString(dpbrowser_ipcstr_tstr_error_title),
+                                                   GetIPCString(dpbrowser_ipcstr_tstr_error_heading), GetIPCString(dpbrowser_ipcstr_tstr_error_message)) );
+                break;
+            }
         }
+    }
+}
+
+void DPBrowserAPIServer::NotifyReady()
+{
+    //Send notifcation to dashboard & UI app
+    if (HWND window = ::FindWindow(g_WindowClassNameDashboardApp, nullptr))
+    {
+        ::PostMessage(window, m_Win32MessageID, dpbrowser_ipccmd_notify_ready, 0);
+    }
+
+    if (HWND window = ::FindWindow(g_WindowClassNameUIApp, nullptr))
+    {
+        ::PostMessage(window, m_Win32MessageID, dpbrowser_ipccmd_notify_ready, 0);
     }
 }
 

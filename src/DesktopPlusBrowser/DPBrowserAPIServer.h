@@ -32,6 +32,7 @@ class DPBrowserAPIServer
         void HandleIPCMessage(const MSG& msg);
 
         //Client Notifications (these send dpbrowser_ipccmd_notify_* messages to dashboard or UI app)
+        void NotifyReady();
         void NotifyNavigationState(vr::VROverlayHandle_t overlay_handle, bool can_go_back, bool can_go_forward, bool is_loading);
         void NotifyURLChange(vr::VROverlayHandle_t overlay_handle, const std::string& url);
         void NotifyTitleChange(vr::VROverlayHandle_t overlay_handle, const std::string& title);

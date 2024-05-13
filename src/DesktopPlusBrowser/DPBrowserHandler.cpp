@@ -3,10 +3,12 @@
 #include <sstream>
 #include <string>
 #include <algorithm>
+#include <fstream>
 
 #include "include/base/cef_callback.h"
 #include "include/cef_app.h"
 #include "include/cef_parser.h"
+#include "include/cef_path_util.h"
 #include "include/views/cef_browser_view.h"
 #include "include/views/cef_window.h"
 #include "include/wrapper/cef_closure_task.h"
@@ -302,6 +304,7 @@ void DPBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<
         }
 
         data.LastNotifiedURL = url;
+        data.ErrorPageSourceURL = "";
     }
 }
 
@@ -414,17 +417,45 @@ void DPBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefF
     if (errorCode == ERR_ABORTED)
         return;
 
-    // Display a load error message using a data: URI.
-    std::stringstream ss;
-    ss << "<html><body bgcolor=\"white\">"
-          "<h2>Failed to load URL " << std::string(failedUrl) << " with error " << std::string(errorText) << " (" << errorCode << ").</h2>"
-          "</body></html>";
+    //Read error page template into a string
+    CefString exe_dir;
+    CefGetPath(PK_DIR_EXE, exe_dir);
 
-    std::string data_uri = GetDataURI(ss.str(), "text/html");
+    std::wstring wpath = exe_dir.c_str();
+    wpath += L"/error_page_template.html";
+
+    std::ifstream error_page_file(StringConvertFromUTF16(wpath.c_str()));
+    std::string line;
+    std::stringstream ss;
+
+    while (std::getline(error_page_file, line))
+    {
+        ss << line;
+    }
+
+    //Replace placeholders with translation strings
+    std::string error_page_str = ss.str();
+    StringReplaceAll(error_page_str, "%TITLE%",   m_TSTR_ErrorTitle);
+    StringReplaceAll(error_page_str, "%HEADING%", m_TSTR_ErrorHeading);
+
+    std::string error_message = m_TSTR_ErrorMessage;
+    StringReplaceAll(error_message,  "%URL%",     std::string(failedUrl));
+    StringReplaceAll(error_message,  "%ERROR%",   std::string(errorText) + " (" + std::to_string(errorCode) + ")");
+    StringReplaceAll(error_page_str, "%MESSAGE%", error_message);
+
+    //Hack: If browser is not transparent, remove alpha channel from background color as it'll get blended with white
+    //This assumes the error page template is using the UI background color, but it's better than the alternative (recreating the browser just to set the background color)
+    DPBrowserData& data = GetBrowserData(*browser);
+    if (!data.IsBackgroundTransparent)
+    {
+        StringReplaceAll(error_page_str, "background-color: #152126C4;", "background-color: #152126;");
+    }
+
+    std::string data_uri = GetDataURI(error_page_str, "text/html");
 
     //Avoid sending the rather confusing looking data URI to UI
-    DPBrowserData& data = GetBrowserData(*browser);
     data.LastNotifiedURL = data_uri;
+    data.ErrorPageSourceURL = failedUrl;
 
     frame->LoadURL(data_uri);
 }
@@ -813,6 +844,7 @@ void DPBrowserHandler::DPBrowser_StartBrowser(vr::VROverlayHandle_t overlay_hand
     //Create browser synchronously and store extra data for the browser
     browser_data.BrowserPtr = CefBrowserHost::CreateBrowserSync(window_info, Get(), url, browser_settings, nullptr, nullptr);
     browser_data.ViewportSize.Set(0, 0, 1280, 720);
+    browser_data.IsBackgroundTransparent = use_transparent_background;
 
     //Assign browser id to browser data id
     int browser_data_id = (int)m_BrowserList.size();
@@ -918,6 +950,7 @@ void DPBrowserHandler::DPBrowser_RecreateBrowser(vr::VROverlayHandle_t overlay_h
 
     //Create new browser synchronously
     browser_data.BrowserPtr = CefBrowserHost::CreateBrowserSync(window_info, Get(), current_url, browser_settings, nullptr, nullptr);
+    browser_data.IsBackgroundTransparent = use_transparent_background;
 
     //Add browser id assignment for new browser
     m_BrowserIDToDataMap[browser_data.BrowserPtr->GetIdentifier()] = browser_data_id;
@@ -1429,7 +1462,18 @@ void DPBrowserHandler::DPBrowser_Refresh(vr::VROverlayHandle_t overlay_handle)
 
     if (browser_data.BrowserPtr != nullptr)
     {
-        (browser_data.BrowserPtr->IsLoading()) ? browser_data.BrowserPtr->StopLoad() : browser_data.BrowserPtr->Reload();
+        if (browser_data.BrowserPtr->IsLoading())
+        {
+            browser_data.BrowserPtr->StopLoad();
+        }
+        else if (!browser_data.ErrorPageSourceURL.empty())  //Load URL that caused the error instead of refreshing the generated error page
+        {
+            browser_data.BrowserPtr->GetMainFrame()->LoadURL(browser_data.ErrorPageSourceURL);
+        }
+        else
+        {
+            browser_data.BrowserPtr->Reload();
+        }
     }
 }
 
@@ -1454,4 +1498,13 @@ void DPBrowserHandler::DPBrowser_ContentBlockSetEnabled(bool enable)
     CEF_REQUIRE_IO_THREAD();
 
     m_ContentBlocker->SetEnabled(enable);
+}
+
+void DPBrowserHandler::DPBrowser_ErrorPageSetStrings(const std::string& title, const std::string& heading, const std::string& message)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    m_TSTR_ErrorTitle   = title;
+    m_TSTR_ErrorHeading = heading;
+    m_TSTR_ErrorMessage = message;
 }
