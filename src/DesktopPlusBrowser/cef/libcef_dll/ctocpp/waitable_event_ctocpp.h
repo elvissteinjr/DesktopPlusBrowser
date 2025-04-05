@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=519f7aab2913629ad5ac8ebcf228abd14b816ade$
+// $hash=01d6d166a49736b69a9ad493fbd8c62ec2141da4$
 //
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_WAITABLE_EVENT_CTOCPP_H_
@@ -39,7 +39,7 @@ class CefWaitableEventCToCpp
   void Signal() override;
   bool IsSignaled() override;
   void Wait() override;
-  bool TimedWait(int64 max_ms) override;
+  bool TimedWait(int64_t max_ms) override;
 };
 
 #endif  // CEF_LIBCEF_DLL_CTOCPP_WAITABLE_EVENT_CTOCPP_H_

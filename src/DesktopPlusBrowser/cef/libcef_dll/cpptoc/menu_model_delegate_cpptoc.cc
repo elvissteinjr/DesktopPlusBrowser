@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=d46082f24a6ad01677700ac68ad424cc4951efed$
+// $hash=a69369fe8fadea409955f130afb3d158e9e66c79$
 //
 
 #include "libcef_dll/cpptoc/menu_model_delegate_cpptoc.h"
+
 #include "libcef_dll/ctocpp/menu_model_ctocpp.h"
 #include "libcef_dll/shutdown_checker.h"
 
@@ -30,12 +31,14 @@ menu_model_delegate_execute_command(struct _cef_menu_model_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: menu_model; type: refptr_diff
   DCHECK(menu_model);
-  if (!menu_model)
+  if (!menu_model) {
     return;
+  }
 
   // Execute
   CefMenuModelDelegateCppToC::Get(self)->ExecuteCommand(
@@ -51,16 +54,19 @@ menu_model_delegate_mouse_outside_menu(struct _cef_menu_model_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: menu_model; type: refptr_diff
   DCHECK(menu_model);
-  if (!menu_model)
+  if (!menu_model) {
     return;
+  }
   // Verify param: screen_point; type: simple_byref_const
   DCHECK(screen_point);
-  if (!screen_point)
+  if (!screen_point) {
     return;
+  }
 
   // Translate param: screen_point; type: simple_byref_const
   CefPoint screen_pointVal = screen_point ? *screen_point : CefPoint();
@@ -79,12 +85,14 @@ void CEF_CALLBACK menu_model_delegate_unhandled_open_submenu(
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: menu_model; type: refptr_diff
   DCHECK(menu_model);
-  if (!menu_model)
+  if (!menu_model) {
     return;
+  }
 
   // Execute
   CefMenuModelDelegateCppToC::Get(self)->UnhandledOpenSubmenu(
@@ -100,12 +108,14 @@ void CEF_CALLBACK menu_model_delegate_unhandled_close_submenu(
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: menu_model; type: refptr_diff
   DCHECK(menu_model);
-  if (!menu_model)
+  if (!menu_model) {
     return;
+  }
 
   // Execute
   CefMenuModelDelegateCppToC::Get(self)->UnhandledCloseSubmenu(
@@ -120,12 +130,14 @@ menu_model_delegate_menu_will_show(struct _cef_menu_model_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: menu_model; type: refptr_diff
   DCHECK(menu_model);
-  if (!menu_model)
+  if (!menu_model) {
     return;
+  }
 
   // Execute
   CefMenuModelDelegateCppToC::Get(self)->MenuWillShow(
@@ -140,12 +152,14 @@ menu_model_delegate_menu_closed(struct _cef_menu_model_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: menu_model; type: refptr_diff
   DCHECK(menu_model);
-  if (!menu_model)
+  if (!menu_model) {
     return;
+  }
 
   // Execute
   CefMenuModelDelegateCppToC::Get(self)->MenuClosed(
@@ -161,16 +175,19 @@ menu_model_delegate_format_label(struct _cef_menu_model_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return 0;
+  }
   // Verify param: menu_model; type: refptr_diff
   DCHECK(menu_model);
-  if (!menu_model)
+  if (!menu_model) {
     return 0;
+  }
   // Verify param: label; type: string_byref
   DCHECK(label);
-  if (!label)
+  if (!label) {
     return 0;
+  }
 
   // Translate param: label; type: string_byref
   CefString labelStr(label);
@@ -211,7 +228,7 @@ CefRefPtr<CefMenuModelDelegate> CefCppToCRefCounted<
     CefMenuModelDelegate,
     cef_menu_model_delegate_t>::UnwrapDerived(CefWrapperType type,
                                               cef_menu_model_delegate_t* s) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

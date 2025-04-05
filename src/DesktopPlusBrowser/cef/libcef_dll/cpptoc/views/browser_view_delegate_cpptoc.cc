@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=18d85c2997264af0f94976650eaf931805fa352e$
+// $hash=7b29181006cb13ebca1ba7319e778400f75bab31$
 //
 
 #include "libcef_dll/cpptoc/views/browser_view_delegate_cpptoc.h"
+
 #include "libcef_dll/cpptoc/client_cpptoc.h"
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
 #include "libcef_dll/ctocpp/views/browser_view_ctocpp.h"
@@ -33,16 +34,19 @@ void CEF_CALLBACK browser_view_delegate_on_browser_created(
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: browser_view; type: refptr_diff
   DCHECK(browser_view);
-  if (!browser_view)
+  if (!browser_view) {
     return;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   // Execute
   CefBrowserViewDelegateCppToC::Get(self)->OnBrowserCreated(
@@ -59,16 +63,19 @@ void CEF_CALLBACK browser_view_delegate_on_browser_destroyed(
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: browser_view; type: refptr_diff
   DCHECK(browser_view);
-  if (!browser_view)
+  if (!browser_view) {
     return;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   // Execute
   CefBrowserViewDelegateCppToC::Get(self)->OnBrowserDestroyed(
@@ -88,29 +95,30 @@ browser_view_delegate_get_delegate_for_popup_browser_view(
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
-    return NULL;
-  // Verify param: browser_view; type: refptr_diff
-  DCHECK(browser_view);
-  if (!browser_view)
-    return NULL;
-  // Verify param: settings; type: struct_byref_const
-  DCHECK(settings);
-  if (!settings)
-    return NULL;
-  if (!template_util::has_valid_size(settings)) {
-    NOTREACHED() << "invalid settings->[base.]size";
+  if (!self) {
     return NULL;
   }
-  // Verify param: client; type: refptr_same
-  DCHECK(client);
-  if (!client)
+  // Verify param: browser_view; type: refptr_diff
+  DCHECK(browser_view);
+  if (!browser_view) {
     return NULL;
+  }
+  // Verify param: settings; type: struct_byref_const
+  DCHECK(settings);
+  if (!settings) {
+    return NULL;
+  }
+  if (!template_util::has_valid_size(settings)) {
+    DCHECK(false) << "invalid settings->[base.]size";
+    return NULL;
+  }
+  // Unverified params: client
 
   // Translate param: settings; type: struct_byref_const
   CefBrowserSettings settingsObj;
-  if (settings)
+  if (settings) {
     settingsObj.Set(*settings, false);
+  }
 
   // Execute
   CefRefPtr<CefBrowserViewDelegate> _retval =
@@ -132,16 +140,19 @@ int CEF_CALLBACK browser_view_delegate_on_popup_browser_view_created(
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return 0;
+  }
   // Verify param: browser_view; type: refptr_diff
   DCHECK(browser_view);
-  if (!browser_view)
+  if (!browser_view) {
     return 0;
+  }
   // Verify param: popup_browser_view; type: refptr_diff
   DCHECK(popup_browser_view);
-  if (!popup_browser_view)
+  if (!popup_browser_view) {
     return 0;
+  }
 
   // Execute
   bool _retval =
@@ -156,18 +167,99 @@ int CEF_CALLBACK browser_view_delegate_on_popup_browser_view_created(
 
 cef_chrome_toolbar_type_t CEF_CALLBACK
 browser_view_delegate_get_chrome_toolbar_type(
+    struct _cef_browser_view_delegate_t* self,
+    cef_browser_view_t* browser_view) {
+  shutdown_checker::AssertNotShutdown();
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self) {
+    return CEF_CTT_NONE;
+  }
+  // Verify param: browser_view; type: refptr_diff
+  DCHECK(browser_view);
+  if (!browser_view) {
+    return CEF_CTT_NONE;
+  }
+
+  // Execute
+  cef_chrome_toolbar_type_t _retval =
+      CefBrowserViewDelegateCppToC::Get(self)->GetChromeToolbarType(
+          CefBrowserViewCToCpp::Wrap(browser_view));
+
+  // Return type: simple
+  return _retval;
+}
+
+int CEF_CALLBACK
+browser_view_delegate_use_frameless_window_for_picture_in_picture(
+    struct _cef_browser_view_delegate_t* self,
+    cef_browser_view_t* browser_view) {
+  shutdown_checker::AssertNotShutdown();
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self) {
+    return 0;
+  }
+  // Verify param: browser_view; type: refptr_diff
+  DCHECK(browser_view);
+  if (!browser_view) {
+    return 0;
+  }
+
+  // Execute
+  bool _retval = CefBrowserViewDelegateCppToC::Get(self)
+                     ->UseFramelessWindowForPictureInPicture(
+                         CefBrowserViewCToCpp::Wrap(browser_view));
+
+  // Return type: bool
+  return _retval;
+}
+
+int CEF_CALLBACK browser_view_delegate_on_gesture_command(
+    struct _cef_browser_view_delegate_t* self,
+    cef_browser_view_t* browser_view,
+    cef_gesture_command_t gesture_command) {
+  shutdown_checker::AssertNotShutdown();
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self) {
+    return 0;
+  }
+  // Verify param: browser_view; type: refptr_diff
+  DCHECK(browser_view);
+  if (!browser_view) {
+    return 0;
+  }
+
+  // Execute
+  bool _retval = CefBrowserViewDelegateCppToC::Get(self)->OnGestureCommand(
+      CefBrowserViewCToCpp::Wrap(browser_view), gesture_command);
+
+  // Return type: bool
+  return _retval;
+}
+
+cef_runtime_style_t CEF_CALLBACK
+browser_view_delegate_get_browser_runtime_style(
     struct _cef_browser_view_delegate_t* self) {
   shutdown_checker::AssertNotShutdown();
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
-    return CEF_CTT_NONE;
+  if (!self) {
+    return CEF_RUNTIME_STYLE_DEFAULT;
+  }
 
   // Execute
-  cef_chrome_toolbar_type_t _retval =
-      CefBrowserViewDelegateCppToC::Get(self)->GetChromeToolbarType();
+  cef_runtime_style_t _retval =
+      CefBrowserViewDelegateCppToC::Get(self)->GetBrowserRuntimeStyle();
 
   // Return type: simple
   return _retval;
@@ -181,12 +273,14 @@ browser_view_delegate_get_preferred_size(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return CefSize();
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return CefSize();
+  }
 
   // Execute
   cef_size_t _retval = CefBrowserViewDelegateCppToC::Get(
@@ -205,12 +299,14 @@ browser_view_delegate_get_minimum_size(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return CefSize();
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return CefSize();
+  }
 
   // Execute
   cef_size_t _retval = CefBrowserViewDelegateCppToC::Get(
@@ -229,12 +325,14 @@ browser_view_delegate_get_maximum_size(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return CefSize();
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return CefSize();
+  }
 
   // Execute
   cef_size_t _retval = CefBrowserViewDelegateCppToC::Get(
@@ -254,12 +352,14 @@ browser_view_delegate_get_height_for_width(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return 0;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return 0;
+  }
 
   // Execute
   int _retval = CefBrowserViewDelegateCppToC::Get(
@@ -280,16 +380,19 @@ browser_view_delegate_on_parent_view_changed(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
   // Verify param: parent; type: refptr_diff
   DCHECK(parent);
-  if (!parent)
+  if (!parent) {
     return;
+  }
 
   // Execute
   CefBrowserViewDelegateCppToC::Get(
@@ -308,16 +411,19 @@ browser_view_delegate_on_child_view_changed(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
   // Verify param: child; type: refptr_diff
   DCHECK(child);
-  if (!child)
+  if (!child) {
     return;
+  }
 
   // Execute
   CefBrowserViewDelegateCppToC::Get(
@@ -335,12 +441,14 @@ browser_view_delegate_on_window_changed(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
 
   // Execute
   CefBrowserViewDelegateCppToC::Get(
@@ -357,16 +465,19 @@ browser_view_delegate_on_layout_changed(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
   // Verify param: new_bounds; type: simple_byref_const
   DCHECK(new_bounds);
-  if (!new_bounds)
+  if (!new_bounds) {
     return;
+  }
 
   // Translate param: new_bounds; type: simple_byref_const
   CefRect new_boundsVal = new_bounds ? *new_bounds : CefRect();
@@ -385,12 +496,14 @@ browser_view_delegate_on_focus(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
 
   // Execute
   CefBrowserViewDelegateCppToC::Get(
@@ -406,17 +519,42 @@ browser_view_delegate_on_blur(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
 
   // Execute
   CefBrowserViewDelegateCppToC::Get(
       reinterpret_cast<cef_browser_view_delegate_t*>(self))
       ->OnBlur(CefViewCToCpp::Wrap(view));
+}
+
+void CEF_CALLBACK
+browser_view_delegate_on_theme_changed(struct _cef_view_delegate_t* self,
+                                       cef_view_t* view) {
+  shutdown_checker::AssertNotShutdown();
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self) {
+    return;
+  }
+  // Verify param: view; type: refptr_diff
+  DCHECK(view);
+  if (!view) {
+    return;
+  }
+
+  // Execute
+  CefBrowserViewDelegateCppToC::Get(
+      reinterpret_cast<cef_browser_view_delegate_t*>(self))
+      ->OnThemeChanged(CefViewCToCpp::Wrap(view));
 }
 
 }  // namespace
@@ -433,6 +571,11 @@ CefBrowserViewDelegateCppToC::CefBrowserViewDelegateCppToC() {
       browser_view_delegate_on_popup_browser_view_created;
   GetStruct()->get_chrome_toolbar_type =
       browser_view_delegate_get_chrome_toolbar_type;
+  GetStruct()->use_frameless_window_for_picture_in_picture =
+      browser_view_delegate_use_frameless_window_for_picture_in_picture;
+  GetStruct()->on_gesture_command = browser_view_delegate_on_gesture_command;
+  GetStruct()->get_browser_runtime_style =
+      browser_view_delegate_get_browser_runtime_style;
   GetStruct()->base.get_preferred_size =
       browser_view_delegate_get_preferred_size;
   GetStruct()->base.get_minimum_size = browser_view_delegate_get_minimum_size;
@@ -447,6 +590,7 @@ CefBrowserViewDelegateCppToC::CefBrowserViewDelegateCppToC() {
   GetStruct()->base.on_layout_changed = browser_view_delegate_on_layout_changed;
   GetStruct()->base.on_focus = browser_view_delegate_on_focus;
   GetStruct()->base.on_blur = browser_view_delegate_on_blur;
+  GetStruct()->base.on_theme_changed = browser_view_delegate_on_theme_changed;
 }
 
 // DESTRUCTOR - Do not edit by hand.
@@ -462,7 +606,7 @@ CefRefPtr<CefBrowserViewDelegate> CefCppToCRefCounted<
     cef_browser_view_delegate_t>::UnwrapDerived(CefWrapperType type,
                                                 cef_browser_view_delegate_t*
                                                     s) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

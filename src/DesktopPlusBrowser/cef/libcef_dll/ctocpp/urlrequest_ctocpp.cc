@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=d3d0a83754df9a39d8f951ea488dd5417d20e9b2$
+// $hash=8d3bc803a0fe5b6f961f6538354732718a7b6fcb$
 //
 
 #include "libcef_dll/ctocpp/urlrequest_ctocpp.h"
+
 #include "libcef_dll/cpptoc/urlrequest_client_cpptoc.h"
 #include "libcef_dll/ctocpp/request_context_ctocpp.h"
 #include "libcef_dll/ctocpp/request_ctocpp.h"
@@ -32,12 +33,14 @@ CefRefPtr<CefURLRequest> CefURLRequest::Create(
 
   // Verify param: request; type: refptr_same
   DCHECK(request.get());
-  if (!request.get())
+  if (!request.get()) {
     return nullptr;
+  }
   // Verify param: client; type: refptr_diff
   DCHECK(client.get());
-  if (!client.get())
+  if (!client.get()) {
     return nullptr;
+  }
   // Unverified params: request_context
 
   // Execute
@@ -57,8 +60,9 @@ CefRefPtr<CefRequest> CefURLRequestCToCpp::GetRequest() {
   shutdown_checker::AssertNotShutdown();
 
   cef_urlrequest_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_request))
+  if (CEF_MEMBER_MISSING(_struct, get_request)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -74,8 +78,9 @@ CefRefPtr<CefURLRequestClient> CefURLRequestCToCpp::GetClient() {
   shutdown_checker::AssertNotShutdown();
 
   cef_urlrequest_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_client))
+  if (CEF_MEMBER_MISSING(_struct, get_client)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -91,8 +96,9 @@ CefURLRequest::Status CefURLRequestCToCpp::GetRequestStatus() {
   shutdown_checker::AssertNotShutdown();
 
   cef_urlrequest_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_request_status))
+  if (CEF_MEMBER_MISSING(_struct, get_request_status)) {
     return UR_UNKNOWN;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -108,8 +114,9 @@ CefURLRequest::ErrorCode CefURLRequestCToCpp::GetRequestError() {
   shutdown_checker::AssertNotShutdown();
 
   cef_urlrequest_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_request_error))
+  if (CEF_MEMBER_MISSING(_struct, get_request_error)) {
     return ERR_NONE;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -125,8 +132,9 @@ CefRefPtr<CefResponse> CefURLRequestCToCpp::GetResponse() {
   shutdown_checker::AssertNotShutdown();
 
   cef_urlrequest_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_response))
+  if (CEF_MEMBER_MISSING(_struct, get_response)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -141,8 +149,9 @@ NO_SANITIZE("cfi-icall") bool CefURLRequestCToCpp::ResponseWasCached() {
   shutdown_checker::AssertNotShutdown();
 
   cef_urlrequest_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, response_was_cached))
+  if (CEF_MEMBER_MISSING(_struct, response_was_cached)) {
     return false;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -157,8 +166,9 @@ NO_SANITIZE("cfi-icall") void CefURLRequestCToCpp::Cancel() {
   shutdown_checker::AssertNotShutdown();
 
   cef_urlrequest_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, cancel))
+  if (CEF_MEMBER_MISSING(_struct, cancel)) {
     return;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -180,7 +190,7 @@ template <>
 cef_urlrequest_t*
 CefCToCppRefCounted<CefURLRequestCToCpp, CefURLRequest, cef_urlrequest_t>::
     UnwrapDerived(CefWrapperType type, CefURLRequest* c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

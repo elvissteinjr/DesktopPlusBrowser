@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=774d22a8a54e71a2511ce6a66491d9563302f0bf$
+// $hash=3eba48ccaeb049442235247470ea785822ae8ee0$
 //
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_TEST_TRANSLATOR_TEST_CTOCPP_H_
@@ -22,6 +22,7 @@
 
 #include <map>
 #include <vector>
+
 #include "include/capi/test/cef_translator_test_capi.h"
 #include "include/test/cef_translator_test.h"
 #include "libcef_dll/ctocpp/ctocpp_ref_counted.h"

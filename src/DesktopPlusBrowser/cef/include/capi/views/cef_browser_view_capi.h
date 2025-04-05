@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2024 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=9ae10b92eed7495112c94825521ac46fb9327ef7$
+// $hash=1c2fbbffaf51e90a2d55bfa7eb3fa3a4e315f4ac$
 //
 
 #ifndef CEF_INCLUDE_CAPI_VIEWS_CEF_BROWSER_VIEW_CAPI_H_
@@ -49,52 +49,65 @@ extern "C" {
 #endif
 
 ///
-// A View hosting a cef_browser_t instance. Methods must be called on the
-// browser process UI thread unless otherwise indicated.
+/// A View hosting a cef_browser_t instance. Methods must be called on the
+/// browser process UI thread unless otherwise indicated.
 ///
 typedef struct _cef_browser_view_t {
   ///
-  // Base structure.
+  /// Base structure.
   ///
   cef_view_t base;
 
   ///
-  // Returns the cef_browser_t hosted by this BrowserView. Will return NULL if
-  // the browser has not yet been created or has already been destroyed.
+  /// Returns the cef_browser_t hosted by this BrowserView. Will return NULL if
+  /// the browser has not yet been created or has already been destroyed.
   ///
   struct _cef_browser_t*(CEF_CALLBACK* get_browser)(
       struct _cef_browser_view_t* self);
 
   ///
-  // Returns the Chrome toolbar associated with this BrowserView. Only supported
-  // when using the Chrome runtime. The cef_browser_view_delegate_t::
-  // get_chrome_toolbar_type() function must return a value other than
-  // CEF_CTT_NONE and the toolbar will not be available until after this
-  // BrowserView is added to a cef_window_t and
-  // cef_view_delegate_t::on_window_changed() has been called.
+  /// Returns the Chrome toolbar associated with this BrowserView. Only
+  /// supported when using the Chrome runtime. The cef_browser_view_delegate_t::
+  /// get_chrome_toolbar_type() function must return a value other than
+  /// CEF_CTT_NONE and the toolbar will not be available until after this
+  /// BrowserView is added to a cef_window_t and
+  /// cef_view_delegate_t::on_window_changed() has been called.
   ///
   struct _cef_view_t*(CEF_CALLBACK* get_chrome_toolbar)(
       struct _cef_browser_view_t* self);
 
   ///
-  // Sets whether accelerators registered with cef_window_t::SetAccelerator are
-  // triggered before or after the event is sent to the cef_browser_t. If
-  // |prefer_accelerators| is true (1) then the matching accelerator will be
-  // triggered immediately and the event will not be sent to the cef_browser_t.
-  // If |prefer_accelerators| is false (0) then the matching accelerator will
-  // only be triggered if the event is not handled by web content or by
-  // cef_keyboard_handler_t. The default value is false (0).
+  /// Sets whether normal priority accelerators are first forwarded to the web
+  /// content (`keydown` event handler) or cef_keyboard_handler_t. Normal
+  /// priority accelerators can be registered via cef_window_t::SetAccelerator
+  /// (with |high_priority|=false (0)) or internally for standard accelerators
+  /// supported by the Chrome runtime. If |prefer_accelerators| is true (1) then
+  /// the matching accelerator will be triggered immediately (calling
+  /// cef_window_delegate_t::OnAccelerator or
+  /// cef_command_handler_t::OnChromeCommand respectively) and the event will
+  /// not be forwarded to the web content or cef_keyboard_handler_t first. If
+  /// |prefer_accelerators| is false (0) then the matching accelerator will only
+  /// be triggered if the event is not handled by web content (`keydown` event
+  /// handler that calls `event.preventDefault()`) or by cef_keyboard_handler_t.
+  /// The default value is false (0).
   ///
   void(CEF_CALLBACK* set_prefer_accelerators)(struct _cef_browser_view_t* self,
                                               int prefer_accelerators);
+
+  ///
+  /// Returns the runtime style for this BrowserView (ALLOY or CHROME). See
+  /// cef_runtime_style_t documentation for details.
+  ///
+  cef_runtime_style_t(CEF_CALLBACK* get_runtime_style)(
+      struct _cef_browser_view_t* self);
 } cef_browser_view_t;
 
 ///
-// Create a new BrowserView. The underlying cef_browser_t will not be created
-// until this view is added to the views hierarchy. The optional |extra_info|
-// parameter provides an opportunity to specify extra information specific to
-// the created browser that will be passed to
-// cef_render_process_handler_t::on_browser_created() in the render process.
+/// Create a new BrowserView. The underlying cef_browser_t will not be created
+/// until this view is added to the views hierarchy. The optional |extra_info|
+/// parameter provides an opportunity to specify extra information specific to
+/// the created browser that will be passed to
+/// cef_render_process_handler_t::on_browser_created() in the render process.
 ///
 CEF_EXPORT cef_browser_view_t* cef_browser_view_create(
     struct _cef_client_t* client,
@@ -105,7 +118,7 @@ CEF_EXPORT cef_browser_view_t* cef_browser_view_create(
     struct _cef_browser_view_delegate_t* delegate);
 
 ///
-// Returns the BrowserView associated with |browser|.
+/// Returns the BrowserView associated with |browser|.
 ///
 CEF_EXPORT cef_browser_view_t* cef_browser_view_get_for_browser(
     struct _cef_browser_t* browser);

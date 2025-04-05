@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=9c26e4bf9952a26541915f64dad82080f09dfd58$
+// $hash=495825d5c3d119323101d93eac3fd25bfa905c97$
 //
 
 #include "libcef_dll/cpptoc/print_handler_cpptoc.h"
+
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
 #include "libcef_dll/ctocpp/print_dialog_callback_ctocpp.h"
 #include "libcef_dll/ctocpp/print_job_callback_ctocpp.h"
@@ -31,12 +32,14 @@ print_handler_on_print_start(struct _cef_print_handler_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   // Execute
   CefPrintHandlerCppToC::Get(self)->OnPrintStart(
@@ -53,16 +56,19 @@ print_handler_on_print_settings(struct _cef_print_handler_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return;
+  }
   // Verify param: settings; type: refptr_diff
   DCHECK(settings);
-  if (!settings)
+  if (!settings) {
     return;
+  }
 
   // Execute
   CefPrintHandlerCppToC::Get(self)->OnPrintSettings(
@@ -80,16 +86,19 @@ print_handler_on_print_dialog(struct _cef_print_handler_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return 0;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return 0;
+  }
   // Verify param: callback; type: refptr_diff
   DCHECK(callback);
-  if (!callback)
+  if (!callback) {
     return 0;
+  }
 
   // Execute
   bool _retval = CefPrintHandlerCppToC::Get(self)->OnPrintDialog(
@@ -111,24 +120,29 @@ print_handler_on_print_job(struct _cef_print_handler_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return 0;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return 0;
+  }
   // Verify param: document_name; type: string_byref_const
   DCHECK(document_name);
-  if (!document_name)
+  if (!document_name) {
     return 0;
+  }
   // Verify param: pdf_file_path; type: string_byref_const
   DCHECK(pdf_file_path);
-  if (!pdf_file_path)
+  if (!pdf_file_path) {
     return 0;
+  }
   // Verify param: callback; type: refptr_diff
   DCHECK(callback);
-  if (!callback)
+  if (!callback) {
     return 0;
+  }
 
   // Execute
   bool _retval = CefPrintHandlerCppToC::Get(self)->OnPrintJob(
@@ -147,12 +161,14 @@ print_handler_on_print_reset(struct _cef_print_handler_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   // Execute
   CefPrintHandlerCppToC::Get(self)->OnPrintReset(
@@ -168,12 +184,14 @@ print_handler_get_pdf_paper_size(struct _cef_print_handler_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return CefSize();
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return CefSize();
+  }
 
   // Execute
   cef_size_t _retval = CefPrintHandlerCppToC::Get(self)->GetPdfPaperSize(
@@ -208,7 +226,7 @@ CefRefPtr<CefPrintHandler> CefCppToCRefCounted<
     CefPrintHandler,
     cef_print_handler_t>::UnwrapDerived(CefWrapperType type,
                                         cef_print_handler_t* s) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

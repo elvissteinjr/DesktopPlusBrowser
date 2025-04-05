@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=de6b935b77168bd9b44f26643c510f360f8b6ebd$
+// $hash=3ad14a232fc9ce8d18ef29f145973353bea42c2c$
 //
 
 #include "libcef_dll/ctocpp/extension_ctocpp.h"
+
 #include "libcef_dll/cpptoc/extension_handler_cpptoc.h"
 #include "libcef_dll/ctocpp/dictionary_value_ctocpp.h"
 #include "libcef_dll/ctocpp/request_context_ctocpp.h"
@@ -24,8 +25,9 @@ NO_SANITIZE("cfi-icall") CefString CefExtensionCToCpp::GetIdentifier() {
   shutdown_checker::AssertNotShutdown();
 
   cef_extension_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_identifier))
+  if (CEF_MEMBER_MISSING(_struct, get_identifier)) {
     return CefString();
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -42,8 +44,9 @@ NO_SANITIZE("cfi-icall") CefString CefExtensionCToCpp::GetPath() {
   shutdown_checker::AssertNotShutdown();
 
   cef_extension_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_path))
+  if (CEF_MEMBER_MISSING(_struct, get_path)) {
     return CefString();
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -61,8 +64,9 @@ CefRefPtr<CefDictionaryValue> CefExtensionCToCpp::GetManifest() {
   shutdown_checker::AssertNotShutdown();
 
   cef_extension_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_manifest))
+  if (CEF_MEMBER_MISSING(_struct, get_manifest)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -78,15 +82,17 @@ bool CefExtensionCToCpp::IsSame(CefRefPtr<CefExtension> that) {
   shutdown_checker::AssertNotShutdown();
 
   cef_extension_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, is_same))
+  if (CEF_MEMBER_MISSING(_struct, is_same)) {
     return false;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   // Verify param: that; type: refptr_same
   DCHECK(that.get());
-  if (!that.get())
+  if (!that.get()) {
     return false;
+  }
 
   // Execute
   int _retval = _struct->is_same(_struct, CefExtensionCToCpp::Unwrap(that));
@@ -100,8 +106,9 @@ CefRefPtr<CefExtensionHandler> CefExtensionCToCpp::GetHandler() {
   shutdown_checker::AssertNotShutdown();
 
   cef_extension_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_handler))
+  if (CEF_MEMBER_MISSING(_struct, get_handler)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -117,8 +124,9 @@ CefRefPtr<CefRequestContext> CefExtensionCToCpp::GetLoaderContext() {
   shutdown_checker::AssertNotShutdown();
 
   cef_extension_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_loader_context))
+  if (CEF_MEMBER_MISSING(_struct, get_loader_context)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -133,8 +141,9 @@ NO_SANITIZE("cfi-icall") bool CefExtensionCToCpp::IsLoaded() {
   shutdown_checker::AssertNotShutdown();
 
   cef_extension_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, is_loaded))
+  if (CEF_MEMBER_MISSING(_struct, is_loaded)) {
     return false;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -149,8 +158,9 @@ NO_SANITIZE("cfi-icall") void CefExtensionCToCpp::Unload() {
   shutdown_checker::AssertNotShutdown();
 
   cef_extension_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, unload))
+  if (CEF_MEMBER_MISSING(_struct, unload)) {
     return;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -172,7 +182,7 @@ template <>
 cef_extension_t*
 CefCToCppRefCounted<CefExtensionCToCpp, CefExtension, cef_extension_t>::
     UnwrapDerived(CefWrapperType type, CefExtension* c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2024 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=3b6b3ef725189debb1dd43db395a111f50dee60c$
+// $hash=4f0dcf2c7edfd89d0e5ac22e391e3c5d899cd575$
 //
 
 #ifndef CEF_INCLUDE_CAPI_VIEWS_CEF_PANEL_DELEGATE_CAPI_H_
@@ -47,13 +47,13 @@ extern "C" {
 #endif
 
 ///
-// Implement this structure to handle Panel events. The functions of this
-// structure will be called on the browser process UI thread unless otherwise
-// indicated.
+/// Implement this structure to handle Panel events. The functions of this
+/// structure will be called on the browser process UI thread unless otherwise
+/// indicated.
 ///
 typedef struct _cef_panel_delegate_t {
   ///
-  // Base structure.
+  /// Base structure.
   ///
   cef_view_delegate_t base;
 } cef_panel_delegate_t;

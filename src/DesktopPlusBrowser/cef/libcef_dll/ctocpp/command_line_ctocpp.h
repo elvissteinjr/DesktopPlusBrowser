@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=6dffc109a4a5bdc10bda0a03950f1a8b81f964b7$
+// $hash=9640cfd33eee4b9298e2c2c9a34c6e3b4dbf7070$
 //
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_COMMAND_LINE_CTOCPP_H_
@@ -21,6 +21,7 @@
 #endif
 
 #include <vector>
+
 #include "include/capi/cef_command_line_capi.h"
 #include "include/cef_command_line.h"
 #include "libcef_dll/ctocpp/ctocpp_ref_counted.h"

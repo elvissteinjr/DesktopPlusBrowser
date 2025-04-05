@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=de83ca0067722af09407abc0b7723a8d91d083ad$
+// $hash=0a23bebb8f6ce5b0ab5611d5f29f9ce755f56d77$
 //
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_CONTEXT_MENU_PARAMS_CTOCPP_H_
@@ -21,6 +21,7 @@
 #endif
 
 #include <vector>
+
 #include "include/capi/cef_context_menu_handler_capi.h"
 #include "include/cef_context_menu_handler.h"
 #include "libcef_dll/ctocpp/ctocpp_ref_counted.h"

@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=53febc1355422739c9de942f67f52fb4de462571$
+// $hash=489fa0cfe92ff9ca22430794766344151175e27b$
 //
 
 #include "libcef_dll/cpptoc/drag_handler_cpptoc.h"
+
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
 #include "libcef_dll/ctocpp/drag_data_ctocpp.h"
 #include "libcef_dll/ctocpp/frame_ctocpp.h"
@@ -31,16 +32,19 @@ int CEF_CALLBACK drag_handler_on_drag_enter(struct _cef_drag_handler_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return 0;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return 0;
+  }
   // Verify param: dragData; type: refptr_diff
   DCHECK(dragData);
-  if (!dragData)
+  if (!dragData) {
     return 0;
+  }
 
   // Execute
   bool _retval = CefDragHandlerCppToC::Get(self)->OnDragEnter(
@@ -61,20 +65,24 @@ void CEF_CALLBACK drag_handler_on_draggable_regions_changed(
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return;
+  }
   // Verify param: frame; type: refptr_diff
   DCHECK(frame);
-  if (!frame)
+  if (!frame) {
     return;
+  }
   // Verify param: regions; type: simple_vec_byref_const
   DCHECK(regionsCount == 0 || regions);
-  if (regionsCount > 0 && !regions)
+  if (regionsCount > 0 && !regions) {
     return;
+  }
 
   // Translate param: regions; type: simple_vec_byref_const
   std::vector<CefDraggableRegion> regionsList;
@@ -111,7 +119,7 @@ template <>
 CefRefPtr<CefDragHandler>
 CefCppToCRefCounted<CefDragHandlerCppToC, CefDragHandler, cef_drag_handler_t>::
     UnwrapDerived(CefWrapperType type, cef_drag_handler_t* s) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=40ce0ebcedcd5995a5a3147049e5b34c016b8519$
+// $hash=6d6b2239e3e28cbe4950ee5f228291c8465aeaa7$
 //
 
 #include "libcef_dll/ctocpp/views/box_layout_ctocpp.h"
+
 #include "libcef_dll/ctocpp/views/fill_layout_ctocpp.h"
 #include "libcef_dll/ctocpp/views/view_ctocpp.h"
 #include "libcef_dll/shutdown_checker.h"
@@ -24,15 +25,17 @@ void CefBoxLayoutCToCpp::SetFlexForView(CefRefPtr<CefView> view, int flex) {
   shutdown_checker::AssertNotShutdown();
 
   cef_box_layout_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, set_flex_for_view))
+  if (CEF_MEMBER_MISSING(_struct, set_flex_for_view)) {
     return;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   // Verify param: view; type: refptr_same
   DCHECK(view.get());
-  if (!view.get())
+  if (!view.get()) {
     return;
+  }
 
   // Execute
   _struct->set_flex_for_view(_struct, CefViewCToCpp::Unwrap(view), flex);
@@ -43,15 +46,17 @@ void CefBoxLayoutCToCpp::ClearFlexForView(CefRefPtr<CefView> view) {
   shutdown_checker::AssertNotShutdown();
 
   cef_box_layout_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, clear_flex_for_view))
+  if (CEF_MEMBER_MISSING(_struct, clear_flex_for_view)) {
     return;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   // Verify param: view; type: refptr_same
   DCHECK(view.get());
-  if (!view.get())
+  if (!view.get()) {
     return;
+  }
 
   // Execute
   _struct->clear_flex_for_view(_struct, CefViewCToCpp::Unwrap(view));
@@ -62,8 +67,9 @@ CefRefPtr<CefBoxLayout> CefBoxLayoutCToCpp::AsBoxLayout() {
   shutdown_checker::AssertNotShutdown();
 
   cef_layout_t* _struct = reinterpret_cast<cef_layout_t*>(GetStruct());
-  if (CEF_MEMBER_MISSING(_struct, as_box_layout))
+  if (CEF_MEMBER_MISSING(_struct, as_box_layout)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -79,8 +85,9 @@ CefRefPtr<CefFillLayout> CefBoxLayoutCToCpp::AsFillLayout() {
   shutdown_checker::AssertNotShutdown();
 
   cef_layout_t* _struct = reinterpret_cast<cef_layout_t*>(GetStruct());
-  if (CEF_MEMBER_MISSING(_struct, as_fill_layout))
+  if (CEF_MEMBER_MISSING(_struct, as_fill_layout)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -95,8 +102,9 @@ NO_SANITIZE("cfi-icall") bool CefBoxLayoutCToCpp::IsValid() {
   shutdown_checker::AssertNotShutdown();
 
   cef_layout_t* _struct = reinterpret_cast<cef_layout_t*>(GetStruct());
-  if (CEF_MEMBER_MISSING(_struct, is_valid))
+  if (CEF_MEMBER_MISSING(_struct, is_valid)) {
     return false;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -121,7 +129,7 @@ template <>
 cef_box_layout_t*
 CefCToCppRefCounted<CefBoxLayoutCToCpp, CefBoxLayout, cef_box_layout_t>::
     UnwrapDerived(CefWrapperType type, CefBoxLayout* c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

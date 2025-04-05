@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=89f651178065dbc03e70e763085bf9125dda6640$
+// $hash=f310399ebf0026717b1d733a34dd51b90623c452$
 //
 
 #include "libcef_dll/cpptoc/download_handler_cpptoc.h"
+
 #include "libcef_dll/ctocpp/before_download_callback_ctocpp.h"
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
 #include "libcef_dll/ctocpp/download_item_callback_ctocpp.h"
@@ -33,20 +34,24 @@ download_handler_can_download(struct _cef_download_handler_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return 0;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return 0;
+  }
   // Verify param: url; type: string_byref_const
   DCHECK(url);
-  if (!url)
+  if (!url) {
     return 0;
+  }
   // Verify param: request_method; type: string_byref_const
   DCHECK(request_method);
-  if (!request_method)
+  if (!request_method) {
     return 0;
+  }
 
   // Execute
   bool _retval = CefDownloadHandlerCppToC::Get(self)->CanDownload(
@@ -57,7 +62,7 @@ download_handler_can_download(struct _cef_download_handler_t* self,
   return _retval;
 }
 
-void CEF_CALLBACK
+int CEF_CALLBACK
 download_handler_on_before_download(struct _cef_download_handler_t* self,
                                     cef_browser_t* browser,
                                     struct _cef_download_item_t* download_item,
@@ -68,30 +73,38 @@ download_handler_on_before_download(struct _cef_download_handler_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
-    return;
+  if (!self) {
+    return 0;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
-    return;
+  if (!browser) {
+    return 0;
+  }
   // Verify param: download_item; type: refptr_diff
   DCHECK(download_item);
-  if (!download_item)
-    return;
+  if (!download_item) {
+    return 0;
+  }
   // Verify param: suggested_name; type: string_byref_const
   DCHECK(suggested_name);
-  if (!suggested_name)
-    return;
+  if (!suggested_name) {
+    return 0;
+  }
   // Verify param: callback; type: refptr_diff
   DCHECK(callback);
-  if (!callback)
-    return;
+  if (!callback) {
+    return 0;
+  }
 
   // Execute
-  CefDownloadHandlerCppToC::Get(self)->OnBeforeDownload(
+  bool _retval = CefDownloadHandlerCppToC::Get(self)->OnBeforeDownload(
       CefBrowserCToCpp::Wrap(browser),
       CefDownloadItemCToCpp::Wrap(download_item), CefString(suggested_name),
       CefBeforeDownloadCallbackCToCpp::Wrap(callback));
+
+  // Return type: bool
+  return _retval;
 }
 
 void CEF_CALLBACK
@@ -104,20 +117,24 @@ download_handler_on_download_updated(struct _cef_download_handler_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
-  if (!browser)
+  if (!browser) {
     return;
+  }
   // Verify param: download_item; type: refptr_diff
   DCHECK(download_item);
-  if (!download_item)
+  if (!download_item) {
     return;
+  }
   // Verify param: callback; type: refptr_diff
   DCHECK(callback);
-  if (!callback)
+  if (!callback) {
     return;
+  }
 
   // Execute
   CefDownloadHandlerCppToC::Get(self)->OnDownloadUpdated(
@@ -148,7 +165,7 @@ CefRefPtr<CefDownloadHandler> CefCppToCRefCounted<
     CefDownloadHandler,
     cef_download_handler_t>::UnwrapDerived(CefWrapperType type,
                                            cef_download_handler_t* s) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

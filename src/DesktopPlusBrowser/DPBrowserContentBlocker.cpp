@@ -18,7 +18,7 @@ void DPBrowserContentBlocker::ReloadEngines()
     CefString exe_dir;
     CefGetPath(PK_DIR_EXE, exe_dir);
 
-    std::wstring wpath = exe_dir.c_str();
+    std::wstring wpath = exe_dir;
     wpath += L"/content_block/";
 
     WIN32_FIND_DATA find_data;

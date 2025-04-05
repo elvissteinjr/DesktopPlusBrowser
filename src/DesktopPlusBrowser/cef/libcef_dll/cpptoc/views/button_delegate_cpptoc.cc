@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=4e776c8db93f07efd47e80fe380071539e94ec81$
+// $hash=0e5cf49bf903204aa1241520c8acf1cb5767da65$
 //
 
 #include "libcef_dll/cpptoc/views/button_delegate_cpptoc.h"
+
 #include "libcef_dll/cpptoc/views/menu_button_delegate_cpptoc.h"
 #include "libcef_dll/ctocpp/views/button_ctocpp.h"
 #include "libcef_dll/ctocpp/views/view_ctocpp.h"
@@ -30,12 +31,14 @@ button_delegate_on_button_pressed(struct _cef_button_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: button; type: refptr_diff
   DCHECK(button);
-  if (!button)
+  if (!button) {
     return;
+  }
 
   // Execute
   CefButtonDelegateCppToC::Get(self)->OnButtonPressed(
@@ -50,12 +53,14 @@ button_delegate_on_button_state_changed(struct _cef_button_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: button; type: refptr_diff
   DCHECK(button);
-  if (!button)
+  if (!button) {
     return;
+  }
 
   // Execute
   CefButtonDelegateCppToC::Get(self)->OnButtonStateChanged(
@@ -70,12 +75,14 @@ button_delegate_get_preferred_size(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return CefSize();
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return CefSize();
+  }
 
   // Execute
   cef_size_t _retval = CefButtonDelegateCppToC::Get(
@@ -94,12 +101,14 @@ button_delegate_get_minimum_size(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return CefSize();
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return CefSize();
+  }
 
   // Execute
   cef_size_t _retval = CefButtonDelegateCppToC::Get(
@@ -118,12 +127,14 @@ button_delegate_get_maximum_size(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return CefSize();
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return CefSize();
+  }
 
   // Execute
   cef_size_t _retval = CefButtonDelegateCppToC::Get(
@@ -143,12 +154,14 @@ button_delegate_get_height_for_width(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return 0;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return 0;
+  }
 
   // Execute
   int _retval = CefButtonDelegateCppToC::Get(
@@ -169,16 +182,19 @@ button_delegate_on_parent_view_changed(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
   // Verify param: parent; type: refptr_diff
   DCHECK(parent);
-  if (!parent)
+  if (!parent) {
     return;
+  }
 
   // Execute
   CefButtonDelegateCppToC::Get(reinterpret_cast<cef_button_delegate_t*>(self))
@@ -196,16 +212,19 @@ button_delegate_on_child_view_changed(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
   // Verify param: child; type: refptr_diff
   DCHECK(child);
-  if (!child)
+  if (!child) {
     return;
+  }
 
   // Execute
   CefButtonDelegateCppToC::Get(reinterpret_cast<cef_button_delegate_t*>(self))
@@ -222,12 +241,14 @@ button_delegate_on_window_changed(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
 
   // Execute
   CefButtonDelegateCppToC::Get(reinterpret_cast<cef_button_delegate_t*>(self))
@@ -243,16 +264,19 @@ button_delegate_on_layout_changed(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
   // Verify param: new_bounds; type: simple_byref_const
   DCHECK(new_bounds);
-  if (!new_bounds)
+  if (!new_bounds) {
     return;
+  }
 
   // Translate param: new_bounds; type: simple_byref_const
   CefRect new_boundsVal = new_bounds ? *new_bounds : CefRect();
@@ -269,12 +293,14 @@ void CEF_CALLBACK button_delegate_on_focus(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
 
   // Execute
   CefButtonDelegateCppToC::Get(reinterpret_cast<cef_button_delegate_t*>(self))
@@ -288,16 +314,40 @@ void CEF_CALLBACK button_delegate_on_blur(struct _cef_view_delegate_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Verify param: view; type: refptr_diff
   DCHECK(view);
-  if (!view)
+  if (!view) {
     return;
+  }
 
   // Execute
   CefButtonDelegateCppToC::Get(reinterpret_cast<cef_button_delegate_t*>(self))
       ->OnBlur(CefViewCToCpp::Wrap(view));
+}
+
+void CEF_CALLBACK
+button_delegate_on_theme_changed(struct _cef_view_delegate_t* self,
+                                 cef_view_t* view) {
+  shutdown_checker::AssertNotShutdown();
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self) {
+    return;
+  }
+  // Verify param: view; type: refptr_diff
+  DCHECK(view);
+  if (!view) {
+    return;
+  }
+
+  // Execute
+  CefButtonDelegateCppToC::Get(reinterpret_cast<cef_button_delegate_t*>(self))
+      ->OnThemeChanged(CefViewCToCpp::Wrap(view));
 }
 
 }  // namespace
@@ -320,6 +370,7 @@ CefButtonDelegateCppToC::CefButtonDelegateCppToC() {
   GetStruct()->base.on_layout_changed = button_delegate_on_layout_changed;
   GetStruct()->base.on_focus = button_delegate_on_focus;
   GetStruct()->base.on_blur = button_delegate_on_blur;
+  GetStruct()->base.on_theme_changed = button_delegate_on_theme_changed;
 }
 
 // DESTRUCTOR - Do not edit by hand.
@@ -338,7 +389,7 @@ CefRefPtr<CefButtonDelegate> CefCppToCRefCounted<
     return CefMenuButtonDelegateCppToC::Unwrap(
         reinterpret_cast<cef_menu_button_delegate_t*>(s));
   }
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

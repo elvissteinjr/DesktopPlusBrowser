@@ -34,7 +34,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
         CefString current_dir;
         CefGetPath(PK_DIR_CURRENT, current_dir);
 
-        std::wstring cache_dir_wstr = current_dir.c_str();
+        std::wstring cache_dir_wstr = current_dir;
         cache_dir_wstr += L"/userdata/";
 
         CefString(&settings.cache_path) = cache_dir_wstr;

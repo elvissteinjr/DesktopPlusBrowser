@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=c7912e34194393590c80fdf47269afbc08a2a9be$
+// $hash=0c9aa4c628bb305301c74720a07145c4d2ef7cde$
 //
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_BROWSER_CTOCPP_H_
@@ -21,6 +21,7 @@
 #endif
 
 #include <vector>
+
 #include "include/capi/cef_browser_capi.h"
 #include "include/capi/cef_client_capi.h"
 #include "include/cef_browser.h"
@@ -52,10 +53,11 @@ class CefBrowserCToCpp
   bool HasDocument() override;
   CefRefPtr<CefFrame> GetMainFrame() override;
   CefRefPtr<CefFrame> GetFocusedFrame() override;
-  CefRefPtr<CefFrame> GetFrame(int64 identifier) override;
-  CefRefPtr<CefFrame> GetFrame(const CefString& name) override;
+  CefRefPtr<CefFrame> GetFrameByIdentifier(
+      const CefString& identifier) override;
+  CefRefPtr<CefFrame> GetFrameByName(const CefString& name) override;
   size_t GetFrameCount() override;
-  void GetFrameIdentifiers(std::vector<int64>& identifiers) override;
+  void GetFrameIdentifiers(std::vector<CefString>& identifiers) override;
   void GetFrameNames(std::vector<CefString>& names) override;
 };
 

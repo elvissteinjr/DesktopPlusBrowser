@@ -42,15 +42,15 @@
 #include "include/cef_stream.h"
 
 ///
-// Thread safe implementation of the CefReadHandler class for reading an
-// in-memory array of bytes.
+/// Thread safe implementation of the CefReadHandler class for reading an
+/// in-memory array of bytes.
 ///
 class CefByteReadHandler : public CefReadHandler {
  public:
   ///
-  // Create a new object for reading an array of bytes. An optional |source|
-  // reference can be kept to keep the underlying data source from being
-  // released while the reader exists.
+  /// Create a new object for reading an array of bytes. An optional |source|
+  /// reference can be kept to keep the underlying data source from being
+  /// released while the reader exists.
   ///
   CefByteReadHandler(const unsigned char* bytes,
                      size_t size,
@@ -60,16 +60,16 @@ class CefByteReadHandler : public CefReadHandler {
   CefByteReadHandler& operator=(const CefByteReadHandler&) = delete;
 
   // CefReadHandler methods.
-  virtual size_t Read(void* ptr, size_t size, size_t n) override;
-  virtual int Seek(int64 offset, int whence) override;
-  virtual int64 Tell() override;
-  virtual int Eof() override;
-  virtual bool MayBlock() override { return false; }
+  size_t Read(void* ptr, size_t size, size_t n) override;
+  int Seek(int64_t offset, int whence) override;
+  int64_t Tell() override;
+  int Eof() override;
+  bool MayBlock() override { return false; }
 
  private:
   const unsigned char* bytes_;
-  int64 size_;
-  int64 offset_;
+  int64_t size_;
+  int64_t offset_ = 0;
   CefRefPtr<CefBaseRefCounted> source_;
 
   base::Lock lock_;

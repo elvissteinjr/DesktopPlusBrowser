@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=bf78c133604e1535633ac8c93ca153bcefe2718d$
+// $hash=4d5c8d1e85098db4ae8eef535d9f8d8f1cde0839$
 //
 
 #include "libcef_dll/ctocpp/v8stack_trace_ctocpp.h"
+
 #include "libcef_dll/ctocpp/v8stack_frame_ctocpp.h"
 #include "libcef_dll/shutdown_checker.h"
 
@@ -37,8 +38,9 @@ NO_SANITIZE("cfi-icall") bool CefV8StackTraceCToCpp::IsValid() {
   shutdown_checker::AssertNotShutdown();
 
   cef_v8stack_trace_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, is_valid))
+  if (CEF_MEMBER_MISSING(_struct, is_valid)) {
     return false;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -53,8 +55,9 @@ NO_SANITIZE("cfi-icall") int CefV8StackTraceCToCpp::GetFrameCount() {
   shutdown_checker::AssertNotShutdown();
 
   cef_v8stack_trace_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_frame_count))
+  if (CEF_MEMBER_MISSING(_struct, get_frame_count)) {
     return 0;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -70,8 +73,9 @@ CefRefPtr<CefV8StackFrame> CefV8StackTraceCToCpp::GetFrame(int index) {
   shutdown_checker::AssertNotShutdown();
 
   cef_v8stack_trace_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_frame))
+  if (CEF_MEMBER_MISSING(_struct, get_frame)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -98,7 +102,7 @@ CefCToCppRefCounted<CefV8StackTraceCToCpp,
                     CefV8StackTrace,
                     cef_v8stack_trace_t>::UnwrapDerived(CefWrapperType type,
                                                         CefV8StackTrace* c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

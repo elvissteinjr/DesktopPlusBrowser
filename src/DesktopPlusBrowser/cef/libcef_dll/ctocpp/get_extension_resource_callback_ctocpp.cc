@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=2747a6d847a7abbc8adcde347308ff7826918884$
+// $hash=a2e2a6947189c20bb2ffb52a8b38c19126065b9c$
 //
 
 #include "libcef_dll/ctocpp/get_extension_resource_callback_ctocpp.h"
+
 #include "libcef_dll/ctocpp/stream_reader_ctocpp.h"
 #include "libcef_dll/shutdown_checker.h"
 
@@ -24,8 +25,9 @@ void CefGetExtensionResourceCallbackCToCpp::Continue(
   shutdown_checker::AssertNotShutdown();
 
   cef_get_extension_resource_callback_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, cont))
+  if (CEF_MEMBER_MISSING(_struct, cont)) {
     return;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -39,8 +41,9 @@ NO_SANITIZE("cfi-icall") void CefGetExtensionResourceCallbackCToCpp::Cancel() {
   shutdown_checker::AssertNotShutdown();
 
   cef_get_extension_resource_callback_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, cancel))
+  if (CEF_MEMBER_MISSING(_struct, cancel)) {
     return;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -66,7 +69,7 @@ CefCToCppRefCounted<CefGetExtensionResourceCallbackCToCpp,
                     CefGetExtensionResourceCallback,
                     cef_get_extension_resource_callback_t>::
     UnwrapDerived(CefWrapperType type, CefGetExtensionResourceCallback* c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

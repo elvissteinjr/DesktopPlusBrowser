@@ -42,17 +42,17 @@
 #include "include/cef_stream.h"
 
 ///
-// Implementation of the CefResourceHandler class for reading from a CefStream.
+/// Implementation of the CefResourceHandler class for reading from a CefStream.
 ///
 class CefStreamResourceHandler : public CefResourceHandler {
  public:
   ///
-  // Create a new object with default response values.
+  /// Create a new object with default response values.
   ///
   CefStreamResourceHandler(const CefString& mime_type,
                            CefRefPtr<CefStreamReader> stream);
   ///
-  // Create a new object with explicit response values.
+  /// Create a new object with explicit response values.
   ///
   CefStreamResourceHandler(int status_code,
                            const CefString& status_text,
@@ -68,7 +68,7 @@ class CefStreamResourceHandler : public CefResourceHandler {
             bool& handle_request,
             CefRefPtr<CefCallback> callback) override;
   void GetResponseHeaders(CefRefPtr<CefResponse> response,
-                          int64& response_length,
+                          int64_t& response_length,
                           CefString& redirectUrl) override;
   bool Read(void* data_out,
             int bytes_to_read,

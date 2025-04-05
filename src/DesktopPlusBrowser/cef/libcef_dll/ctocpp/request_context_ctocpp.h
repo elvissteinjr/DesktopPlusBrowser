@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,7 +9,7 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=693f5845874072abc324f643981531ed08d17b37$
+// $hash=daa5d7e0fa0e6b882ca98d9b4be5e6f5c81ddbde$
 //
 
 #ifndef CEF_LIBCEF_DLL_CTOCPP_REQUEST_CONTEXT_CTOCPP_H_
@@ -21,6 +21,7 @@
 #endif
 
 #include <vector>
+
 #include "include/capi/cef_request_context_capi.h"
 #include "include/capi/cef_request_context_handler_capi.h"
 #include "include/capi/cef_scheme_capi.h"
@@ -52,14 +53,6 @@ class CefRequestContextCToCpp
       const CefString& domain_name,
       CefRefPtr<CefSchemeHandlerFactory> factory) override;
   bool ClearSchemeHandlerFactories() override;
-  bool HasPreference(const CefString& name) override;
-  CefRefPtr<CefValue> GetPreference(const CefString& name) override;
-  CefRefPtr<CefDictionaryValue> GetAllPreferences(
-      bool include_defaults) override;
-  bool CanSetPreference(const CefString& name) override;
-  bool SetPreference(const CefString& name,
-                     CefRefPtr<CefValue> value,
-                     CefString& error) override;
   void ClearCertificateExceptions(
       CefRefPtr<CefCompletionCallback> callback) override;
   void ClearHttpAuthCredentials(
@@ -76,6 +69,37 @@ class CefRequestContextCToCpp
   CefRefPtr<CefExtension> GetExtension(const CefString& extension_id) override;
   CefRefPtr<CefMediaRouter> GetMediaRouter(
       CefRefPtr<CefCompletionCallback> callback) override;
+  CefRefPtr<CefValue> GetWebsiteSetting(
+      const CefString& requesting_url,
+      const CefString& top_level_url,
+      cef_content_setting_types_t content_type) override;
+  void SetWebsiteSetting(const CefString& requesting_url,
+                         const CefString& top_level_url,
+                         cef_content_setting_types_t content_type,
+                         CefRefPtr<CefValue> value) override;
+  cef_content_setting_values_t GetContentSetting(
+      const CefString& requesting_url,
+      const CefString& top_level_url,
+      cef_content_setting_types_t content_type) override;
+  void SetContentSetting(const CefString& requesting_url,
+                         const CefString& top_level_url,
+                         cef_content_setting_types_t content_type,
+                         cef_content_setting_values_t value) override;
+  void SetChromeColorScheme(cef_color_variant_t variant,
+                            cef_color_t user_color) override;
+  cef_color_variant_t GetChromeColorSchemeMode() override;
+  cef_color_t GetChromeColorSchemeColor() override;
+  cef_color_variant_t GetChromeColorSchemeVariant() override;
+
+  // CefPreferenceManager methods.
+  bool HasPreference(const CefString& name) override;
+  CefRefPtr<CefValue> GetPreference(const CefString& name) override;
+  CefRefPtr<CefDictionaryValue> GetAllPreferences(
+      bool include_defaults) override;
+  bool CanSetPreference(const CefString& name) override;
+  bool SetPreference(const CefString& name,
+                     CefRefPtr<CefValue> value,
+                     CefString& error) override;
 };
 
 #endif  // CEF_LIBCEF_DLL_CTOCPP_REQUEST_CONTEXT_CTOCPP_H_

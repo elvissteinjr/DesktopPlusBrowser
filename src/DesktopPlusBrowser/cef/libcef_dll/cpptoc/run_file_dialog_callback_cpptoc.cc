@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=15fb714ee545d6ea2057ab82aec380dc25739199$
+// $hash=894fb10f707d9b251266123da81e11c9bbb7581b$
 //
 
 #include "libcef_dll/cpptoc/run_file_dialog_callback_cpptoc.h"
+
 #include "libcef_dll/shutdown_checker.h"
 #include "libcef_dll/transfer_util.h"
 
@@ -28,8 +29,9 @@ void CEF_CALLBACK run_file_dialog_callback_on_file_dialog_dismissed(
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
   // Unverified params: file_paths
 
   // Translate param: file_paths; type: string_vec_byref_const
@@ -62,7 +64,7 @@ CefCppToCRefCounted<CefRunFileDialogCallbackCppToC,
                     CefRunFileDialogCallback,
                     cef_run_file_dialog_callback_t>::
     UnwrapDerived(CefWrapperType type, cef_run_file_dialog_callback_t* s) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=e32b4745b887e33f589cb04e8b46a7317686e4c2$
+// $hash=5a26f2bf1cc72b53b999645e9cef73b2f6483027$
 //
 
 #include "libcef_dll/ctocpp/stream_writer_ctocpp.h"
+
 #include "libcef_dll/cpptoc/write_handler_cpptoc.h"
 #include "libcef_dll/shutdown_checker.h"
 
@@ -27,8 +28,9 @@ CefRefPtr<CefStreamWriter> CefStreamWriter::CreateForFile(
 
   // Verify param: fileName; type: string_byref_const
   DCHECK(!fileName.empty());
-  if (fileName.empty())
+  if (fileName.empty()) {
     return nullptr;
+  }
 
   // Execute
   cef_stream_writer_t* _retval =
@@ -47,8 +49,9 @@ CefRefPtr<CefStreamWriter> CefStreamWriter::CreateForHandler(
 
   // Verify param: handler; type: refptr_diff
   DCHECK(handler.get());
-  if (!handler.get())
+  if (!handler.get()) {
     return nullptr;
+  }
 
   // Execute
   cef_stream_writer_t* _retval = cef_stream_writer_create_for_handler(
@@ -65,15 +68,17 @@ size_t CefStreamWriterCToCpp::Write(const void* ptr, size_t size, size_t n) {
   shutdown_checker::AssertNotShutdown();
 
   cef_stream_writer_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, write))
+  if (CEF_MEMBER_MISSING(_struct, write)) {
     return 0;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   // Verify param: ptr; type: simple_byaddr
   DCHECK(ptr);
-  if (!ptr)
+  if (!ptr) {
     return 0;
+  }
 
   // Execute
   size_t _retval = _struct->write(_struct, ptr, size, n);
@@ -83,12 +88,13 @@ size_t CefStreamWriterCToCpp::Write(const void* ptr, size_t size, size_t n) {
 }
 
 NO_SANITIZE("cfi-icall")
-int CefStreamWriterCToCpp::Seek(int64 offset, int whence) {
+int CefStreamWriterCToCpp::Seek(int64_t offset, int whence) {
   shutdown_checker::AssertNotShutdown();
 
   cef_stream_writer_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, seek))
+  if (CEF_MEMBER_MISSING(_struct, seek)) {
     return 0;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -99,17 +105,18 @@ int CefStreamWriterCToCpp::Seek(int64 offset, int whence) {
   return _retval;
 }
 
-NO_SANITIZE("cfi-icall") int64 CefStreamWriterCToCpp::Tell() {
+NO_SANITIZE("cfi-icall") int64_t CefStreamWriterCToCpp::Tell() {
   shutdown_checker::AssertNotShutdown();
 
   cef_stream_writer_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, tell))
+  if (CEF_MEMBER_MISSING(_struct, tell)) {
     return 0;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   // Execute
-  int64 _retval = _struct->tell(_struct);
+  int64_t _retval = _struct->tell(_struct);
 
   // Return type: simple
   return _retval;
@@ -119,8 +126,9 @@ NO_SANITIZE("cfi-icall") int CefStreamWriterCToCpp::Flush() {
   shutdown_checker::AssertNotShutdown();
 
   cef_stream_writer_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, flush))
+  if (CEF_MEMBER_MISSING(_struct, flush)) {
     return 0;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -135,8 +143,9 @@ NO_SANITIZE("cfi-icall") bool CefStreamWriterCToCpp::MayBlock() {
   shutdown_checker::AssertNotShutdown();
 
   cef_stream_writer_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, may_block))
+  if (CEF_MEMBER_MISSING(_struct, may_block)) {
     return false;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -163,7 +172,7 @@ CefCToCppRefCounted<CefStreamWriterCToCpp,
                     CefStreamWriter,
                     cef_stream_writer_t>::UnwrapDerived(CefWrapperType type,
                                                         CefStreamWriter* c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

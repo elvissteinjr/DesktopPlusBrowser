@@ -45,11 +45,9 @@
 #include "include/cef_browser.h"
 #include "include/cef_drag_data.h"
 
-#define CEF_ON_ACCELERATED_PAINT2 1
-
 ///
-// Implement this interface to handle events when window rendering is disabled.
-// The methods of this class will be called on the UI thread.
+/// Implement this interface to handle events when window rendering is disabled.
+/// The methods of this class will be called on the UI thread.
 ///
 /*--cef(source=client)--*/
 class CefRenderHandler : public virtual CefBaseRefCounted {
@@ -61,8 +59,8 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
   typedef cef_text_input_mode_t TextInputMode;
 
   ///
-  // Return the handler for accessibility notifications. If no handler is
-  // provided the default implementation will be used.
+  /// Return the handler for accessibility notifications. If no handler is
+  /// provided the default implementation will be used.
   ///
   /*--cef()--*/
   virtual CefRefPtr<CefAccessibilityHandler> GetAccessibilityHandler() {
@@ -70,9 +68,9 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
   }
 
   ///
-  // Called to retrieve the root window rectangle in screen DIP coordinates.
-  // Return true if the rectangle was provided. If this method returns false the
-  // rectangle from GetViewRect will be used.
+  /// Called to retrieve the root window rectangle in screen DIP coordinates.
+  /// Return true if the rectangle was provided. If this method returns false
+  /// the rectangle from GetViewRect will be used.
   ///
   /*--cef()--*/
   virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
@@ -80,17 +78,17 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
   }
 
   ///
-  // Called to retrieve the view rectangle in screen DIP coordinates. This
-  // method must always provide a non-empty rectangle.
+  /// Called to retrieve the view rectangle in screen DIP coordinates. This
+  /// method must always provide a non-empty rectangle.
   ///
   /*--cef()--*/
   virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) = 0;
 
   ///
-  // Called to retrieve the translation from view DIP coordinates to screen
-  // coordinates. Windows/Linux should provide screen device (pixel) coordinates
-  // and MacOS should provide screen DIP coordinates. Return true if the
-  // requested coordinates were provided.
+  /// Called to retrieve the translation from view DIP coordinates to screen
+  /// coordinates. Windows/Linux should provide screen device (pixel)
+  /// coordinates and MacOS should provide screen DIP coordinates. Return true
+  /// if the requested coordinates were provided.
   ///
   /*--cef()--*/
   virtual bool GetScreenPoint(CefRefPtr<CefBrowser> browser,
@@ -102,13 +100,13 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
   }
 
   ///
-  // Called to allow the client to fill in the CefScreenInfo object with
-  // appropriate values. Return true if the |screen_info| structure has been
-  // modified.
-  //
-  // If the screen info rectangle is left empty the rectangle from GetViewRect
-  // will be used. If the rectangle is still empty or invalid popups may not be
-  // drawn correctly.
+  /// Called to allow the client to fill in the CefScreenInfo object with
+  /// appropriate values. Return true if the |screen_info| structure has been
+  /// modified.
+  ///
+  /// If the screen info rectangle is left empty the rectangle from GetViewRect
+  /// will be used. If the rectangle is still empty or invalid popups may not be
+  /// drawn correctly.
   ///
   /*--cef()--*/
   virtual bool GetScreenInfo(CefRefPtr<CefBrowser> browser,
@@ -117,30 +115,30 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
   }
 
   ///
-  // Called when the browser wants to show or hide the popup widget. The popup
-  // should be shown if |show| is true and hidden if |show| is false.
+  /// Called when the browser wants to show or hide the popup widget. The popup
+  /// should be shown if |show| is true and hidden if |show| is false.
   ///
   /*--cef()--*/
   virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {}
 
   ///
-  // Called when the browser wants to move or resize the popup widget. |rect|
-  // contains the new location and size in view coordinates.
+  /// Called when the browser wants to move or resize the popup widget. |rect|
+  /// contains the new location and size in view coordinates.
   ///
   /*--cef()--*/
   virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) {
   }
 
   ///
-  // Called when an element should be painted. Pixel values passed to this
-  // method are scaled relative to view coordinates based on the value of
-  // CefScreenInfo.device_scale_factor returned from GetScreenInfo. |type|
-  // indicates whether the element is the view or the popup widget. |buffer|
-  // contains the pixel data for the whole image. |dirtyRects| contains the set
-  // of rectangles in pixel coordinates that need to be repainted. |buffer| will
-  // be |width|*|height|*4 bytes in size and represents a BGRA image with an
-  // upper-left origin. This method is only called when
-  // CefWindowInfo::shared_texture_enabled is set to false.
+  /// Called when an element should be painted. Pixel values passed to this
+  /// method are scaled relative to view coordinates based on the value of
+  /// CefScreenInfo.device_scale_factor returned from GetScreenInfo. |type|
+  /// indicates whether the element is the view or the popup widget. |buffer|
+  /// contains the pixel data for the whole image. |dirtyRects| contains the set
+  /// of rectangles in pixel coordinates that need to be repainted. |buffer|
+  /// will be |width|*|height|*4 bytes in size and represents a BGRA image with
+  /// an upper-left origin. This method is only called when
+  /// CefWindowInfo::shared_texture_enabled is set to false.
   ///
   /*--cef()--*/
   virtual void OnPaint(CefRefPtr<CefBrowser> browser,
@@ -151,64 +149,60 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
                        int height) = 0;
 
   ///
-  // Called when an element has been rendered to the shared texture handle.
-  // |type| indicates whether the element is the view or the popup widget.
-  // |dirtyRects| contains the set of rectangles in pixel coordinates that need
-// to be repainted. |shared_handle| is an OS specific type defined below. This
-  // function is only called when cef_window_tInfo::shared_texture_enabled is
-  // set to true (1), and is currently only supported on Windows and Mac.
-  //
-  // Internally, there is a small queue of textures being sent round-robbin via
-  // this call - clients may hold on to a texture reference until the next time
-  // OnAcceleratedPaint is called, at which time the old texture must be
-  // released. If a client needs the reference longer, it must be copied. It may
-  // be assumed that every call to OnAcceleratedPaint is a different texture
-  // handle than the immediately previous call.
-  //
-  // On Windows: |shared_handle| is the handle for a D3D11 Texture2D that can be
-  // accessed via ID3D11Device1 using the OpenSharedResource1 function. The
-  // texture was created with the flags: D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
-  // D3D11_RESOURCE_MISC_SHARED_KEYED_MUTEX.  Clients must acquire the DXGI
-  // keyed mutex via IDXGIKeyedMutex::AcquireSync with a value of 1, and release
-  // it when finished with a value of 0.
-  //
-  // On Mac: |shared_handle| is an IOSurface wrapped in a mach_port_t. Clients
-  // can access this by using:
-  //  IOSurfaceLookupFromMachPort((mach_port_t)shared_handle)
-  // and then using CGLTexImageIOSurface2D() to bind it to an OpenGL texture.
-  // Clients will need to use GL_TEXTURE_RECTANGLE and not GL_TEXTURE_2D.
+  /// Called when an element has been rendered to the shared texture handle.
+  /// |type| indicates whether the element is the view or the popup widget.
+  /// |dirtyRects| contains the set of rectangles in pixel coordinates that need
+  /// to be repainted. |info| contains the shared handle; on Windows it is a
+  /// HANDLE to a texture that can be opened with D3D11 OpenSharedResource, on
+  /// macOS it is an IOSurface pointer that can be opened with Metal or OpenGL,
+  /// and on Linux it contains several planes, each with an fd to the underlying
+  /// system native buffer.
+  ///
+  /// The underlying implementation uses a pool to deliver frames. As a result,
+  /// the handle may differ every frame depending on how many frames are
+  /// in-progress. The handle's resource cannot be cached and cannot be accessed
+  /// outside of this callback. It should be reopened each time this callback is
+  /// executed and the contents should be copied to a texture owned by the
+  /// client application. The contents of |info| will be released back to the
+  /// pool after this callback returns.
   ///
   /*--cef()--*/
   virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
                                   PaintElementType type,
                                   const RectList& dirtyRects,
-                                  void* shared_handle) {}
+                                  const CefAcceleratedPaintInfo& info) {}
 
   ///
-  // New implementation by Jim. Doesn't used keyed_mutexes.
-  // There's a bool which signals a new texture.
+  /// Called to retrieve the size of the touch handle for the specified
+  /// |orientation|.
   ///
   /*--cef()--*/
-  virtual void OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser,
-                                   PaintElementType type,
-                                   const RectList& dirtyRects,
-                                   void* shared_handle,
-                                   bool new_texture) {}
+  virtual void GetTouchHandleSize(CefRefPtr<CefBrowser> browser,
+                                  cef_horizontal_alignment_t orientation,
+                                  CefSize& size) {}
 
   ///
-  // Called when the user starts dragging content in the web view. Contextual
-  // information about the dragged content is supplied by |drag_data|.
-  // (|x|, |y|) is the drag start location in screen coordinates.
-  // OS APIs that run a system message loop may be used within the
-  // StartDragging call.
-  //
-  // Return false to abort the drag operation. Don't call any of
-  // CefBrowserHost::DragSource*Ended* methods after returning false.
-  //
-  // Return true to handle the drag operation. Call
-  // CefBrowserHost::DragSourceEndedAt and DragSourceSystemDragEnded either
-  // synchronously or asynchronously to inform the web view that the drag
-  // operation has ended.
+  /// Called when touch handle state is updated. The client is responsible for
+  /// rendering the touch handles.
+  ///
+  /*--cef()--*/
+  virtual void OnTouchHandleStateChanged(CefRefPtr<CefBrowser> browser,
+                                         const CefTouchHandleState& state) {}
+
+  ///
+  /// Called when the user starts dragging content in the web view. Contextual
+  /// information about the dragged content is supplied by |drag_data|.
+  /// (|x|, |y|) is the drag start location in screen coordinates.
+  /// OS APIs that run a system message loop may be used within the
+  /// StartDragging call.
+  ///
+  /// Return false to abort the drag operation. Don't call any of
+  /// CefBrowserHost::DragSource*Ended* methods after returning false.
+  ///
+  /// Return true to handle the drag operation. Call
+  /// CefBrowserHost::DragSourceEndedAt and DragSourceSystemDragEnded either
+  /// synchronously or asynchronously to inform the web view that the drag
+  /// operation has ended.
   ///
   /*--cef()--*/
   virtual bool StartDragging(CefRefPtr<CefBrowser> browser,
@@ -220,16 +214,16 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
   }
 
   ///
-  // Called when the web view wants to update the mouse cursor during a
-  // drag & drop operation. |operation| describes the allowed operation
-  // (none, move, copy, link).
+  /// Called when the web view wants to update the mouse cursor during a
+  /// drag & drop operation. |operation| describes the allowed operation
+  /// (none, move, copy, link).
   ///
   /*--cef()--*/
   virtual void UpdateDragCursor(CefRefPtr<CefBrowser> browser,
                                 DragOperation operation) {}
 
   ///
-  // Called when the scroll offset has changed.
+  /// Called when the scroll offset has changed.
   ///
   /*--cef()--*/
   virtual void OnScrollOffsetChanged(CefRefPtr<CefBrowser> browser,
@@ -237,9 +231,9 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
                                      double y) {}
 
   ///
-  // Called when the IME composition range has changed. |selected_range| is the
-  // range of characters that have been selected. |character_bounds| is the
-  // bounds of each character in view coordinates.
+  /// Called when the IME composition range has changed. |selected_range| is the
+  /// range of characters that have been selected. |character_bounds| is the
+  /// bounds of each character in view coordinates.
   ///
   /*--cef()--*/
   virtual void OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser,
@@ -247,9 +241,9 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
                                             const RectList& character_bounds) {}
 
   ///
-  // Called when text selection has changed for the specified |browser|.
-  // |selected_text| is the currently selected text and |selected_range| is
-  // the character range.
+  /// Called when text selection has changed for the specified |browser|.
+  /// |selected_text| is the currently selected text and |selected_range| is
+  /// the character range.
   ///
   /*--cef(optional_param=selected_text,optional_param=selected_range)--*/
   virtual void OnTextSelectionChanged(CefRefPtr<CefBrowser> browser,
@@ -257,10 +251,10 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
                                       const CefRange& selected_range) {}
 
   ///
-  // Called when an on-screen keyboard should be shown or hidden for the
-  // specified |browser|. |input_mode| specifies what kind of keyboard
-  // should be opened. If |input_mode| is CEF_TEXT_INPUT_MODE_NONE, any
-  // existing keyboard for this browser should be hidden.
+  /// Called when an on-screen keyboard should be shown or hidden for the
+  /// specified |browser|. |input_mode| specifies what kind of keyboard
+  /// should be opened. If |input_mode| is CEF_TEXT_INPUT_MODE_NONE, any
+  /// existing keyboard for this browser should be hidden.
   ///
   /*--cef()--*/
   virtual void OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser,

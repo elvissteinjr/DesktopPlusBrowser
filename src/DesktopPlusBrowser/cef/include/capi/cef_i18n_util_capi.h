@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2024 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,7 +33,7 @@
 // by hand. See the translator.README.txt file in the tools directory for
 // more information.
 //
-// $hash=c063e5f0e0c9fef71bdb56e7cc3ea775de17a3ea$
+// $hash=990e80ab5ae04298e6b70cbc0a67115825563251$
 //
 
 #ifndef CEF_INCLUDE_CAPI_CEF_I18N_UTIL_CAPI_H_
@@ -47,7 +47,7 @@ extern "C" {
 #endif
 
 ///
-// Returns true (1) if the application text direction is right-to-left.
+/// Returns true (1) if the application text direction is right-to-left.
 ///
 CEF_EXPORT int cef_is_rtl(void);
 

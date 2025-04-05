@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=a62aa669321b0f86ea3508ce31ea5b1a0bc3f9b5$
+// $hash=5d6ff6a00d9b85cef14d7075c608da74c5e7d9f3$
 //
 
 #include "libcef_dll/ctocpp/resource_bundle_ctocpp.h"
+
 #include "libcef_dll/ctocpp/binary_value_ctocpp.h"
 
 // STATIC METHODS - Body may be edited by hand.
@@ -33,8 +34,9 @@ CefRefPtr<CefResourceBundle> CefResourceBundle::GetGlobal() {
 NO_SANITIZE("cfi-icall")
 CefString CefResourceBundleCToCpp::GetLocalizedString(int string_id) {
   cef_resource_bundle_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_localized_string))
+  if (CEF_MEMBER_MISSING(_struct, get_localized_string)) {
     return CefString();
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -52,8 +54,9 @@ NO_SANITIZE("cfi-icall")
 CefRefPtr<CefBinaryValue> CefResourceBundleCToCpp::GetDataResource(
     int resource_id) {
   cef_resource_bundle_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_data_resource))
+  if (CEF_MEMBER_MISSING(_struct, get_data_resource)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -70,8 +73,9 @@ CefRefPtr<CefBinaryValue> CefResourceBundleCToCpp::GetDataResourceForScale(
     int resource_id,
     ScaleFactor scale_factor) {
   cef_resource_bundle_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, get_data_resource_for_scale))
+  if (CEF_MEMBER_MISSING(_struct, get_data_resource_for_scale)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -97,7 +101,7 @@ cef_resource_bundle_t* CefCToCppRefCounted<
     CefResourceBundle,
     cef_resource_bundle_t>::UnwrapDerived(CefWrapperType type,
                                           CefResourceBundle* c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

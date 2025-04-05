@@ -28,69 +28,73 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// Weak pointers are pointers to an object that do not affect its lifetime,
-// and which may be invalidated (i.e. reset to nullptr) by the object, or its
-// owner, at any time, most commonly when the object is about to be deleted.
-
-// Weak pointers are useful when an object needs to be accessed safely by one
-// or more objects other than its owner, and those callers can cope with the
-// object vanishing and e.g. tasks posted to it being silently dropped.
-// Reference-counting such an object would complicate the ownership graph and
-// make it harder to reason about the object's lifetime.
-
-// EXAMPLE:
-//
-//  class Controller {
-//   public:
-//    void SpawnWorker() { Worker::StartNew(weak_factory_.GetWeakPtr()); }
-//    void WorkComplete(const Result& result) { ... }
-//   private:
-//    // Member variables should appear before the WeakPtrFactory, to ensure
-//    // that any WeakPtrs to Controller are invalidated before its members
-//    // variable's destructors are executed, rendering them invalid.
-//    WeakPtrFactory<Controller> weak_factory_{this};
-//  };
-//
-//  class Worker {
-//   public:
-//    static void StartNew(WeakPtr<Controller> controller) {
-//      Worker* worker = new Worker(std::move(controller));
-//      // Kick off asynchronous processing...
-//    }
-//   private:
-//    Worker(WeakPtr<Controller> controller)
-//        : controller_(std::move(controller)) {}
-//    void DidCompleteAsynchronousProcessing(const Result& result) {
-//      if (controller_)
-//        controller_->WorkComplete(result);
-//    }
-//    WeakPtr<Controller> controller_;
-//  };
-//
-// With this implementation a caller may use SpawnWorker() to dispatch multiple
-// Workers and subsequently delete the Controller, without waiting for all
-// Workers to have completed.
-
-// ------------------------- IMPORTANT: Thread-safety -------------------------
-
-// Weak pointers may be passed safely between threads, but must always be
-// dereferenced and invalidated on the same ThreaddTaskRunner otherwise
-// checking the pointer would be racey.
-//
-// To ensure correct use, the first time a WeakPtr issued by a WeakPtrFactory
-// is dereferenced, the factory and its WeakPtrs become bound to the calling
-// thread or current ThreaddWorkerPool token, and cannot be dereferenced or
-// invalidated on any other task runner. Bound WeakPtrs can still be handed
-// off to other task runners, e.g. to use to post tasks back to object on the
-// bound thread.
-//
-// If all WeakPtr objects are destroyed or invalidated then the factory is
-// unbound from the ThreaddTaskRunner/Thread. The WeakPtrFactory may then be
-// destroyed, or new WeakPtr objects may be used, from a different thread.
-//
-// Thus, at least one WeakPtr object must exist and have been dereferenced on
-// the correct thread to enforce that other WeakPtr objects will enforce they
-// are used on the desired thread.
+///
+/// \file
+/// Weak pointers are pointers to an object that do not affect its lifetime.
+/// They may be invalidated (i.e. reset to nullptr) by the object, or its
+/// owner, at any time, most commonly when the object is about to be deleted.
+///
+/// Weak pointers are useful when an object needs to be accessed safely by one
+/// or more objects other than its owner, and those callers can cope with the
+/// object vanishing and e.g. tasks posted to it being silently dropped.
+/// Reference-counting such an object would complicate the ownership graph and
+/// make it harder to reason about the object's lifetime.
+///
+/// EXAMPLE:
+///
+/// <pre>
+///  class Controller {
+///   public:
+///    void SpawnWorker() { Worker::StartNew(weak_factory_.GetWeakPtr()); }
+///    void WorkComplete(const Result& result) { ... }
+///   private:
+///    // Member variables should appear before the WeakPtrFactory, to ensure
+///    // that any WeakPtrs to Controller are invalidated before its members
+///    // variable's destructors are executed, rendering them invalid.
+///    WeakPtrFactory<Controller> weak_factory_{this};
+///  };
+///
+///  class Worker {
+///   public:
+///    static void StartNew(WeakPtr<Controller> controller) {
+///      Worker* worker = new Worker(std::move(controller));
+///      // Kick off asynchronous processing...
+///    }
+///   private:
+///    Worker(WeakPtr<Controller> controller)
+///        : controller_(std::move(controller)) {}
+///    void DidCompleteAsynchronousProcessing(const Result& result) {
+///      if (controller_)
+///        controller_->WorkComplete(result);
+///    }
+///    WeakPtr<Controller> controller_;
+///  };
+/// </pre>
+///
+/// With this implementation a caller may use SpawnWorker() to dispatch multiple
+/// Workers and subsequently delete the Controller, without waiting for all
+/// Workers to have completed.
+///
+/// <b>IMPORTANT: Thread-safety</b>
+///
+/// Weak pointers may be passed safely between threads, but must always be
+/// dereferenced and invalidated on the same ThreaddTaskRunner otherwise
+/// checking the pointer would be racey.
+///
+/// To ensure correct use, the first time a WeakPtr issued by a WeakPtrFactory
+/// is dereferenced, the factory and its WeakPtrs become bound to the calling
+/// thread or current ThreaddWorkerPool token, and cannot be dereferenced or
+/// invalidated on any other task runner. Bound WeakPtrs can still be handed
+/// off to other task runners, e.g. to use to post tasks back to object on the
+/// bound thread.
+///
+/// If all WeakPtr objects are destroyed or invalidated then the factory is
+/// unbound from the ThreadedTaskRunner/Thread. The WeakPtrFactory may then be
+/// destroyed, or new WeakPtr objects may be used, from a different thread.
+///
+/// Thus, at least one WeakPtr object must exist and have been dereferenced on
+/// the correct thread to enforce that other WeakPtr objects will enforce they
+/// are used on the desired thread.
 
 #ifndef CEF_INCLUDE_BASE_CEF_WEAK_PTR_H_
 #define CEF_INCLUDE_BASE_CEF_WEAK_PTR_H_
@@ -119,7 +123,7 @@ class SupportsWeakPtr;
 template <typename T>
 class WeakPtr;
 
-namespace internal {
+namespace cef_internal {
 // These classes are part of the WeakPtr implementation.
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
 
@@ -193,7 +197,7 @@ class WeakPtrBase {
   WeakPtrBase& operator=(WeakPtrBase&& other) noexcept = default;
 
   void reset() {
-    ref_ = internal::WeakReference();
+    ref_ = cef_internal::WeakReference();
     ptr_ = 0;
   }
 
@@ -221,7 +225,7 @@ class SupportsWeakPtrBase {
   template <typename Derived>
   static WeakPtr<Derived> StaticAsWeakPtr(Derived* t) {
     static_assert(
-        std::is_base_of<internal::SupportsWeakPtrBase, Derived>::value,
+        std::is_base_of<cef_internal::SupportsWeakPtrBase, Derived>::value,
         "AsWeakPtr argument must inherit from SupportsWeakPtr");
     return AsWeakPtrImpl<Derived>(t);
   }
@@ -238,32 +242,37 @@ class SupportsWeakPtrBase {
   }
 };
 
-}  // namespace internal
+}  // namespace cef_internal
 
 template <typename T>
 class WeakPtrFactory;
 
-// The WeakPtr class holds a weak reference to |T*|.
-//
-// This class is designed to be used like a normal pointer.  You should always
-// null-test an object of this class before using it or invoking a method that
-// may result in the underlying object being destroyed.
-//
-// EXAMPLE:
-//
-//   class Foo { ... };
-//   WeakPtr<Foo> foo;
-//   if (foo)
-//     foo->method();
-//
+///
+/// The WeakPtr class holds a weak reference to |T*|.
+///
+/// This class is designed to be used like a normal pointer.  You should always
+/// null-test an object of this class before using it or invoking a method that
+/// may result in the underlying object being destroyed.
+///
+/// EXAMPLE:
+///
+/// <pre>
+///   class Foo { ... };
+///   WeakPtr<Foo> foo;
+///   if (foo)
+///     foo->method();
+/// </pre>
+///
 template <typename T>
-class WeakPtr : public internal::WeakPtrBase {
+class WeakPtr : public cef_internal::WeakPtrBase {
  public:
   WeakPtr() = default;
   WeakPtr(std::nullptr_t) {}
 
-  // Allow conversion from U to T provided U "is a" T. Note that this
-  // is separate from the (implicit) copy and move constructors.
+  ///
+  /// Allow conversion from U to T provided U "is a" T. Note that this
+  /// is separate from the (implicit) copy and move constructors.
+  ///
   template <typename U>
   WeakPtr(const WeakPtr<U>& other) : WeakPtrBase(other) {
     // Need to cast from U* to T* to do pointer adjustment in case of multiple
@@ -292,35 +301,43 @@ class WeakPtr : public internal::WeakPtrBase {
     return get();
   }
 
-  // Allow conditionals to test validity, e.g. if (weak_ptr) {...};
+  ///
+  /// Allow conditionals to test validity, e.g. `if (weak_ptr) {...}`;
+  ///
   explicit operator bool() const { return get() != nullptr; }
 
-  // Returns false if the WeakPtr is confirmed to be invalid. This call is safe
-  // to make from any thread, e.g. to optimize away unnecessary work, but
-  // operator bool() must always be called, on the correct thread, before
-  // actually using the pointer.
-  //
-  // Warning: as with any object, this call is only thread-safe if the WeakPtr
-  // instance isn't being re-assigned or reset() racily with this call.
+  ///
+  /// Returns false if the WeakPtr is confirmed to be invalid. This call is safe
+  /// to make from any thread, e.g. to optimize away unnecessary work, but
+  /// operator bool() must always be called, on the correct thread, before
+  /// actually using the pointer.
+  ///
+  /// Warning: as with any object, this call is only thread-safe if the WeakPtr
+  /// instance isn't being re-assigned or reset() racily with this call.
+  ///
   bool MaybeValid() const { return ref_.MaybeValid(); }
 
-  // Returns whether the object |this| points to has been invalidated. This can
-  // be used to distinguish a WeakPtr to a destroyed object from one that has
-  // been explicitly set to null.
+  ///
+  /// Returns whether the object |this| points to has been invalidated. This can
+  /// be used to distinguish a WeakPtr to a destroyed object from one that has
+  /// been explicitly set to null.
+  ///
   bool WasInvalidated() const { return ptr_ && !ref_.IsValid(); }
 
  private:
-  friend class internal::SupportsWeakPtrBase;
+  friend class cef_internal::SupportsWeakPtrBase;
   template <typename U>
   friend class WeakPtr;
   friend class SupportsWeakPtr<T>;
   friend class WeakPtrFactory<T>;
 
-  WeakPtr(const internal::WeakReference& ref, T* ptr)
+  WeakPtr(const cef_internal::WeakReference& ref, T* ptr)
       : WeakPtrBase(ref, reinterpret_cast<uintptr_t>(ptr)) {}
 };
 
-// Allow callers to compare WeakPtrs against nullptr to test validity.
+///
+/// Allow callers to compare WeakPtrs against nullptr to test validity.
+///
 template <class T>
 bool operator!=(const WeakPtr<T>& weak_ptr, std::nullptr_t) {
   return !(weak_ptr == nullptr);
@@ -338,23 +355,26 @@ bool operator==(std::nullptr_t, const WeakPtr<T>& weak_ptr) {
   return weak_ptr == nullptr;
 }
 
-namespace internal {
+namespace cef_internal {
 class WeakPtrFactoryBase {
  protected:
   WeakPtrFactoryBase(uintptr_t ptr);
   ~WeakPtrFactoryBase();
-  internal::WeakReferenceOwner weak_reference_owner_;
+  cef_internal::WeakReferenceOwner weak_reference_owner_;
   uintptr_t ptr_;
 };
-}  // namespace internal
+}  // namespace cef_internal
 
-// A class may be composed of a WeakPtrFactory and thereby
-// control how it exposes weak pointers to itself.  This is helpful if you only
-// need weak pointers within the implementation of a class.  This class is also
-// useful when working with primitive types.  For example, you could have a
-// WeakPtrFactory<bool> that is used to pass around a weak reference to a bool.
+///
+/// A class may be composed of a WeakPtrFactory and thereby control how it
+/// exposes weak pointers to itself.  This is helpful if you only need weak
+/// pointers within the implementation of a class.  This class is also useful
+/// when working with primitive types.  For example, you could have a
+/// WeakPtrFactory<bool> that is used to pass around a weak reference to a
+/// bool.
+///
 template <class T>
-class WeakPtrFactory : public internal::WeakPtrFactoryBase {
+class WeakPtrFactory : public cef_internal::WeakPtrFactoryBase {
  public:
   WeakPtrFactory() = delete;
 
@@ -371,26 +391,32 @@ class WeakPtrFactory : public internal::WeakPtrFactoryBase {
                       reinterpret_cast<T*>(ptr_));
   }
 
-  // Call this method to invalidate all existing weak pointers.
+  ///
+  /// Call this method to invalidate all existing weak pointers.
+  ///
   void InvalidateWeakPtrs() {
     DCHECK(ptr_);
     weak_reference_owner_.Invalidate();
   }
 
-  // Call this method to determine if any weak pointers exist.
+  ///
+  /// Call this method to determine if any weak pointers exist.
+  ///
   bool HasWeakPtrs() const {
     DCHECK(ptr_);
     return weak_reference_owner_.HasRefs();
   }
 };
 
-// A class may extend from SupportsWeakPtr to let others take weak pointers to
-// it. This avoids the class itself implementing boilerplate to dispense weak
-// pointers.  However, since SupportsWeakPtr's destructor won't invalidate
-// weak pointers to the class until after the derived class' members have been
-// destroyed, its use can lead to subtle use-after-destroy issues.
+///
+/// A class may extend from SupportsWeakPtr to let others take weak pointers to
+/// it. This avoids the class itself implementing boilerplate to dispense weak
+/// pointers.  However, since SupportsWeakPtr's destructor won't invalidate
+/// weak pointers to the class until after the derived class' members have been
+/// destroyed, its use can lead to subtle use-after-destroy issues.
+///
 template <class T>
-class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
+class SupportsWeakPtr : public cef_internal::SupportsWeakPtrBase {
  public:
   SupportsWeakPtr() = default;
 
@@ -405,30 +431,35 @@ class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
   ~SupportsWeakPtr() = default;
 
  private:
-  internal::WeakReferenceOwner weak_reference_owner_;
+  cef_internal::WeakReferenceOwner weak_reference_owner_;
 };
 
-// Helper function that uses type deduction to safely return a WeakPtr<Derived>
-// when Derived doesn't directly extend SupportsWeakPtr<Derived>, instead it
-// extends a Base that extends SupportsWeakPtr<Base>.
-//
-// EXAMPLE:
-//   class Base : public base::SupportsWeakPtr<Producer> {};
-//   class Derived : public Base {};
-//
-//   Derived derived;
-//   base::WeakPtr<Derived> ptr = base::AsWeakPtr(&derived);
-//
-// Note that the following doesn't work (invalid type conversion) since
-// Derived::AsWeakPtr() is WeakPtr<Base> SupportsWeakPtr<Base>::AsWeakPtr(),
-// and there's no way to safely cast WeakPtr<Base> to WeakPtr<Derived> at
-// the caller.
-//
-//   base::WeakPtr<Derived> ptr = derived.AsWeakPtr();  // Fails.
-
+///
+/// Helper function that uses type deduction to safely return a WeakPtr<Derived>
+/// when Derived doesn't directly extend SupportsWeakPtr<Derived>, instead it
+/// extends a Base that extends SupportsWeakPtr<Base>.
+///
+/// EXAMPLE:
+/// <pre>
+///   class Base : public base::SupportsWeakPtr<Producer> {};
+///   class Derived : public Base {};
+///
+///   Derived derived;
+///   base::WeakPtr<Derived> ptr = base::AsWeakPtr(&derived);
+/// </pre>
+///
+/// Note that the following doesn't work (invalid type conversion) since
+/// Derived::AsWeakPtr() is WeakPtr<Base> SupportsWeakPtr<Base>::AsWeakPtr(),
+/// and there's no way to safely cast WeakPtr<Base> to WeakPtr<Derived> at
+/// the caller.
+///
+/// <pre>
+///   base::WeakPtr<Derived> ptr = derived.AsWeakPtr();  // Fails.
+/// </pre>
+///
 template <typename Derived>
 WeakPtr<Derived> AsWeakPtr(Derived* t) {
-  return internal::SupportsWeakPtrBase::StaticAsWeakPtr<Derived>(t);
+  return cef_internal::SupportsWeakPtrBase::StaticAsWeakPtr<Derived>(t);
 }
 
 }  // namespace base

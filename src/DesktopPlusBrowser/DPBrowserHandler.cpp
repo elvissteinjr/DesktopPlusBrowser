@@ -146,7 +146,12 @@ void DPBrowserHandler::ScheduledIdleFrameUpdate(CefRefPtr<CefBrowser> browser)
         dirty_rects.push_back(data.ViewportSize);
 
         m_IsPaintCallForIdleFrame = true;
-        OnAcceleratedPaint2(browser, PET_VIEW, dirty_rects, nullptr, false);    //PET_VIEW is given as paint type, but it doesn't matter with new_texture being set to false
+
+        //Create paint info with existing handle so it won't be evaluated as a new texture
+        CefAcceleratedPaintInfo paint_info = {};
+        paint_info.shared_texture_handle = data.SharedTextureLastHandle;
+
+        OnAcceleratedPaint(browser, PET_VIEW, dirty_rects, paint_info);    //PET_VIEW is given as paint type, but it doesn't matter for synthetic paint info
     }
 }
 
@@ -161,7 +166,7 @@ void DPBrowserHandler::TryApplyPendingResolution(vr::VROverlayHandle_t overlay_h
         //Reset the pending viewport and call SetResolution() which will post this task again for later if the browser is still resizing
         int width  = browser_data.ViewportSizePending.width;
         int height = browser_data.ViewportSizePending.height;
-        browser_data.ViewportSizePending.Reset();
+        browser_data.ViewportSizePending = {};   //Reset
 
         DPBrowser_SetResolution(overlay_handle, width, height);
     }
@@ -231,7 +236,7 @@ void DPBrowserHandler::CheckStaleFPSValues()
     }
 }
 
-void DPBrowserHandler::OnAcceleratedPaint2UpdateStagingTexture(DPBrowserData& data)
+void DPBrowserHandler::OnAcceleratedPaintUpdateStagingTexture(DPBrowserData& data)
 {
     D3DManager::Get().GetDeviceContext()->CopyResource(data.StagingTexture.Get(), data.SharedTexture.Get());
 
@@ -244,15 +249,14 @@ void DPBrowserHandler::OnAcceleratedPaint2UpdateStagingTexture(DPBrowserData& da
 
         //Textures are vertically flipped still, so we need to account for that when clipping the copy regions
         UINT dst_x = clamp(data.PopupWidgetRect.x, 0, (int)texture_desc.Width);
-        int idst_y = -(data.PopupWidgetRect.y + data.PopupWidgetRect.height) + data.ViewportSize.height;
-        UINT dst_y = clamp(idst_y, 0, (int)texture_desc.Height);
+        UINT dst_y = clamp(data.PopupWidgetRect.y, 0, (int)texture_desc.Height);
 
         D3D11_BOX box = {0};
         box.left   = (data.PopupWidgetRect.x < 0) ? -data.PopupWidgetRect.x : 0;
-        box.top    = (idst_y < 0)                 ? -idst_y                 : 0;
+        box.top    = (data.PopupWidgetRect.y < 0) ? -data.PopupWidgetRect.y : 0;
         box.front  = 0;
         box.right  = std::min((UINT)data.PopupWidgetRect.width,  texture_desc.Width  -  dst_x);
-        box.bottom = std::min((UINT)data.PopupWidgetRect.height, texture_desc.Height - idst_y);
+        box.bottom = std::min((UINT)data.PopupWidgetRect.height, texture_desc.Height -  dst_y);
         box.back   = 1;
 
         D3DManager::Get().GetDeviceContext()->CopySubresourceRegion((ID3D11Texture2D*)data.StagingTexture.Get(), 0, dst_x, dst_y, 0, 
@@ -321,6 +325,8 @@ void DPBrowserHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefStr
 
 bool DPBrowserHandler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor, cef_cursor_type_t type, const CefCursorInfo& custom_cursor_info)
 {
+    CEF_REQUIRE_UI_THREAD();
+
     if (type != CT_HAND)
         return false;
 
@@ -421,7 +427,7 @@ void DPBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefF
     CefString exe_dir;
     CefGetPath(PK_DIR_EXE, exe_dir);
 
-    std::wstring wpath = exe_dir.c_str();
+    std::wstring wpath = exe_dir;
     wpath += L"/error_page_template.html";
 
     std::ifstream error_page_file(StringConvertFromUTF16(wpath.c_str()));
@@ -462,6 +468,8 @@ void DPBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefF
 
 void DPBrowserHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward)
 {
+    CEF_REQUIRE_UI_THREAD();
+
     DPBrowserData& data = GetBrowserData(*browser);
 
     if (data.Overlays.empty())
@@ -472,6 +480,8 @@ void DPBrowserHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool 
 
 void DPBrowserHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
 {
+    CEF_REQUIRE_UI_THREAD();
+
     rect = GetBrowserData(*browser).ViewportSize;
 }
 
@@ -508,13 +518,10 @@ void DPBrowserHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType t
     return; //Use OnAcceleratedPaint2()
 }
 
-void DPBrowserHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, void* shared_handle)
+void DPBrowserHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const CefAcceleratedPaintInfo& info)
 {
-    return; //Use OnAcceleratedPaint2()
-}
+    CEF_REQUIRE_UI_THREAD();
 
-void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, void* shared_handle, bool new_texture)
-{
     //This function does a bit of trickery to avoid texture flicker. It seems to work, but feels like there could be a better way to work around it
     DPBrowserData& data = GetBrowserData(*browser);
 
@@ -522,34 +529,56 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
         return;
 
     //Use shared handle here
+    const bool new_texture = (type == PET_VIEW) ? (data.SharedTextureLastHandle != info.shared_texture_handle) : (data.PopupWidgetTextureLastHandle != info.shared_texture_handle);
+
+    D3D11_TEXTURE2D_DESC texture_desc_shared = {0};
+
     if (new_texture)
     {
         if (type == PET_VIEW)
         {
             data.SharedTexture.Reset();
-            data.StagingTexture.Reset();
-            data.PopupWidgetTexture.Reset();
 
-            HRESULT res = D3DManager::Get().GetDevice()->OpenSharedResource1(shared_handle, __uuidof(ID3D11Texture2D), (void**)&data.SharedTexture);
+            HRESULT res = D3DManager::Get().GetDevice()->OpenSharedResource1(info.shared_texture_handle, __uuidof(ID3D11Texture2D), (void**)&data.SharedTexture);
 
             if (FAILED(res))
                 return;
 
-            //Set resize state if it's not already set for reason
-            if (!data.IsResizing)
+            data.SharedTextureLastHandle = info.shared_texture_handle;
+            data.SharedTexture->GetDesc(&texture_desc_shared);
+
+            //Texture is sometimes still empty, bail in that case
+            if (texture_desc_shared.Width == 0)
+                return;
+
+            D3D11_TEXTURE2D_DESC texture_desc_staging = {0};
+
+            if (data.StagingTexture != nullptr)
+                data.StagingTexture->GetDesc(&texture_desc_staging);
+
+            if ((data.StagingTexture == nullptr) || (texture_desc_shared.Width != texture_desc_staging.Width) || (texture_desc_shared.Height != texture_desc_staging.Height))
             {
-                data.IsResizing = true;
-                data.ResizingFrameCount = 0;
+                data.StagingTexture.Reset();
+                data.PopupWidgetTexture.Reset();
+
+                //Set resize state if it's not already set for reason
+                if (!data.IsResizing)
+                {
+                    data.IsResizing = true;
+                    data.ResizingFrameCount = 0;
+                }
             }
         }
         else if ((type == PET_POPUP) && (data.IsPopupWidgetVisible))
         {
             data.PopupWidgetTexture.Reset();
 
-            HRESULT res = D3DManager::Get().GetDevice()->OpenSharedResource1(shared_handle, __uuidof(ID3D11Texture2D), (void**)&data.PopupWidgetTexture);
+            HRESULT res = D3DManager::Get().GetDevice()->OpenSharedResource1(info.shared_texture_handle, __uuidof(ID3D11Texture2D), (void**)&data.PopupWidgetTexture);
 
             if (FAILED(res))
                 return;
+
+            data.PopupWidgetTextureLastHandle = info.shared_texture_handle;
         }
         else
         {
@@ -561,13 +590,30 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
         return;
     }
 
+    //If we don't have a staging texture yet/anymore, create it
+    if (data.StagingTexture == nullptr)
+    {
+        if (texture_desc_shared.Width == 0)
+        {
+            data.SharedTexture->GetDesc(&texture_desc_shared);
+        }
+
+        data.StagingTexture = D3DManager::Get().CreateOverlayTexture(texture_desc_shared.Width, texture_desc_shared.Height);
+
+        //Bail if texture creation failed
+        if (data.StagingTexture == nullptr)
+        {
+            return;
+        }
+    }
+
     //Default to partial copy unless the texture is new (usually from resize) or popup widget is visible
     bool do_full_copy = (data.IsFullCopyScheduled || data.IsResizing || data.IsPopupWidgetVisible);
 
     //To avoid flicker after a resize, the first few frames are not actually sent to OpenVR
     if (data.IsResizing)
     {
-        if (data.ResizingFrameCount > 2)
+        if (data.ResizingFrameCount > 5)
         {
             data.IsResizing = false;
 
@@ -582,24 +628,6 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
         data.ResizingFrameCount++;
     }
 
-    //If we don't have a staging texture yet/anymore, create it
-    D3D11_TEXTURE2D_DESC texture_desc = {0};
-    if (data.StagingTexture == nullptr)
-    {
-        if (texture_desc.Width == 0)
-        {
-            data.SharedTexture->GetDesc(&texture_desc);
-        }
-
-        data.StagingTexture = D3DManager::Get().CreateOverlayTexture(texture_desc.Width, texture_desc.Height);
-
-        //Bail if texture creation failed
-        if (data.StagingTexture == nullptr)
-        {
-            return;
-        }
-    }
-
     //Update all overlays using this browser
     vr::VROverlayHandle_t ovrl_shared_source = vr::k_ulOverlayHandleInvalid;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_tex_shared_source;
@@ -607,9 +635,9 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
     {
         if (overlay.IsOverUnder3D)
         {
-            if (texture_desc.Width == 0)
+            if (texture_desc_shared.Width == 0)
             {
-                data.SharedTexture->GetDesc(&texture_desc);
+                data.SharedTexture->GetDesc(&texture_desc_shared);
             }
 
             //Don't set the texture while resizing to avoid flickering
@@ -631,11 +659,8 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
             //Also use staging texture during resizing to avoid flickering
             ID3D11Texture2D* texture_source = ((data.IsResizing) || (data.PopupWidgetTexture != nullptr)) ? data.StagingTexture.Get() : data.SharedTexture.Get();
 
-            //Flip the cropping rectangle vertically to match flipped input texture
-            const int crop_y_flipped = -overlay.OU3D_CropY + data.ViewportSize.height - overlay.OU3D_CropHeight;
-
             overlay.OU3D_Converter.Convert(D3DManager::Get().GetDevice(), D3DManager::Get().GetDeviceContext(), nullptr, nullptr, texture_source,
-                                           texture_desc.Width, texture_desc.Height, overlay.OU3D_CropX, crop_y_flipped, overlay.OU3D_CropWidth, overlay.OU3D_CropHeight);
+                                           texture_desc_shared.Width, texture_desc_shared.Height, overlay.OU3D_CropX, overlay.OU3D_CropY, overlay.OU3D_CropWidth, overlay.OU3D_CropHeight);
 
             //Copy will not be done in time without flushing
             D3DManager::Get().GetDeviceContext()->Flush();
@@ -656,12 +681,12 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
 
                 if (ovrl_shader_rsv != nullptr)
                 {
-                    if (texture_desc.Width == 0)
+                    if (texture_desc_shared.Width == 0)
                     {
-                        data.SharedTexture->GetDesc(&texture_desc);
+                        data.SharedTexture->GetDesc(&texture_desc_shared);
                     }
 
-                    if ( (texture_desc.Width == (UINT)ovrl_size.x) && (texture_desc.Height == (UINT)ovrl_size.y) )
+                    if ( (texture_desc_shared.Width == (UINT)ovrl_size.x) && (texture_desc_shared.Height == (UINT)ovrl_size.y) )
                     {
                         Microsoft::WRL::ComPtr<ID3D11Resource> ovrl_tex;
                         ovrl_shader_rsv->GetResource(&ovrl_tex);
@@ -685,23 +710,23 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
             //Do a full copy if needed, utilizing an additional staging texture
             if (do_full_copy)
             {
-                //Set the overlay texture from the staging texture
-                vr::Texture_t vr_tex = {0};
-                vr_tex.eColorSpace = vr::ColorSpace_Gamma;
-                vr_tex.eType       = vr::TextureType_DirectX;
-                vr_tex.handle      = data.StagingTexture.Get();
-
                 //Don't set the texture while resizing to avoid flickering
                 if (!data.IsResizing)
                 {
+                    //Set the overlay texture from the staging texture
+                    vr::Texture_t vr_tex = {0};
+                    vr_tex.eColorSpace = vr::ColorSpace_Gamma;
+                    vr_tex.eType       = vr::TextureType_DirectX;
+                    vr_tex.handle      = data.StagingTexture.Get();
+
                     //Note how we set the overlay texture before copying the texture. This is because the first frame on a new texture will be blank and we want to avoid flickering
-                    vr::VROverlayEx()->SetOverlayTextureEx(ovrl_shared_source, &vr_tex, {(int)texture_desc.Width, (int)texture_desc.Height});
+                    vr::VROverlayEx()->SetOverlayTextureEx(ovrl_shared_source, &vr_tex, {(int)texture_desc_shared.Width, (int)texture_desc_shared.Height});
 
                     //Use this staging texture as a device reference for the shared overlays
                     staging_tex_shared_source = data.StagingTexture;
                 }
 
-                OnAcceleratedPaint2UpdateStagingTexture(data);
+                OnAcceleratedPaintUpdateStagingTexture(data);
 
                 data.IsFullCopyScheduled = false;
             }
@@ -716,7 +741,7 @@ void DPBrowserHandler::OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintE
     //Happens and matters rarely (basically all OU3D + widget visible) but still handle it
     if ((staging_tex_shared_source == nullptr) && (do_full_copy))
     {
-        OnAcceleratedPaint2UpdateStagingTexture(data);
+        OnAcceleratedPaintUpdateStagingTexture(data);
     }
 
     //Frame counter
@@ -789,9 +814,10 @@ void DPBrowserHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRef
     model->Clear();
 }
 
-void DPBrowserHandler::OnBeforeDownload(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDownloadItem> download_item, const CefString& suggested_name, CefRefPtr<CefBeforeDownloadCallback> callback)
+bool DPBrowserHandler::OnBeforeDownload(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDownloadItem> download_item, const CefString& suggested_name, CefRefPtr<CefBeforeDownloadCallback> callback)
 {
-    //Do nothing
+    //Cancel download
+    return false;
 }
 
 void DPBrowserHandler::OnDownloadUpdated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDownloadItem> download_item, CefRefPtr<CefDownloadItemCallback> callback)
@@ -799,7 +825,7 @@ void DPBrowserHandler::OnDownloadUpdated(CefRefPtr<CefBrowser> browser, CefRefPt
     CEF_REQUIRE_UI_THREAD();
 
     //We don't allow any downloads
-    // 
+    //
     //CEF documentation suggests that downloads would be blocked by default if the callback in OnBeforeDownload() isn't used, but that simply isn't true.
     //In the default case, the download happens quietly and is put in the temp folder... and never deleted. Not nice.
     callback->Cancel();

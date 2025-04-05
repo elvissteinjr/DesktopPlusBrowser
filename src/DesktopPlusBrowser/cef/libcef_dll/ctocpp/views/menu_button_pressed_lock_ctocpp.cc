@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=684914b489c5d322b41d61d46f5d387675da2c30$
+// $hash=722bf985114de475681723f00b7f5be597702670$
 //
 
 #include "libcef_dll/ctocpp/views/menu_button_pressed_lock_ctocpp.h"
+
 #include "libcef_dll/shutdown_checker.h"
 
 // CONSTRUCTOR - Do not edit by hand.
@@ -32,7 +33,7 @@ cef_menu_button_pressed_lock_t* CefCToCppRefCounted<
     cef_menu_button_pressed_lock_t>::UnwrapDerived(CefWrapperType type,
                                                    CefMenuButtonPressedLock*
                                                        c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

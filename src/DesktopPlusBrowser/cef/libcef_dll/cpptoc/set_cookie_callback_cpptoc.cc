@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=99f02c8911b913161cfd3834e19bbdc0ba542409$
+// $hash=6d16b62196087c29f7fcf39818640fce23a90403$
 //
 
 #include "libcef_dll/cpptoc/set_cookie_callback_cpptoc.h"
+
 #include "libcef_dll/shutdown_checker.h"
 
 namespace {
@@ -27,8 +28,9 @@ set_cookie_callback_on_complete(struct _cef_set_cookie_callback_t* self,
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
-  if (!self)
+  if (!self) {
     return;
+  }
 
   // Execute
   CefSetCookieCallbackCppToC::Get(self)->OnComplete(success ? true : false);
@@ -54,7 +56,7 @@ CefRefPtr<CefSetCookieCallback> CefCppToCRefCounted<
     CefSetCookieCallback,
     cef_set_cookie_callback_t>::UnwrapDerived(CefWrapperType type,
                                               cef_set_cookie_callback_t* s) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

@@ -60,6 +60,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -68,11 +69,11 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;_WIN32;UNICODE;_UNICODE;WINVER=0x0601;_WIN32_WINNT=0x601;NOMINMAX;WIN32_LEAN_AND_MEAN;_HAS_EXCEPTIONS=0;PSAPI_VERSION=1;CEF_USE_ATL;_HAS_ITERATOR_DEBUGGING=0;WRAPPING_CEF_SHARED</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;_WIN32;UNICODE;_UNICODE;WINVER=0x0A00;_WIN32_WINNT=0x0A00;NTDDI_VERSION=NTDDI_WIN10_FE;NOMINMAX;WIN32_LEAN_AND_MEAN;_HAS_EXCEPTIONS=0;WRAPPING_CEF_SHARED</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;_WIN32;UNICODE;_UNICODE;WINVER=0x0601;_WIN32_WINNT=0x601;NOMINMAX;WIN32_LEAN_AND_MEAN;_HAS_EXCEPTIONS=0;PSAPI_VERSION=1;CEF_USE_SANDBOX;CEF_USE_ATL;_HAS_ITERATOR_DEBUGGING=0;WRAPPING_CEF_SHARED</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;_WIN32;UNICODE;_UNICODE;WINVER=0x0A00;_WIN32_WINNT=0x0A00;NTDDI_VERSION=NTDDI_WIN10_FE;NOMINMAX;WIN32_LEAN_AND_MEAN;_HAS_EXCEPTIONS=0;WRAPPING_CEF_SHARED</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -96,6 +97,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -105,14 +107,14 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;_WIN32;UNICODE;_UNICODE;WINVER=0x0601;_WIN32_WINNT=0x601;NOMINMAX;WIN32_LEAN_AND_MEAN;_HAS_EXCEPTIONS=0;PSAPI_VERSION=1;CEF_USE_ATL;_NDEBUG;WRAPPING_CEF_SHARED</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;_WIN32;UNICODE;_UNICODE;WINVER=0x0A00;_WIN32_WINNT=0x0A00;NTDDI_VERSION=NTDDI_WIN10_FE;NOMINMAX;WIN32_LEAN_AND_MEAN;_HAS_EXCEPTIONS=0;_NDEBUG;WRAPPING_CEF_SHARED</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;_WIN32;UNICODE;_UNICODE;WINVER=0x0601;_WIN32_WINNT=0x601;NOMINMAX;WIN32_LEAN_AND_MEAN;_HAS_EXCEPTIONS=0;PSAPI_VERSION=1;CEF_USE_SANDBOX;CEF_USE_ATL;_NDEBUG;WRAPPING_CEF_SHARED</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;_WIN32;UNICODE;_UNICODE;WINVER=0x0A00;_WIN32_WINNT=0x0A00;NTDDI_VERSION=NTDDI_WIN10_FE;NOMINMAX;WIN32_LEAN_AND_MEAN;_HAS_EXCEPTIONS=0;_NDEBUG;WRAPPING_CEF_SHARED</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -215,6 +217,8 @@
     <ClInclude Include="..\libcef_dll\cpptoc\navigation_entry_visitor_cpptoc.h" />
     <ClCompile Include="..\libcef_dll\cpptoc\pdf_print_callback_cpptoc.cc" />
     <ClInclude Include="..\libcef_dll\cpptoc\pdf_print_callback_cpptoc.h" />
+    <ClCompile Include="..\libcef_dll\cpptoc\permission_handler_cpptoc.cc" />
+    <ClInclude Include="..\libcef_dll\cpptoc\permission_handler_cpptoc.h" />
     <ClCompile Include="..\libcef_dll\cpptoc\print_handler_cpptoc.cc" />
     <ClInclude Include="..\libcef_dll\cpptoc\print_handler_cpptoc.h" />
     <ClCompile Include="..\libcef_dll\cpptoc\read_handler_cpptoc.cc" />
@@ -261,6 +265,8 @@
     <ClInclude Include="..\libcef_dll\cpptoc\v8interceptor_cpptoc.h" />
     <ClCompile Include="..\libcef_dll\cpptoc\write_handler_cpptoc.cc" />
     <ClInclude Include="..\libcef_dll\cpptoc\write_handler_cpptoc.h" />
+    <ClCompile Include="..\libcef_dll\cpptoc\test\test_server_handler_cpptoc.cc" />
+    <ClInclude Include="..\libcef_dll\cpptoc\test\test_server_handler_cpptoc.h" />
     <ClCompile Include="..\libcef_dll\cpptoc\test\translator_test_ref_ptr_client_child_cpptoc.cc" />
     <ClInclude Include="..\libcef_dll\cpptoc\test\translator_test_ref_ptr_client_child_cpptoc.h" />
     <ClCompile Include="..\libcef_dll\cpptoc\test\translator_test_ref_ptr_client_cpptoc.cc" />
@@ -329,6 +335,8 @@
     <ClInclude Include="..\libcef_dll\ctocpp\jsdialog_callback_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\list_value_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\list_value_ctocpp.h" />
+    <ClCompile Include="..\libcef_dll\ctocpp\media_access_callback_ctocpp.cc" />
+    <ClInclude Include="..\libcef_dll\ctocpp\media_access_callback_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\media_route_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\media_route_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\media_router_ctocpp.cc" />
@@ -341,10 +349,16 @@
     <ClInclude Include="..\libcef_dll\ctocpp\menu_model_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\navigation_entry_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\navigation_entry_ctocpp.h" />
+    <ClCompile Include="..\libcef_dll\ctocpp\permission_prompt_callback_ctocpp.cc" />
+    <ClInclude Include="..\libcef_dll\ctocpp\permission_prompt_callback_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\post_data_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\post_data_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\post_data_element_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\post_data_element_ctocpp.h" />
+    <ClCompile Include="..\libcef_dll\ctocpp\preference_manager_ctocpp.cc" />
+    <ClInclude Include="..\libcef_dll\ctocpp\preference_manager_ctocpp.h" />
+    <ClCompile Include="..\libcef_dll\ctocpp\preference_registrar_ctocpp.cc" />
+    <ClInclude Include="..\libcef_dll\ctocpp\preference_registrar_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\print_dialog_callback_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\print_dialog_callback_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\print_job_callback_ctocpp.cc" />
@@ -369,12 +383,18 @@
     <ClInclude Include="..\libcef_dll\ctocpp\response_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\run_context_menu_callback_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\run_context_menu_callback_ctocpp.h" />
+    <ClCompile Include="..\libcef_dll\ctocpp\run_quick_menu_callback_ctocpp.cc" />
+    <ClInclude Include="..\libcef_dll\ctocpp\run_quick_menu_callback_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\scheme_registrar_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\scheme_registrar_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\select_client_certificate_callback_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\select_client_certificate_callback_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\server_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\server_ctocpp.h" />
+    <ClCompile Include="..\libcef_dll\ctocpp\shared_memory_region_ctocpp.cc" />
+    <ClInclude Include="..\libcef_dll\ctocpp\shared_memory_region_ctocpp.h" />
+    <ClCompile Include="..\libcef_dll\ctocpp\shared_process_message_builder_ctocpp.cc" />
+    <ClInclude Include="..\libcef_dll\ctocpp\shared_process_message_builder_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\sslinfo_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\sslinfo_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\sslstatus_ctocpp.cc" />
@@ -387,6 +407,8 @@
     <ClInclude Include="..\libcef_dll\ctocpp\task_runner_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\thread_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\thread_ctocpp.h" />
+    <ClCompile Include="..\libcef_dll\ctocpp\unresponsive_process_callback_ctocpp.cc" />
+    <ClInclude Include="..\libcef_dll\ctocpp\unresponsive_process_callback_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\urlrequest_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\urlrequest_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\v8context_ctocpp.cc" />
@@ -411,6 +433,10 @@
     <ClInclude Include="..\libcef_dll\ctocpp\xml_reader_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\zip_reader_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\zip_reader_ctocpp.h" />
+    <ClCompile Include="..\libcef_dll\ctocpp\test\test_server_connection_ctocpp.cc" />
+    <ClInclude Include="..\libcef_dll\ctocpp\test\test_server_connection_ctocpp.h" />
+    <ClCompile Include="..\libcef_dll\ctocpp\test\test_server_ctocpp.cc" />
+    <ClInclude Include="..\libcef_dll\ctocpp\test\test_server_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\test\translator_test_ctocpp.cc" />
     <ClInclude Include="..\libcef_dll\ctocpp\test\translator_test_ctocpp.h" />
     <ClCompile Include="..\libcef_dll\ctocpp\test\translator_test_ref_ptr_library_child_child_ctocpp.cc" />
@@ -498,6 +524,8 @@
     <ClInclude Include="..\include\cef_origin_whitelist.h" />
     <ClInclude Include="..\include\cef_parser.h" />
     <ClInclude Include="..\include\cef_path_util.h" />
+    <ClInclude Include="..\include\cef_permission_handler.h" />
+    <ClInclude Include="..\include\cef_preference.h" />
     <ClInclude Include="..\include\cef_print_handler.h" />
     <ClInclude Include="..\include\cef_print_settings.h" />
     <ClInclude Include="..\include\cef_process_message.h" />
@@ -517,6 +545,8 @@
     <ClInclude Include="..\include\cef_response_filter.h" />
     <ClInclude Include="..\include\cef_scheme.h" />
     <ClInclude Include="..\include\cef_server.h" />
+    <ClInclude Include="..\include\cef_shared_memory_region.h" />
+    <ClInclude Include="..\include\cef_shared_process_message_builder.h" />
     <ClInclude Include="..\include\cef_ssl_info.h" />
     <ClInclude Include="..\include\cef_ssl_status.h" />
     <ClInclude Include="..\include\cef_stream.h" />
@@ -524,6 +554,7 @@
     <ClInclude Include="..\include\cef_task.h" />
     <ClInclude Include="..\include\cef_thread.h" />
     <ClInclude Include="..\include\cef_trace.h" />
+    <ClInclude Include="..\include\cef_unresponsive_process_callback.h" />
     <ClInclude Include="..\include\cef_urlrequest.h" />
     <ClInclude Include="..\include\cef_v8.h" />
     <ClInclude Include="..\include\cef_values.h" />
@@ -536,7 +567,6 @@
     <ClInclude Include="..\include\base\cef_atomic_flag.h" />
     <ClInclude Include="..\include\base\cef_atomic_ref_count.h" />
     <ClInclude Include="..\include\base\cef_auto_reset.h" />
-    <ClInclude Include="..\include\base\cef_basictypes.h" />
     <ClInclude Include="..\include\base\cef_bind.h" />
     <ClInclude Include="..\include\base\cef_build.h" />
     <ClInclude Include="..\include\base\cef_callback.h" />
@@ -545,21 +575,20 @@
     <ClInclude Include="..\include\base\cef_callback_list.h" />
     <ClInclude Include="..\include\base\cef_cancelable_callback.h" />
     <ClInclude Include="..\include\base\cef_compiler_specific.h" />
-    <ClInclude Include="..\include\base\cef_cxx17_backports.h" />
     <ClInclude Include="..\include\base\cef_lock.h" />
     <ClInclude Include="..\include\base\cef_logging.h" />
     <ClInclude Include="..\include\base\cef_macros.h" />
     <ClInclude Include="..\include\base\cef_platform_thread.h" />
-    <ClInclude Include="..\include\base\cef_ptr_util.h" />
     <ClInclude Include="..\include\base\cef_ref_counted.h" />
     <ClInclude Include="..\include\base\cef_scoped_refptr.h" />
-    <ClInclude Include="..\include\base\cef_template_util.h" />
     <ClInclude Include="..\include\base\cef_thread_checker.h" />
     <ClInclude Include="..\include\base\cef_trace_event.h" />
     <ClInclude Include="..\include\base\cef_tuple.h" />
     <ClInclude Include="..\include\base\cef_weak_ptr.h" />
     <ClInclude Include="..\include\base\internal\cef_bind_internal.h" />
     <ClInclude Include="..\include\base\internal\cef_callback_internal.h" />
+    <None Include="..\include\base\internal\cef_color_id_macros.inc">
+    </None>
     <ClInclude Include="..\include\base\internal\cef_lock_impl.h" />
     <ClInclude Include="..\include\base\internal\cef_raw_scoped_refptr_mismatch_checker.h" />
     <ClInclude Include="..\include\base\internal\cef_scoped_policy.h" />
@@ -606,6 +635,8 @@
     <ClInclude Include="..\include\capi\cef_origin_whitelist_capi.h" />
     <ClInclude Include="..\include\capi\cef_parser_capi.h" />
     <ClInclude Include="..\include\capi\cef_path_util_capi.h" />
+    <ClInclude Include="..\include\capi\cef_permission_handler_capi.h" />
+    <ClInclude Include="..\include\capi\cef_preference_capi.h" />
     <ClInclude Include="..\include\capi\cef_print_handler_capi.h" />
     <ClInclude Include="..\include\capi\cef_print_settings_capi.h" />
     <ClInclude Include="..\include\capi\cef_process_message_capi.h" />
@@ -625,6 +656,8 @@
     <ClInclude Include="..\include\capi\cef_response_filter_capi.h" />
     <ClInclude Include="..\include\capi\cef_scheme_capi.h" />
     <ClInclude Include="..\include\capi\cef_server_capi.h" />
+    <ClInclude Include="..\include\capi\cef_shared_memory_region_capi.h" />
+    <ClInclude Include="..\include\capi\cef_shared_process_message_builder_capi.h" />
     <ClInclude Include="..\include\capi\cef_ssl_info_capi.h" />
     <ClInclude Include="..\include\capi\cef_ssl_status_capi.h" />
     <ClInclude Include="..\include\capi\cef_stream_capi.h" />
@@ -632,6 +665,7 @@
     <ClInclude Include="..\include\capi\cef_task_capi.h" />
     <ClInclude Include="..\include\capi\cef_thread_capi.h" />
     <ClInclude Include="..\include\capi\cef_trace_capi.h" />
+    <ClInclude Include="..\include\capi\cef_unresponsive_process_callback_capi.h" />
     <ClInclude Include="..\include\capi\cef_urlrequest_capi.h" />
     <ClInclude Include="..\include\capi\cef_v8_capi.h" />
     <ClInclude Include="..\include\capi\cef_values_capi.h" />
@@ -640,6 +674,7 @@
     <ClInclude Include="..\include\capi\cef_xml_reader_capi.h" />
     <ClInclude Include="..\include\capi\cef_zip_reader_capi.h" />
     <ClInclude Include="..\include\capi\test\cef_test_helpers_capi.h" />
+    <ClInclude Include="..\include\capi\test\cef_test_server_capi.h" />
     <ClInclude Include="..\include\capi\test\cef_translator_test_capi.h" />
     <ClInclude Include="..\include\capi\views\cef_box_layout_capi.h" />
     <ClInclude Include="..\include\capi\views\cef_browser_view_capi.h" />
@@ -673,13 +708,19 @@
     <ClInclude Include="..\include\internal\cef_string_wrappers.h" />
     <ClInclude Include="..\include\internal\cef_thread_internal.h" />
     <ClInclude Include="..\include\internal\cef_time.h" />
+    <ClInclude Include="..\include\internal\cef_time_wrappers.h" />
     <ClInclude Include="..\include\internal\cef_trace_event_internal.h" />
     <ClInclude Include="..\include\internal\cef_types.h" />
+    <ClInclude Include="..\include\internal\cef_types_color.h" />
+    <ClInclude Include="..\include\internal\cef_types_content_settings.h" />
     <ClInclude Include="..\include\internal\cef_types_geometry.h" />
+    <ClInclude Include="..\include\internal\cef_types_runtime.h" />
     <ClInclude Include="..\include\internal\cef_types_wrappers.h" />
+    <ClInclude Include="..\include\internal\cef_app_win.h" />
     <ClInclude Include="..\include\internal\cef_types_win.h" />
     <ClInclude Include="..\include\internal\cef_win.h" />
     <ClInclude Include="..\include\test\cef_test_helpers.h" />
+    <ClInclude Include="..\include\test\cef_test_server.h" />
     <ClInclude Include="..\include\test\cef_translator_test.h" />
     <ClInclude Include="..\include\views\cef_box_layout.h" />
     <ClInclude Include="..\include\views\cef_browser_view.h" />
@@ -715,6 +756,8 @@
     <ClCompile Include="..\libcef_dll\wrapper\cef_byte_read_handler.cc" />
     <ClCompile Include="..\libcef_dll\wrapper\cef_closure_task.cc" />
     <ClCompile Include="..\libcef_dll\wrapper\cef_message_router.cc" />
+    <ClCompile Include="..\libcef_dll\wrapper\cef_message_router_utils.cc" />
+    <ClInclude Include="..\libcef_dll\wrapper\cef_message_router_utils.h" />
     <ClCompile Include="..\libcef_dll\wrapper\cef_resource_manager.cc" />
     <ClCompile Include="..\libcef_dll\wrapper\cef_scoped_temp_dir.cc" />
     <ClCompile Include="..\libcef_dll\wrapper\cef_stream_resource_handler.cc" />

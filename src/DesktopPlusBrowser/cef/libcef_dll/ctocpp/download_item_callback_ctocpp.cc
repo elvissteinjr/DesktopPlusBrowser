@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=092e50c318b7d1c933ffb293ff062df17bfbb736$
+// $hash=7045db87f55761534c3d1b32895626a652693c7c$
 //
 
 #include "libcef_dll/ctocpp/download_item_callback_ctocpp.h"
+
 #include "libcef_dll/shutdown_checker.h"
 
 // VIRTUAL METHODS - Body may be edited by hand.
@@ -21,8 +22,9 @@ NO_SANITIZE("cfi-icall") void CefDownloadItemCallbackCToCpp::Cancel() {
   shutdown_checker::AssertNotShutdown();
 
   cef_download_item_callback_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, cancel))
+  if (CEF_MEMBER_MISSING(_struct, cancel)) {
     return;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -34,8 +36,9 @@ NO_SANITIZE("cfi-icall") void CefDownloadItemCallbackCToCpp::Pause() {
   shutdown_checker::AssertNotShutdown();
 
   cef_download_item_callback_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, pause))
+  if (CEF_MEMBER_MISSING(_struct, pause)) {
     return;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -47,8 +50,9 @@ NO_SANITIZE("cfi-icall") void CefDownloadItemCallbackCToCpp::Resume() {
   shutdown_checker::AssertNotShutdown();
 
   cef_download_item_callback_t* _struct = GetStruct();
-  if (CEF_MEMBER_MISSING(_struct, resume))
+  if (CEF_MEMBER_MISSING(_struct, resume)) {
     return;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -72,7 +76,7 @@ cef_download_item_callback_t* CefCToCppRefCounted<
     CefDownloadItemCallback,
     cef_download_item_callback_t>::UnwrapDerived(CefWrapperType type,
                                                  CefDownloadItemCallback* c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

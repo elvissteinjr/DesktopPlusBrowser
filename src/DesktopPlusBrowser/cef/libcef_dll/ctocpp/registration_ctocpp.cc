@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=36f275457b15025ac7b979eca3179cd127f45ffb$
+// $hash=7bdb6e790c82ca3c1197d09073761858db30789a$
 //
 
 #include "libcef_dll/ctocpp/registration_ctocpp.h"
+
 #include "libcef_dll/shutdown_checker.h"
 
 // CONSTRUCTOR - Do not edit by hand.
@@ -31,7 +32,7 @@ CefCToCppRefCounted<CefRegistrationCToCpp,
                     CefRegistration,
                     cef_registration_t>::UnwrapDerived(CefWrapperType type,
                                                        CefRegistration* c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

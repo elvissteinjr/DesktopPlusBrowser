@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Embedded Framework Authors. All rights
+// Copyright (c) 2024 The Chromium Embedded Framework Authors. All rights
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 //
@@ -9,10 +9,11 @@
 // implementations. See the translator.README.txt file in the tools directory
 // for more information.
 //
-// $hash=dafea3abdc32cc7dd8552bbdf5bd2bb32e816c5f$
+// $hash=f79d068708f915cea83ab611330f3ea3caf6c148$
 //
 
 #include "libcef_dll/ctocpp/views/fill_layout_ctocpp.h"
+
 #include "libcef_dll/ctocpp/views/box_layout_ctocpp.h"
 #include "libcef_dll/shutdown_checker.h"
 
@@ -23,8 +24,9 @@ CefRefPtr<CefBoxLayout> CefFillLayoutCToCpp::AsBoxLayout() {
   shutdown_checker::AssertNotShutdown();
 
   cef_layout_t* _struct = reinterpret_cast<cef_layout_t*>(GetStruct());
-  if (CEF_MEMBER_MISSING(_struct, as_box_layout))
+  if (CEF_MEMBER_MISSING(_struct, as_box_layout)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -40,8 +42,9 @@ CefRefPtr<CefFillLayout> CefFillLayoutCToCpp::AsFillLayout() {
   shutdown_checker::AssertNotShutdown();
 
   cef_layout_t* _struct = reinterpret_cast<cef_layout_t*>(GetStruct());
-  if (CEF_MEMBER_MISSING(_struct, as_fill_layout))
+  if (CEF_MEMBER_MISSING(_struct, as_fill_layout)) {
     return nullptr;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -56,8 +59,9 @@ NO_SANITIZE("cfi-icall") bool CefFillLayoutCToCpp::IsValid() {
   shutdown_checker::AssertNotShutdown();
 
   cef_layout_t* _struct = reinterpret_cast<cef_layout_t*>(GetStruct());
-  if (CEF_MEMBER_MISSING(_struct, is_valid))
+  if (CEF_MEMBER_MISSING(_struct, is_valid)) {
     return false;
+  }
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -82,7 +86,7 @@ template <>
 cef_fill_layout_t*
 CefCToCppRefCounted<CefFillLayoutCToCpp, CefFillLayout, cef_fill_layout_t>::
     UnwrapDerived(CefWrapperType type, CefFillLayout* c) {
-  NOTREACHED() << "Unexpected class type: " << type;
+  DCHECK(false) << "Unexpected class type: " << type;
   return nullptr;
 }
 

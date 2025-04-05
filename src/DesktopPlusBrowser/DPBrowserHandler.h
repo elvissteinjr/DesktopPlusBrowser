@@ -34,11 +34,13 @@ struct DPBrowserData
 
     //State
     CefRefPtr<CefBrowser> BrowserPtr;
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> SharedTexture;      //Texture shared by CEF
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> StagingTexture;     //Texture sent to OpenVR
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> PopupWidgetTexture; //Texture shared by CEF, used for popup widgets (i.e. form dropdowns)
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> SharedTexture;                  //Texture shared by CEF
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> StagingTexture;                 //Texture sent to OpenVR
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> PopupWidgetTexture;             //Texture shared by CEF, used for popup widgets (i.e. form dropdowns)
+    cef_shared_texture_handle_t SharedTextureLastHandle = nullptr;          //Last handle sent for main texture (used to detect texture changes)
+    cef_shared_texture_handle_t PopupWidgetTextureLastHandle = nullptr;     //Last handle sent for popup widget
     std::string LastNotifiedURL;
-    std::string ErrorPageSourceURL;                             //URL of the page that caused the current error page, if not empty
+    std::string ErrorPageSourceURL;                                         //URL of the page that caused the current error page, if not empty
     bool IsFullCopyScheduled = true;
     bool IsResizing = false;
     bool IsPopupWidgetVisible = false;
@@ -95,7 +97,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         void TryApplyPendingResolution(vr::VROverlayHandle_t overlay_handle);
         void ApplyMaxFPS(CefBrowser& browser);
         void CheckStaleFPSValues();
-        void OnAcceleratedPaint2UpdateStagingTexture(DPBrowserData& data);
+        void OnAcceleratedPaintUpdateStagingTexture(DPBrowserData& data);
         CefKeyEvent KeyboardGenerateWCharEvent(wchar_t wchar);
         //--
 
@@ -142,8 +144,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) override;
         virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) override;
         virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void *buffer, int width, int height) override;
-        virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, void *shared_handle) override;
-        virtual void OnAcceleratedPaint2(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, void *shared_handle, bool new_texture) override;
+        virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const CefAcceleratedPaintInfo &info) override;
         virtual bool StartDragging(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDragData> drag_data, DragOperationsMask allowed_ops, int x, int y) override;
         virtual void OnVirtualKeyboardRequested(CefRefPtr<CefBrowser> browser, TextInputMode input_mode) override;
 
@@ -151,7 +152,7 @@ class DPBrowserHandler : public CefClient, public CefDisplayHandler, public CefL
         virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model) override;
 
         //CefDownloadHandler:
-        virtual void OnBeforeDownload(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDownloadItem> download_item, const CefString& suggested_name, 
+        virtual bool OnBeforeDownload(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDownloadItem> download_item, const CefString& suggested_name,
                                       CefRefPtr<CefBeforeDownloadCallback> callback) override;
         virtual void OnDownloadUpdated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDownloadItem> download_item, CefRefPtr<CefDownloadItemCallback> callback) override;
 

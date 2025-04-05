@@ -27,36 +27,40 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// This file adds defines about the platform we're currently building on.
-//
-//  Operating System:
-//    OS_AIX / OS_ANDROID / OS_ASMJS / OS_FREEBSD / OS_FUCHSIA / OS_IOS /
-//    OS_LINUX / OS_MAC / OS_NACL (SFI or NONSFI) / OS_NETBSD / OS_OPENBSD /
-//    OS_QNX / OS_SOLARIS / OS_WIN
-//  Operating System family:
-//    OS_APPLE: IOS or MAC
-//    OS_BSD: FREEBSD or NETBSD or OPENBSD
-//    OS_POSIX: AIX or ANDROID or ASMJS or CHROMEOS or FREEBSD or IOS or LINUX
-//              or MAC or NACL or NETBSD or OPENBSD or QNX or SOLARIS
-//
-//  /!\ Note: OS_CHROMEOS is set by the build system, not this file
-//
-//  Compiler:
-//    COMPILER_MSVC / COMPILER_GCC
-//
-//  Processor:
-//    ARCH_CPU_ARM64 / ARCH_CPU_ARMEL / ARCH_CPU_MIPS / ARCH_CPU_MIPS64 /
-//    ARCH_CPU_MIPS64EL / ARCH_CPU_MIPSEL / ARCH_CPU_PPC64 / ARCH_CPU_S390 /
-//    ARCH_CPU_S390X / ARCH_CPU_X86 / ARCH_CPU_X86_64
-//  Processor family:
-//    ARCH_CPU_ARM_FAMILY: ARMEL or ARM64
-//    ARCH_CPU_MIPS_FAMILY: MIPS64EL or MIPSEL or MIPS64 or MIPS
-//    ARCH_CPU_PPC64_FAMILY: PPC64
-//    ARCH_CPU_S390_FAMILY: S390 or S390X
-//    ARCH_CPU_X86_FAMILY: X86 or X86_64
-//  Processor features:
-//    ARCH_CPU_31_BITS / ARCH_CPU_32_BITS / ARCH_CPU_64_BITS
-//    ARCH_CPU_BIG_ENDIAN / ARCH_CPU_LITTLE_ENDIAN
+/// \file
+/// This file adds defines about the platform we're currently building on.
+///
+/// <pre>
+///  Operating System:
+///    OS_AIX / OS_ANDROID / OS_ASMJS / OS_FREEBSD / OS_FUCHSIA / OS_IOS /
+///    OS_LINUX / OS_MAC / OS_NACL (SFI or NONSFI) / OS_NETBSD / OS_OPENBSD /
+///    OS_QNX / OS_SOLARIS / OS_WIN
+///  Operating System family:
+///    OS_APPLE: IOS or MAC
+///    OS_BSD: FREEBSD or NETBSD or OPENBSD
+///    OS_POSIX: AIX or ANDROID or ASMJS or CHROMEOS or FREEBSD or IOS or LINUX
+///              or MAC or NACL or NETBSD or OPENBSD or QNX or SOLARIS
+///
+///  /!\ Note: OS_CHROMEOS is set by the build system, not this file
+///
+///  Compiler:
+///    COMPILER_MSVC / COMPILER_GCC
+///
+///  Processor:
+///    ARCH_CPU_ARM64 / ARCH_CPU_ARMEL / ARCH_CPU_MIPS / ARCH_CPU_MIPS64 /
+///    ARCH_CPU_MIPS64EL / ARCH_CPU_MIPSEL / ARCH_CPU_PPC64 / ARCH_CPU_S390 /
+///    ARCH_CPU_S390X / ARCH_CPU_X86 / ARCH_CPU_X86_64
+///  Processor family:
+///    ARCH_CPU_ARM_FAMILY: ARMEL or ARM64
+///    ARCH_CPU_MIPS_FAMILY: MIPS64EL or MIPSEL or MIPS64 or MIPS
+///    ARCH_CPU_PPC64_FAMILY: PPC64
+///    ARCH_CPU_S390_FAMILY: S390 or S390X
+///    ARCH_CPU_X86_FAMILY: X86 or X86_64
+///  Processor features:
+///    ARCH_CPU_31_BITS / ARCH_CPU_32_BITS / ARCH_CPU_64_BITS
+///    ARCH_CPU_BIG_ENDIAN / ARCH_CPU_LITTLE_ENDIAN
+/// </pre>
+///
 
 #ifndef CEF_INCLUDE_BASE_CEF_BUILD_H_
 #define CEF_INCLUDE_BASE_CEF_BUILD_H_
@@ -65,7 +69,28 @@
 #if defined(USING_CHROMIUM_INCLUDES)
 // When building CEF include the Chromium header directly.
 #include "build/build_config.h"
+#include "cef/libcef/features/features.h"
+
+// The following #defines are used in cef/include/ headers and CEF client-side
+// code. CEF library-side code should use BUILDFLAG checks directly instead of
+// these #defines. CEF client-side code will get these #defines from
+// cef_config.h so any changes must also be reflected in
+// tools/make_config_header.py.
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/base/ozone_buildflags.h"
+#if BUILDFLAG(IS_OZONE_X11)
+#define CEF_X11 1
+#endif
+#endif
+
+#if !BUILDFLAG(ENABLE_ALLOY_BOOTSTRAP)
+#define DISABLE_ALLOY_BOOTSTRAP 1
+#endif
+
 #else  // !USING_CHROMIUM_INCLUDES
+#include "include/cef_config.h"
+
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -228,19 +253,19 @@
 
 // Type detection for wchar_t.
 #if defined(OS_WIN)
-#define WCHAR_T_IS_UTF16
+#define WCHAR_T_IS_16_BIT
 #elif defined(OS_FUCHSIA)
-#define WCHAR_T_IS_UTF32
+#define WCHAR_T_IS_32_BIT
 #elif defined(OS_POSIX) && defined(COMPILER_GCC) && defined(__WCHAR_MAX__) && \
     (__WCHAR_MAX__ == 0x7fffffff || __WCHAR_MAX__ == 0xffffffff)
-#define WCHAR_T_IS_UTF32
+#define WCHAR_T_IS_32_BIT
 #elif defined(OS_POSIX) && defined(COMPILER_GCC) && defined(__WCHAR_MAX__) && \
     (__WCHAR_MAX__ == 0x7fff || __WCHAR_MAX__ == 0xffff)
 // On Posix, we'll detect short wchar_t, but projects aren't guaranteed to
 // compile in this mode (in particular, Chrome doesn't). This is intended for
 // other projects using base who manage their own dependencies and make sure
 // short wchar works for them.
-#define WCHAR_T_IS_UTF16
+#define WCHAR_T_IS_16_BIT
 #else
 #error Please add support for your compiler in include/base/cef_build.h
 #endif
@@ -249,7 +274,7 @@
 // The compiler thinks std::string::const_iterator and "const char*" are
 // equivalent types.
 #define STD_STRING_ITERATOR_IS_CHAR_POINTER
-// The compiler thinks std::u16string::const_iterator and "char16*" are
+// The compiler thinks std::u16string::const_iterator and "char16_t*" are
 // equivalent types.
 #define BASE_STRING16_ITERATOR_IS_CHAR16_POINTER
 #endif
