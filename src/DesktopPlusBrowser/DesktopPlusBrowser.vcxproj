@@ -167,12 +167,14 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Shared\COMWrapper.cpp" />
     <ClCompile Include="..\Shared\OpenVRExt.cpp" />
     <ClCompile Include="..\Shared\OUtoSBSConverter.cpp" />
     <ClCompile Include="..\Shared\Util.cpp" />
     <ClCompile Include="..\ThirdParty\adblock_rust_ffi\src\wrapper.cc" />
     <ClCompile Include="DPBrowserAPIServer.cpp" />
     <ClCompile Include="DPBrowserApp.cpp" />
+    <ClInclude Include="..\Shared\COMWrapper.h" />
     <ClInclude Include="..\Shared\DPBrowserAPI.h" />
     <ClInclude Include="..\Shared\DPRect.h" />
     <ClInclude Include="..\Shared\openvr.h" />

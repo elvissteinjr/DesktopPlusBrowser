@@ -19,6 +19,9 @@
     <ClCompile Include="..\Shared\OpenVRExt.cpp">
       <Filter>Shared</Filter>
     </ClCompile>
+    <ClCompile Include="..\Shared\COMWrapper.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Shared\openvr.h">
@@ -49,6 +52,9 @@
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\OpenVRExt.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\COMWrapper.h">
       <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
