@@ -608,7 +608,8 @@ void DPBrowserHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintEl
     }
 
     //Default to partial copy unless the texture is new (usually from resize) or popup widget is visible
-    bool do_full_copy = (data.IsFullCopyScheduled || data.IsResizing || data.IsPopupWidgetVisible);
+    //Starting with SteamVR 2.19.1 this setup for partial updates doesn't really work anymore. Always do full copies now.
+    bool do_full_copy = true;//(data.IsFullCopyScheduled || data.IsResizing || data.IsPopupWidgetVisible);
 
     //To avoid flicker after a resize, the first few frames are not actually sent to OpenVR
     if (data.IsResizing)
@@ -630,6 +631,7 @@ void DPBrowserHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintEl
 
     //Update all overlays using this browser
     vr::VROverlayHandle_t ovrl_shared_source = vr::k_ulOverlayHandleInvalid;
+    bool refresh_shared_texture = false;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_tex_shared_source;
     for (auto& overlay : data.Overlays)
     {
@@ -720,7 +722,7 @@ void DPBrowserHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintEl
                     vr_tex.handle      = data.StagingTexture.Get();
 
                     //Note how we set the overlay texture before copying the texture. This is because the first frame on a new texture will be blank and we want to avoid flickering
-                    vr::VROverlayEx()->SetOverlayTextureEx(ovrl_shared_source, &vr_tex, {(int)texture_desc_shared.Width, (int)texture_desc_shared.Height});
+                    vr::VROverlayEx()->SetOverlayTextureEx(ovrl_shared_source, &vr_tex, {(int)texture_desc_shared.Width, (int)texture_desc_shared.Height}, &refresh_shared_texture);
 
                     //Use this staging texture as a device reference for the shared overlays
                     staging_tex_shared_source = data.StagingTexture;
@@ -731,7 +733,7 @@ void DPBrowserHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintEl
                 data.IsFullCopyScheduled = false;
             }
         }
-        else if ( (do_full_copy) && (!data.IsResizing) && (staging_tex_shared_source != nullptr) ) //For all others, set it shared from the normal overlay if an update is needed
+        else if ( (do_full_copy) && (!data.IsResizing) && (refresh_shared_texture) && (staging_tex_shared_source != nullptr) ) //For all others, set it shared from the normal overlay if an update is needed
         {
             vr::VROverlayEx()->SetSharedOverlayTexture(ovrl_shared_source, overlay.OverlayHandle, staging_tex_shared_source.Get());
         }
