@@ -754,10 +754,14 @@ void DPBrowserHandler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintEl
 
     if (::GetTickCount64() >= data.FrameCountStartTick + 1000)
     {
-        //A second has passed, send fps messages and reset the value
-        DPBrowserAPIServer::Get().NotifyFPS(data.Overlays[0].OverlayHandle, data.FrameCount);   //We only need to notify the primary overlay
+        //A second has passed, send fps messages if different and reset the value
+        if (data.FrameCount != data.FrameCountLast)
+        {
+            DPBrowserAPIServer::Get().NotifyFPS(data.Overlays[0].OverlayHandle, data.FrameCount);   //We only need to notify the primary overlay
+        }
 
         data.FrameCountStartTick = ::GetTickCount64();
+        data.FrameCountLast = data.FrameCount;
         data.FrameCount = 0;
     }
 

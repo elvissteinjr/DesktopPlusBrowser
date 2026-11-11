@@ -49,6 +49,7 @@ struct DPBrowserData
     int IdleFrameCount = 0;
     bool IsIdleFrameUpdateScheduled = false;
     int FrameCount = 0;
+    int FrameCountLast = -1;
     ULONGLONG FrameCountStartTick = 0;
     bool KeyboardToggledKeys[256] = {false};                                        //Tracks state of toggled keys between API calls (only DPBrowser_KeyboardToggleKey())
     vr::VROverlayHandle_t LastActiveOverlayHandle = vr::k_ulOverlayHandleInvalid;   //Last overlay used as target for keyboard or mouse input (excluding mouse move/scroll)
