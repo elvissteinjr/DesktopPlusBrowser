@@ -5,7 +5,7 @@ Browser component for the Desktop+ VR overlay application, using the Chromium Em
 
 ### Steam
 
-Switch to the "Desktop+ NewUI Preview + Browser" beta branch.  
+Enable the free Desktop+ Browser DLC for Desktop+ in Steam.  
 Browser overlays will now be available within Desktop+.
 
 ### Release Archive
